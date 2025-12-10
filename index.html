@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Samsco Communications | Aiyedun Samuel</title>
+    <meta name="description" content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & Mass Comm Student at Covenant University.">
+    
+    <meta property="og:title" content="Samsco Communications | Creativity Evolved">
+    <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
+    <meta property="og:image" content="https://yourwebsite.com/og-image.jpg"> 
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"> 
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --accent-blue: #2563eb;
+            --neon-blue: #00f0ff;
+            --text-gray: #9ca3af;
+        }
+
+        body.god-mode {
+            --accent-blue: #dc2626; 
+            --neon-blue: #ff004c;   
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            -webkit-user-select: none; -ms-user-select: none; user-select: none;
+        }
+
+        /* CUSTOM CURSOR */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn { cursor: none; }
+        }
+
+        #cursor {
+            position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+            border: 2px solid var(--neon-blue); border-radius: 50%;
+            pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 9999; transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.5s;
+            mix-blend-mode: difference; display: none;
+        }
+        #cursor.hovered {
+            width: 50px; height: 50px;
+            background-color: rgba(0, 240, 255, 0.2);
+            border-color: transparent; backdrop-filter: blur(2px);
+        }
+        body.god-mode #cursor.hovered { background-color: rgba(255, 0, 76, 0.2); }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+
+        /* LAGOS BADGE */
+        .lagos-badge {
+            position: fixed; bottom: 30px; right: 20px; 
+            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px; border-radius: 50px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+            z-index: 80; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .lagos-badge:hover { border-color: var(--accent-blue); transform: translateY(-3px); }
+        .live-dot {
+            width: 6px; height: 6px; background-color: #22c55e; border-radius: 50%;
+            box-shadow: 0 0 10px #22c55e; animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* IDENTITY BUBBLE */
+        .identity-trigger { position: relative; display: inline-block; cursor: help; }
+        #identity-bubble {
+            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px);
+            background: rgba(37, 99, 235, 0.9); padding: 8px 16px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: bold; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px var(--accent-blue); z-index: 100; /* Increased Z-index */
+            margin-bottom: 10px;
+        }
+        body.god-mode #identity-bubble { background: rgba(220, 38, 38, 0.9); box-shadow: 0 0 15px var(--accent-blue); }
+        #identity-bubble::after {
+            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+            border-width: 5px; border-style: solid;
+            border-color: rgba(37, 99, 235, 0.9) transparent transparent transparent;
+        }
+        body.god-mode #identity-bubble::after { border-color: rgba(220, 38, 38, 0.9) transparent transparent transparent; }
+        .identity-trigger:hover #identity-bubble { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .filter-btn.active, .vault-filter-btn.active {
+            background-color: var(--accent-blue); color: white;
+            box-shadow: 0 0 15px var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* UTILITIES */
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.1s; }
+        
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 20s linear infinite; }
+        
+        html { scroll-behavior: smooth; }
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
+        
+        .neon-text { text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .glass-card:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent-blue); transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+        
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* FLUID TEXT ANIMATIONS */
+        .hero-text-mask { overflow: hidden; display: block; line-height: 1.1; }
+        .anim-heading { transform: translateY(100%); opacity: 0; display: inline-block; } 
+        .anim-text { transform: translateY(20px); opacity: 0; }
+        .anim-stagger { transform: translateY(30px); opacity: 0; }
+        
+        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        #mobile-menu { transform: translateX(100%); transition: transform 0.4s ease-in-out; }
+        #mobile-menu.open { transform: translateX(0); }
+
+        /* MODAL (Single Project) */
+        #project-modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        #project-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #project-modal.active .modal-content { transform: scale(1); }
+
+        /* BIG GALLERY MODAL (Grid) */
+        #full-gallery-modal { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        #full-gallery-modal.active { opacity: 1; pointer-events: auto; }
+        
+        /* LIGHTBOX (View Image) */
+        #lightbox-modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        #lightbox-modal.active { opacity: 1; pointer-events: auto; }
+        
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.05); color: white; width: 50px; height: 50px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-btn:hover { background: var(--accent-blue); border-color: var(--accent-blue); }
+        .nav-prev { left: -80px; } .nav-next { right: -80px; }
+        @media (max-width: 768px) { .nav-prev { left: 0; top: auto; bottom: -70px; } .nav-next { right: 0; top: auto; bottom: -70px; } }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <div id="scroll-progress"></div>
+    <div id="cursor"></div>
+    
+    <div class="lagos-badge">
+        <div class="live-dot"></div>
+        <span id="lagos-time">LAGOS: --:-- --</span>
+    </div>
+
+    <div class="loader" id="loader">
+        <h1 class="text-2xl font-bold tracking-[0.5em] animate-pulse">SAMSCO</h1>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <nav class="fixed w-full top-0 z-50 px-6 py-6 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-card rounded-full px-8 py-4 cursor-hover">
+            <div class="text-xl font-bold tracking-tighter cursor-pointer" onclick="window.scrollTo(0,0)">
+                SAMSCO<span class="text-blue-500">.</span>
+            </div>
+            <div class="hidden md:flex gap-10 text-xs font-bold tracking-widest">
+                <a href="#about" class="hover:text-blue-400 transition-colors">ABOUT</a>
+                <a href="#services" class="hover:text-blue-400 transition-colors">EXPERTISE</a>
+                <a href="#portfolio" class="hover:text-blue-400 transition-colors">WORK</a>
+                <a href="#contact" class="hover:text-blue-400 transition-colors">CONTACT</a>
+            </div>
+            <div class="md:hidden text-2xl cursor-pointer" id="menu-btn">☰</div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 flex flex-col justify-center items-center gap-8 md:hidden">
+        <button id="close-menu" class="absolute top-8 right-8 text-3xl text-white hover:text-blue-500">✕</button>
+        <a href="#about" class="text-3xl font-bold hover:text-blue-500 mobile-link">ABOUT</a>
+        <a href="#services" class="text-3xl font-bold hover:text-blue-500 mobile-link">EXPERTISE</a>
+        <a href="#portfolio" class="text-3xl font-bold hover:text-blue-500 mobile-link">WORK</a>
+        <a href="#contact" class="text-3xl font-bold hover:text-blue-500 mobile-link">CONTACT</a>
+    </div>
+
+    <!-- PROJECT DETAILS MODAL -->
+    <div id="project-modal" class="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-black/90 backdrop-blur-xl">
+        <div class="modal-content glass-card p-8 md:p-12 max-w-3xl w-full rounded-3xl relative border border-white/10 shadow-2xl">
+            <button id="close-modal" class="absolute top-6 right-6 text-gray-400 hover:text-white text-xl bg-white/5 w-10 h-10 rounded-full flex items-center justify-center cursor-hover z-30 transition-colors">✕</button>
+            
+            <button id="prev-project" class="nav-btn nav-prev cursor-hover">❮</button>
+            <button id="next-project" class="nav-btn nav-next cursor-hover">❯</button>
+
+            <span id="modal-category" class="text-blue-500 text-xs font-bold tracking-[0.2em] mb-4 block">CATEGORY</span>
+            <h2 id="modal-title" class="text-3xl md:text-5xl font-bold mb-6 text-white">Project Title</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-8 border-y border-white/10 py-6">
+                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">CLIENT/ORG</h4><p id="modal-client" class="text-white text-sm">Global Tech</p></div>
+                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">YEAR</h4><p id="modal-year" class="text-white text-sm">2024</p></div>
+                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">ROLE</h4><p id="modal-role" class="text-white text-sm">Creative Lead</p></div>
+            </div>
+
+            <div class="space-y-6 text-gray-300 text-lg leading-relaxed font-light">
+                <p id="modal-desc">Description goes here...</p>
+                <div class="pt-4">
+                    <h4 class="text-xs text-gray-500 font-bold mb-3 tracking-widest">TECH STACK</h4>
+                    <div id="modal-tags" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="relative z-10" id="main-content">
+
+        <section id="home" class="h-screen flex flex-col justify-center items-center text-center px-4 relative">
+            <div class="hero-content z-20 mt-20">
+                <div class="inline-block border border-blue-500/30 bg-blue-500/10 px-4 py-1 rounded-full mb-6 backdrop-blur-md">
+                    <span class="text-blue-400 tracking-[0.2em] text-xs font-bold">19 Y/O • SAMSCO COMMUNICATIONS</span>
+                </div>
+                <h1 class="text-6xl md:text-9xl font-bold mb-6 leading-[0.9] tracking-tight">
+                    <div class="hero-text-mask"><span id="hero-word-1" class="anim-heading">VISION</span></div> 
+                    <div class="hero-text-mask"><span id="hero-word-2" class="anim-heading text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">ENGINEERED</span></div>
+                </h1>
+                <p class="max-w-xl mx-auto text-gray-400 text-lg mb-10 leading-relaxed font-light anim-text">
+                    Final Year Mass Communication Student & Creative Technologist. <br class="hidden md:block">Blending futuristic design, code, and storytelling.
+                </p>
+                <div class="flex justify-center gap-4 anim-stagger">
+                    <button id="open-gallery-hero" class="magnetic-btn bg-white text-black px-8 py-4 rounded-full font-bold transition-all hover:bg-blue-50 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        Open The Vault
+                    </button>
+                    <a href="#contact" class="magnetic-btn border border-white/20 hover:border-white hover:bg-white/5 px-8 py-4 rounded-full font-bold transition-all">Contact Me</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="w-full bg-black border-y border-white/10 overflow-hidden py-6 relative z-20">
+            <div class="whitespace-nowrap flex gap-12 text-lg font-bold text-gray-500 animate-marquee tracking-widest">
+                <span>3D VISUALIZATION</span> <span>•</span> <span>VFX</span> <span>•</span> <span>VIBE-CODING</span> <span>•</span> <span>GRAPHICS</span> <span>•</span>
+                <span>DATA ANALYTICS</span> <span>•</span> <span>AI AUTOMATION</span> <span>•</span> <span>C#</span> <span>•</span> <span>MOTION GRAPHICS</span> <span>•</span>
+            </div>
+        </div>
+
+        <section id="about" class="py-32 px-6 bg-gradient-to-b from-transparent to-black/80">
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div class="relative group" id="about-img-container">
+                    <div class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5">
+                        
+                        <!-- Image 1: Default -->
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg" 
+                             onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=800&q=80'"
+                             alt="Samsco Portrait" 
+                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
+                        
+                        <!-- Image 2: Hover -->
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg" 
+                             alt="Samsco Portrait Alternate" 
+                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
+
+                        <!-- Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none"></div>
+                    </div>
+                </div>
+                <div>
+                    <!-- REMOVED hero-text-mask HERE TO FIX CLIPPING -->
+                    <div class="mb-8">
+                        <h2 class="text-4xl md:text-6xl font-bold anim-heading">Hello, I'm 
+                            <span class="text-blue-500 relative cursor-help identity-trigger inline-block border-b-2 border-blue-500/30 hover:border-blue-500 transition-colors">
+                                Samsco
+                                <div id="identity-bubble">Aiyedun Samuel</div>
+                            </span>.
+                        </h2>
+                    </div>
+
+                    <p class="text-xl text-gray-300 mb-6 leading-relaxed font-light anim-text">
+                        19-Year-Old Multi-Disciplinary Talent. Final Year Student at <span class="text-white font-bold">Covenant University</span>.
+                    </p>
+                    <p class="text-gray-400 mb-8 leading-relaxed anim-text">
+                        I bridge the gap between Mass Communication and Creative Technology. My personality is a blend of youthful energy and a serious, growth-focused mindset. I don't just design; I create futuristic, interactive experiences using AI, Code, and 3D.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm font-bold tracking-wide text-white/80">
+                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> 3D & Product Viz</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Vibe-Coding (C#, JS)</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Data Analytics</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Gaming & AI</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-32 px-6 bg-black">
+            <div class="max-w-7xl mx-auto">
+                <div class="hero-text-mask mb-20 text-center"><h2 class="text-3xl md:text-5xl font-bold anim-heading">Core Expertise</h2></div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
+                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">❖</div>
+                        <h3 class="text-2xl font-bold mb-4">3D & VFX</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm">Product visualization and visual effects that push boundaries. Clean layouts with futuristic aesthetics.</p>
+                    </div>
+                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
+                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">⚡</div>
+                        <h3 class="text-2xl font-bold mb-4">Design & Motion</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm">Graphics design and fluid motion graphics. I create tech-inspired designs that tell a story.</p>
+                    </div>
+                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
+                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">⌬</div>
+                        <h3 class="text-2xl font-bold mb-4">Code & Data</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm">Creative coding (HTML/CSS/JS/C#) and Data Analytics. Building interactive and automated AI solutions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vault-trigger" class="py-32 px-6 bg-black relative border-t border-white/10 overflow-hidden">
+            <div class="absolute inset-0 bg-blue-900/10 blur-[100px]"></div>
+            <div class="max-w-7xl mx-auto text-center relative z-10">
+                <span class="text-blue-500 font-bold tracking-widest text-sm mb-4 block anim-text">THE ARCHIVE</span>
+                <div class="hero-text-mask mb-8">
+                    <h2 class="text-5xl md:text-8xl font-black anim-heading uppercase">Visual <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Vault</span></h2>
+                </div>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-12 text-lg anim-text">
+                    A comprehensive collection of my designs, 3D renders, and coding experiments. Explore over 30+ archived works from Modion, CUCSA, and personal labs.
+                </p>
+                <button id="open-gallery-main" class="group relative inline-flex items-center justify-center px-12 py-6 overflow-hidden font-bold text-white transition-all duration-300 bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-400 magnetic-btn anim-stagger">
+                    <span class="relative text-xl tracking-widest">EXPLORE GALLERY ❖</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="portfolio" class="py-32 px-6 bg-gradient-to-t from-gray-900 to-black">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div>
+                        <span class="text-blue-500 font-bold tracking-widest text-sm anim-text">SELECTED WORKS</span>
+                        <div class="hero-text-mask"><h2 class="text-3xl md:text-5xl font-bold mt-4 anim-heading">Previous Experiences</h2></div>
+                    </div>
+                    
+                    <div class="flex gap-2 flex-wrap anim-stagger">
+                        <button class="filter-btn active px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="all">ALL</button>
+                        <button class="filter-btn px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="design">DESIGN</button>
+                        <button class="filter-btn px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="vfx">3D/VFX</button>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8" id="gallery-grid">
+                    
+                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
+                         data-title="Brand Media Campaign" data-category="GRAPHICS DESIGN" data-client="Modion Communications" data-year="2024"
+                         data-role="Media Specialist Intern"
+                         data-desc="Executed over 50 professional designs for high-profile clients during a 2-month internship. Focused on brand consistency and digital engagement."
+                         data-tags="Photoshop,Illustrator,Canva,Strategy">
+                        <img src="https://www.brandessencenigeria.com/wp-content/uploads/2025/12/IMG-20251208-WA0168-1024x819.jpg" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Modion Work">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">INTERNSHIP</span>
+                            <h3 class="text-2xl font-bold text-white">Modion Comms</h3>
+                        </div>
+                    </div>
+
+                    <div class="project-card vfx all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
+                         data-title="Product Visualization" data-category="3D ART & VFX" data-client="AI Mix Agency" data-year="2024"
+                         data-role="3D Artist"
+                         data-desc="Created high-fidelity 3D assets and product visualizations as a requirement for the agency course. Focused on lighting and texture realism."
+                         data-tags="Blender,Cycles">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="3D Work">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">3D VISUALIZATION</span>
+                            <h3 class="text-2xl font-bold text-white">AI Mix Agency</h3>
+                        </div>
+                    </div>
+
+                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
+                         data-title="Student Association Rebrand" data-category="CREATIVE DIRECTION" data-client="CUCSA (Covenant Univ)" data-year="2024-25"
+                         data-role="Creative Head"
+                         data-desc="Leading the visual identity for the Covenant University Communication Students Association. overseeing graphics, layout, and corporate communications."
+                         data-tags="Leadership,Creative Direction,Layout">
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="CUCSA Work">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">LEADERSHIP</span>
+                            <h3 class="text-2xl font-bold text-white">CUCSA Creative Head</h3>
+                        </div>
+                    </div>
+
+                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
+                         data-title="Data Trends Analysis" data-category="DATA ANALYTICS" data-client="Coding Community" data-year="2024"
+                         data-role="Data Analyst"
+                         data-desc="Researching and analyzing data sets to provide insights for the community. Utilizing Python and Excel for data storytelling."
+                         data-tags="Python,Excel,Research,Data Viz">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Data Work">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">ANALYTICS</span>
+                            <h3 class="text-2xl font-bold text-white">Data Analysis</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-32 px-6 flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-blue-900/10 blur-[120px]"></div>
+            <div class="max-w-4xl w-full text-center relative z-10 glass-card p-16 rounded-[3rem] border-t border-blue-500/30">
+                <div class="hero-text-mask mb-8"><h2 class="text-5xl md:text-7xl font-bold anim-heading">Let's Create the Future.</h2></div>
+                <p class="text-gray-300 mb-12 text-xl font-light anim-text">Available for freelance projects in 3D, Design, and Creative Coding.</p>
+                
+                <div class="flex flex-col md:flex-row justify-center gap-6 flex-wrap anim-stagger">
+                    <a href="mailto:samscocommunications@gmail.com" class="magnetic-btn inline-block bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all shadow-xl">
+                        Send Email
+                    </a>
+                    <a href="tel:09072483594" class="magnetic-btn inline-block bg-transparent border border-white/20 text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all">
+                        +234 907 248 3594
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-black pt-20 pb-10 border-t border-white/10 text-sm">
+            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-2">
+                    <h2 class="text-2xl font-bold mb-4">SAMSCO<span class="text-blue-500">.</span></h2>
+                    <p class="text-gray-500 max-w-sm leading-relaxed">
+                        Visual Engineering for the Modern Web. <br>
+                        Enhancing creativity, communication, and digital experiences through technology.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-white mb-6 tracking-widest text-xs">NAVIGATION</h4>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="#home" class="hover:text-blue-500 transition-colors footer-link">Home</a></li>
+                        <li><a href="#portfolio" class="hover:text-blue-500 transition-colors footer-link">Work</a></li>
+                        <li><a href="#services" class="hover:text-blue-500 transition-colors footer-link">Services</a></li>
+                        <li><a href="#contact" class="hover:text-blue-500 transition-colors footer-link">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white mb-6 tracking-widest text-xs">CONNECT</h4>
+                    <ul class="space-y-4 text-gray-500">
+                        <li><a href="https://linkedin.com/in/samsco" class="hover:text-blue-500 transition-colors footer-link">LinkedIn</a></li>
+                        <li><a href="https://t.me/i_am_samsco/" class="hover:text-blue-500 transition-colors footer-link">Telegram</a></li>
+                        <li><a href="https://instagram.com/samsco.s1" class="hover:text-blue-500 transition-colors footer-link">Instagram</a></li>
+                        <li><span class="text-gray-700">Lagos, NG (WAT)</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-gray-600 text-xs">
+                <p>&copy; 2025 Samsco Communications. All Rights Reserved.</p>
+                <p>Designed & Engineered by Samsco.</p>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- GALLERY OVERLAY (UPDATED WITH FILTERS) -->
+    <div id="full-gallery-modal" class="fixed inset-0 z-[90] bg-black overflow-y-auto">
+        <div class="min-h-screen px-4 py-12 md:px-12">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 sticky top-0 bg-black/90 backdrop-blur-md py-6 z-20 border-b border-white/10 -mx-4 px-4 md:-mx-12 md:px-12">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-3xl font-bold">THE VAULT</h2>
+                    <p class="text-gray-500 text-sm">Archived Works: 30+</p>
+                </div>
+                
+                <!-- NEW: Filter Container in Header -->
+                <div id="vault-filters" class="flex flex-wrap gap-2">
+                    <!-- Filters injected here -->
+                </div>
+
+                <button id="close-gallery" class="absolute top-6 right-4 md:static text-white hover:text-blue-500 text-2xl font-bold cursor-hover bg-white/10 w-12 h-12 rounded-full flex items-center justify-center transition-colors">✕</button>
+            </div>
+            
+            <!-- Grid generated by JS -->
+            <div id="gallery-grid-content" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-24 md:mt-0">
+                <!-- JS will inject images here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX OVERLAY (UPDATED WITH VIDEO) -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl">
+        <button id="lightbox-close" class="absolute top-6 right-6 text-gray-400 hover:text-white text-3xl cursor-hover z-50">✕</button>
+        <button id="lightbox-prev" class="nav-btn nav-prev cursor-hover z-50" style="left: 20px;">❮</button>
+        <button id="lightbox-next" class="nav-btn nav-next cursor-hover z-50" style="right: 20px;">❯</button>
+        
+        <div class="relative max-w-5xl w-full h-full flex flex-col justify-center items-center">
+            <!-- Image Container -->
+            <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6">
+            
+            <!-- Video Container (Hidden by default) -->
+            <video id="lightbox-video" controls class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
+                <source src="" type="video/mp4">
+            </video>
+
+            <div class="text-center">
+                <h3 id="lightbox-title" class="text-2xl font-bold text-white mb-1">Project Name</h3>
+                <span id="lightbox-cat" class="text-blue-500 text-xs font-bold tracking-widest uppercase">Category</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. HERO ROTATOR ---
+        const words = [
+            { top: "VISION", bottom: "ENGINEERED" },
+            { top: "REALITY", bottom: "RENDERED" },
+            { top: "DIGITAL", bottom: "ALCHEMY" },
+            { top: "LOGIC", bottom: "DEFYING" },
+            { top: "ART", bottom: "INTELLIGENT" }
+        ];
+
+        let currentIndex = 0;
+        const topText = document.getElementById("hero-word-1");
+        const bottomText = document.getElementById("hero-word-2");
+
+        function rotateText() {
+            currentIndex = (currentIndex + 1) % words.length;
+            const nextWord = words[currentIndex];
+            gsap.to([topText, bottomText], {
+                y: -100, opacity: 0, duration: 1, ease: "power4.in", stagger: 0.1,
+                onComplete: () => {
+                    topText.innerText = nextWord.top;
+                    bottomText.innerText = nextWord.bottom;
+                    gsap.set([topText, bottomText], { y: 100 });
+                    gsap.to([topText, bottomText], { y: 0, opacity: 1, duration: 1, ease: "power4.out", stagger: 0.1 });
+                }
+            });
+        }
+        setInterval(rotateText, 4000);
+
+        // --- 2. EASY ACCESS GALLERY CONFIGURATION ---
+        const galleryConfig = [
+            // --- GRAPHICS DESIGN (Batch 1) ---
+            { title: "Graphic Art 01", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-13_08-20-06.jpg" },
+            { title: "Graphic Art 02", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-13_08-23-54.jpg" },
+            { title: "Graphic Art 03", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-06-07_15-42-05.jpg" },
+            { title: "Graphic Art 04", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-11_17-48-06.jpg" },
+            { title: "Graphic Art 05", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-16_17-25-47.jpg" },
+            { title: "Graphic Art 06", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_22_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 07", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_20_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 08", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_21_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 09", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_24_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 10", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_23_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 11", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_26_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 12", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_25_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 13", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_27_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 14", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_29_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 15", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_28_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 16", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_30_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 17", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_32_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 18", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_31_2025-12-09_19-59-08.jpg" },
+
+            // --- GRAPHICS DESIGN (Batch 2 - New Additions) ---
+            { title: "Satisfied", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/satisfied.jpg" },
+            { title: "CCH 2024", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/cch%202024.jpg" },
+            { title: "Project Oct", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2024-10-18_14-08-16.jpg" },
+            { title: "Graphic Art 19", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_7_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 20", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_6_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 21", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_5_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 22", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_4_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 23", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_3_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 24", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_1_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 25", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_31_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 26", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_32_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 27", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2_2025-12-09_19-44-05.jpg" },
+            { title: "Graphic Art 28", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_15_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 29", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_12_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 30", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_11_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 31", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_9_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 32", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_14_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 33", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_10_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 34", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_7_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 35", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2_2025-12-09_20-06-29.jpg" },
+            { title: "Graphic Art 36", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/Untitled-1.png" },
+            { title: "Graphic Art 37", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_4_2025-12-09_19-59-08.jpg" },
+            { title: "Graphic Art 38", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_6_2025-12-09_19-59-08.jpg" },
+            
+            // --- VIDEO (3D & VFX) ---
+            { title: "VFX Intro Reel", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/intro.mp4" },
+            { title: "Random Render", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Just%20a%20random%20render.mp4" },
+            { title: "Minimie Ad Concept", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Minimie.mp4" },
+            { title: "Character FX Simulation", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/A%20character%20on%20Fire.mp4" },
+            { title: "VFX Car Shot", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/VFX%20Car%20Shot.mp4" },
+            { title: "Instagram VFX", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Instagram.mp4" },
+            { title: "Random Render B", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Random%20Renderr.mp4" },
+            { title: "Random Concept", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Random%20a.mp4" },
+            { title: "Car VFX Still", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/car%20vfx.jpg" },
+
+            // --- VIDEO EDITING ---
+            { 
+                title: "Hypo Ad Campaign", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/%E2%80%9CWhen%20life%20gives%20you%20stains,%20Hypo%20gives%20you%20hope%20%F0%9F%98%85%F0%9F%AB%A7%20A%20campaign%20that%20never%20made%20it%20to%20class,%20but%20made%20it%20to%20IG!%20CREDITS-%20Editor-%20@samsco.s1%20Actors-%20@mr_a.l.u.c.a.r.d%20@i__zeke%20%F0%9F%8E%A5-%20@kendavid.na%20%20" 
+            },
+            { 
+                title: "Situation of Nigeria 2024", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/THE%20SITUATION%20OF%20NIGERIA%20IN%202024%20@motola_savage%20@temi.babs%20@mrlastborn1%20%20%F0%9F%93%B8%20@iamch_uks%20Edited%20by%20@samsco.s1%20" 
+            },
+            { 
+                title: "Na Hunger Cause Am", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/Na%20hunger%20cause%20am%20@motola_savage%20@iamch_uks%20@temi.babs%20@thebosstehila%20%20Edited%20by%20@samsco.s1%20%20Shot%20by%20@mrlastborn1%20@samsco.s1%20%20We%20are%20THEM%20(Content%20Creators)%20" 
+            },
+            { 
+                title: "The Pen Skit", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/The%20pen%20%E2%9C%8D%EF%B8%8F%F0%9F%99%86%F0%9F%8F%BD%F0%9F%98%82%20A%20new%20video%20from%20THEM%20%F0%9F%98%82%20%20@motola_savage%20@temi.babs%20%20@iamch_uks%20@thebosstehila%20%20%20Shot-%20@samsco.s1%20%20Edited-%20@mrlastborn1%20%20@samsco.s1%20%20%20Appreciation-%20God%20Almighty%20for%20the%20success%20of%20this.%20%20" 
+            },
+            { 
+                title: "POV: Maths Teacher", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/POV-%20YOU%20MET%20YOUR%20SECONDARY%20SCHOOL%20MATHS%20TEACHER.mp4" 
+            },
+            { 
+                title: "La La Land Skit", 
+                cat: "Video Editing", 
+                type: "video", 
+                url: "https://6937feda504a835c4ce351d7.imgix.net/When%20your%20bestie%20lives%20in%20La%20La%20Land%20%F0%9F%92%AD%20Me-%20%E2%80%9CWe%20need%20to%20be%20realistic.%E2%80%9D%20Her-%20%E2%80%9CI%20saw%20a%20sign%20in%20the%20clouds%20shaped%20like%20a%20heart%E2%80%A6%20it%E2%80%99s%20destiny.%E2%80%9D%20%F0%9F%92%80%F0%9F%92%80%F0%9F%92%80%20%20Tag%20that%20one%20friend%20who%20stays%20in%20dreamland%2024-7%20%F0%9F%98%AD%E2%9C%A8%20%20%20" 
+            },
+
+            // --- AI GENERATION ---
+            { title: "AI Animation 1", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/AI%20Video%20Generator%20-%20Animate%20Photos%20&%20Frames%20Online%20-%20Kling%20AI.mp4" },
+            { title: "AI Animation 2", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/AI%20Video%20Generator%20-%20Animate%20Photos%20&%20Frames%20Online%20-%20Kling%20AI_2.mp4" },
+            { title: "A Guy Trying", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/A_guy_trying_202512081219.mp4" },
+            { title: "Me (AI Generated)", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Me.mp4" },
+
+            // --- CODING PLACEHOLDERS ---
+            { title: "Data Dashboard", cat: "Coding & Data Analytics", url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80" },
+            { title: "Code Interface", cat: "Coding & Data Analytics", url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        const galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI"];
+
+        // --- 3. DYNAMIC GALLERY & FILTER GENERATOR ---
+        const galleryGrid = document.getElementById('gallery-grid-content');
+        const filterContainer = document.getElementById('vault-filters');
+        
+        let currentFilter = 'ALL';
+        let galleryItems = []; // Populated after generation
+        let visibleGalleryItems = []; // Subset based on filter
+
+        // Generate Filters
+        const allCategories = ["ALL", ...galleryCategories];
+        allCategories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `vault-filter-btn px-4 py-1 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-wider transition-all ${cat === 'ALL' ? 'active bg-blue-600 border-blue-600' : ''}`;
+            btn.textContent = cat;
+            btn.setAttribute('data-filter', cat);
+            
+            btn.addEventListener('click', () => {
+                // Active State
+                document.querySelectorAll('.vault-filter-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-blue-600', 'border-blue-600');
+                    b.classList.add('bg-white/5', 'border-white/10');
+                });
+                btn.classList.add('active', 'bg-blue-600', 'border-blue-600');
+                btn.classList.remove('bg-white/5', 'border-white/10');
+                
+                currentFilter = cat;
+                
+                // Update visible list
+                visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item')).filter(item => 
+                    currentFilter === 'ALL' || item.getAttribute('data-cat') === currentFilter
+                );
+
+                // Filtering Logic (Visuals)
+                const items = document.querySelectorAll('.gallery-item');
+                items.forEach(item => {
+                    const itemCat = item.getAttribute('data-cat');
+                    if(cat === 'ALL' || itemCat === cat) {
+                        gsap.to(item, { scale: 1, opacity: 1, duration: 0.3, display: 'block', ease: "power2.out" });
+                    } else {
+                        gsap.to(item, { scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
+                    }
+                });
+            });
+            filterContainer.appendChild(btn);
+        });
+
+        // Generate Items from Config
+        const totalItemsToGenerate = galleryConfig.length; 
+        
+        for(let i = 0; i < totalItemsToGenerate; i++) {
+            const configItem = galleryConfig[i];
+            const displayIndex = i + 1;
+            
+            const cat = configItem.cat; 
+            const isVideo = configItem.type === 'video' || configItem.url.endsWith('.mp4');
+
+            const item = document.createElement('div');
+            item.className = 'gallery-item relative aspect-square bg-gray-800 rounded-lg overflow-hidden group cursor-pointer border border-white/5';
+            
+            item.setAttribute('data-index', i);
+            item.setAttribute('data-title', `${configItem.title}`);
+            item.setAttribute('data-cat', cat);
+            item.setAttribute('data-type', isVideo ? 'video' : 'image');
+            item.setAttribute('data-url', configItem.url);
+            
+            let mediaContent = '';
+            if(isVideo) {
+                mediaContent = `<video src="${configItem.url}" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
+            } else {
+                mediaContent = `<img src="${configItem.url}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
+            }
+
+            item.innerHTML = `
+                ${mediaContent}
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 pointer-events-none">
+                    <span class="text-blue-400 text-[10px] font-bold tracking-widest mb-1 uppercase">${cat}</span>
+                    <h4 class="text-white text-lg font-bold">${configItem.title}</h4>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        }
+        
+        // Initial population of visible items
+        visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+
+        // --- 4. GALLERY MODAL LOGIC ---
+        const galleryModal = document.getElementById('full-gallery-modal');
+        const openGalleryBtns = [document.getElementById('open-gallery-hero'), document.getElementById('open-gallery-main')];
+        const closeGalleryBtn = document.getElementById('close-gallery');
+
+        openGalleryBtns.forEach(btn => {
+            if(btn) {
+                btn.addEventListener('click', () => {
+                    galleryModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    gsap.fromTo(".gallery-item", 
+                        { y: 50, opacity: 0 },
+                        { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, delay: 0.2 }
+                    );
+                });
+            }
+        });
+
+        closeGalleryBtn.addEventListener('click', () => {
+            galleryModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // --- 5. LIGHTBOX LOGIC (UPDATED WITH CONTEXT AWARENESS) ---
+        const lightbox = document.getElementById('lightbox-modal');
+        const lbImg = document.getElementById('lightbox-img');
+        const lbVideo = document.getElementById('lightbox-video');
+        const lbTitle = document.getElementById('lightbox-title');
+        const lbCat = document.getElementById('lightbox-cat');
+        let currentLbIndex = 0;
+        
+        // Add click listeners to items
+        const allGalleryItems = document.querySelectorAll('.gallery-item');
+        allGalleryItems.forEach((item) => {
+            item.addEventListener('click', () => {
+                openLightbox(item);
+            });
+        });
+
+        function openLightbox(clickedItem) {
+            // Find index relative to VISIBLE items
+            currentLbIndex = visibleGalleryItems.indexOf(clickedItem);
+            updateLightboxContent();
+            lightbox.classList.add('active');
+        }
+
+        function updateLightboxContent() {
+            if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
+            
+            const item = visibleGalleryItems[currentLbIndex];
+            const url = item.getAttribute('data-url');
+            const type = item.getAttribute('data-type');
+            const title = item.getAttribute('data-title');
+            const cat = item.getAttribute('data-cat');
+
+            lbTitle.innerText = title;
+            lbCat.innerText = cat;
+
+            if (type === 'video') {
+                lbImg.classList.add('hidden');
+                lbVideo.classList.remove('hidden');
+                lbVideo.src = url;
+                lbVideo.play();
+            } else {
+                lbVideo.classList.add('hidden');
+                lbImg.classList.remove('hidden');
+                lbImg.src = url;
+                lbVideo.pause();
+            }
+        }
+
+        function nextLightboxItem() {
+            currentLbIndex = (currentLbIndex + 1) % visibleGalleryItems.length;
+            updateLightboxContent();
+        }
+
+        function prevLightboxItem() {
+            currentLbIndex = (currentLbIndex - 1 + visibleGalleryItems.length) % visibleGalleryItems.length;
+            updateLightboxContent();
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lbVideo.pause();
+        }
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-next').addEventListener('click', nextLightboxItem);
+        document.getElementById('lightbox-prev').addEventListener('click', prevLightboxItem);
+
+        // KEYBOARD SUPPORT
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                nextLightboxItem();
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                prevLightboxItem();
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeLightbox();
+            }
+        });
+
+        // --- 6. FLUID TEXT ANIMATION SYSTEM ---
+        gsap.utils.toArray('.anim-heading').forEach(text => {
+            gsap.to(text, {
+                scrollTrigger: { trigger: text, start: "top 85%" },
+                y: 0, opacity: 1, duration: 1.2, ease: "power4.out"
+            });
+        });
+
+        gsap.utils.toArray('.anim-text').forEach(text => {
+            gsap.to(text, {
+                scrollTrigger: { trigger: text, start: "top 90%" },
+                y: 0, opacity: 1, duration: 1.5, ease: "power2.out"
+            });
+        });
+
+        gsap.utils.toArray('.anim-stagger').forEach((item, i) => {
+            gsap.to(item, {
+                scrollTrigger: { trigger: item, start: "top 90%" },
+                y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)"
+            });
+        });
+
+        // --- 7. STANDARD SETUP & MAGNETIC BUTTONS ---
+        window.addEventListener('load', () => {
+            gsap.to("#loader", { opacity: 0, duration: 0.8, onComplete: () => document.getElementById('loader').remove() });
+        });
+
+        const bubble = document.getElementById("identity-bubble");
+        const trigger = document.querySelector(".identity-trigger");
+        const identities = ["Aiyedun Samuel", "Visual Engineer", "Samsco Personal"];
+        let idIndex = 0;
+        let idInterval;
+        
+        if(trigger && bubble) {
+            trigger.addEventListener("mouseenter", () => {
+                idInterval = setInterval(() => {
+                    idIndex = (idIndex + 1) % identities.length;
+                    bubble.innerText = identities[idIndex];
+                }, 1500);
+            });
+            trigger.addEventListener("mouseleave", () => {
+                clearInterval(idInterval);
+                bubble.innerText = "Aiyedun Samuel"; 
+            });
+        }
+
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.getAttribute('data-filter');
+                projectCards.forEach(item => {
+                    if (filter === 'all' || item.classList.contains(filter)) {
+                        gsap.to(item, { scale: 1, opacity: 1, duration: 0.4, display: 'block', ease: "power2.out" });
+                    } else {
+                        gsap.to(item, { scale: 0.9, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
+                    }
+                });
+            });
+        });
+
+        const projectModal = document.getElementById('project-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const prevBtn = document.getElementById('prev-project');
+        const nextBtn = document.getElementById('next-project');
+        
+        const mTitle = document.getElementById('modal-title');
+        const mCat = document.getElementById('modal-category');
+        const mDesc = document.getElementById('modal-desc');
+        const mClient = document.getElementById('modal-client');
+        const mYear = document.getElementById('modal-year');
+        const mRole = document.getElementById('modal-role');
+        const mTags = document.getElementById('modal-tags');
+
+        let currentProjectIndex = 0;
+        const projectArray = Array.from(projectCards);
+
+        function openProjectModal(index) {
+            currentProjectIndex = index;
+            const card = projectArray[index];
+            mTitle.innerText = card.getAttribute('data-title');
+            mCat.innerText = card.getAttribute('data-category');
+            mDesc.innerText = card.getAttribute('data-desc');
+            mClient.innerText = card.getAttribute('data-client') || "Private Client";
+            mYear.innerText = card.getAttribute('data-year') || "2024";
+            mRole.innerText = card.getAttribute('data-role') || "Creative Lead";
+            
+            const tags = card.getAttribute('data-tags').split(',');
+            mTags.innerHTML = ''; 
+            tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'px-3 py-1 bg-white/10 border border-white/5 rounded-full text-xs text-blue-300 tracking-wide';
+                span.innerText = tag;
+                mTags.appendChild(span);
+            });
+            projectModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeProjectModal() { projectModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        
+        function nextProjectFunc() {
+            let nextIndex = (currentProjectIndex + 1) % projectArray.length;
+            while(projectArray[nextIndex].style.display === 'none') { nextIndex = (nextIndex + 1) % projectArray.length; }
+            openProjectModal(nextIndex);
+        }
+        function prevProjectFunc() {
+            let prevIndex = (currentProjectIndex - 1 + projectArray.length) % projectArray.length;
+            while(projectArray[prevIndex].style.display === 'none') { prevIndex = (prevIndex - 1 + projectArray.length) % projectArray.length; }
+            openProjectModal(prevIndex);
+        }
+
+        projectArray.forEach((card, index) => card.addEventListener('click', () => openProjectModal(index)));
+        closeModalBtn.addEventListener('click', closeProjectModal);
+        nextBtn.addEventListener('click', nextProjectFunc);
+        prevBtn.addEventListener('click', prevProjectFunc);
+        projectModal.addEventListener('click', (e) => { if (e.target === projectModal) closeProjectModal(); });
+
+        const cursor = document.getElementById('cursor');
+        if (window.matchMedia("(pointer: fine)").matches) {
+            cursor.style.display = 'block';
+            document.addEventListener('mousemove', (e) => gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 }));
+            
+            document.querySelectorAll('a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+            });
+
+            document.querySelectorAll(".magnetic-btn").forEach(btn => {
+                btn.addEventListener("mousemove", (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - rect.width / 2) * 0.5;
+                    const y = (e.clientY - rect.top - rect.height / 2) * 0.5;
+                    gsap.to(btn, { x: x, y: y, duration: 0.3, ease: "power2.out" });
+                });
+                btn.addEventListener("mouseleave", () => {
+                    gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+                });
+            });
+        }
+
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+        
+        const grid = new THREE.GridHelper(50, 50, 0x1a1a1a, 0x0a0a0a);
+        grid.position.y = -2;
+        scene.add(grid);
+        
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 600;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i=0; i<particlesCount*3; i++) posArray[i] = (Math.random()-0.5)*25;
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMesh = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.02, color: 0x2563eb, transparent: true, opacity: 0.6 }));
+        scene.add(particlesMesh);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.0005;
+            grid.position.z = (Date.now() * 0.001) % 1; 
+            renderer.render(scene, camera);
+        }
+        animate();
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
+        function updateTime() {
+            const time = new Date().toLocaleTimeString('en-US', { timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit' });
+            document.getElementById('lagos-time').innerText = `LAGOS: ${time}`;
+        }
+        setInterval(updateTime, 1000); updateTime();
+        
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+        closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
+    </script>
+</body>
+</html>05:33 10/12/2025
