@@ -119,6 +119,29 @@
         html { scroll-behavior: smooth; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
         
+        /* NEW: Scroll Reactive Video Background */
+        #video-background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1; /* Above ThreeJS canvas (0), below Content (10) */
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.8; /* Subtle blend */
+            mix-blend-mode: screen; /* Holographic effect over black */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* The Canvas for Image Sequence */
+        #headset-canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
         .neon-text { text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
         
         /* Glass Card */
@@ -139,27 +162,81 @@
         .anim-stagger { transform: translateY(30px); opacity: 0; }
         
         /* PREMIUM LOADER ANIMATION */
-        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        .loader { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; 
+            display: flex; justify-content: center; align-items: center; 
+            transition: opacity 0.5s ease; 
+        }
+
+        .loader-content {
+            position: relative;
+            width: 550px; /* INCREASED SIZE to accommodate larger logo */
+            height: 550px;
+            max-width: 95vw;
+            max-height: 95vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         
         .loader-img {
-            width: 350px; /* SIZE: Small Icon */
+            width: 400px; /* SIZE: Increased to 400px */
+            max-width: 70%; /* Responsive safeguard */
             height: auto;
-            
-            /* mix-blend-mode removed since webp supports transparency */
-            
+            position: relative;
+            z-index: 10;
             animation: premiumPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Tech Rings Animation */
+        .tech-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid transparent;
+            pointer-events: none;
+        }
+
+        .ring-1 {
+            width: 100%; height: 100%;
+            border-top: 2px solid var(--accent-blue);
+            border-right: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .ring-2 {
+            width: 130%; height: 130%;
+            border-left: 1px solid var(--neon-blue);
+            border-bottom: 1px solid transparent;
+            opacity: 0.7;
+            animation: spin 4s linear infinite reverse;
+        }
+
+        .ring-3 {
+            width: 160%; height: 160%;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         @keyframes premiumPulse {
             0%, 100% {
                 transform: scale(1);
-                /* Blue Glow Pulse */
-                filter: drop-shadow(0 0 5px rgba(37, 99, 235, 0.5));
-                opacity: 0.8;
+                /* Stronger Blue Glow Pulse */
+                filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.6)) drop-shadow(0 0 30px rgba(37, 99, 235, 0.4));
+                opacity: 0.9;
             }
             50% {
-                transform: scale(1.15);
-                filter: drop-shadow(0 0 20px rgba(37, 99, 235, 1));
+                transform: scale(1.05);
+                /* Intense Glow */
+                filter: drop-shadow(0 0 40px rgba(37, 99, 235, 1)) drop-shadow(0 0 80px rgba(0, 240, 255, 0.8));
                 opacity: 1;
             }
         }
@@ -242,7 +319,12 @@
 
     <!-- LOADER -->
     <div class="loader" id="loader">
-        <img src="https://6937feda504a835c4ce351d7.imgix.net/sc.webp" alt="Samsco Loader" class="loader-img">
+        <div class="loader-content">
+            <div class="tech-ring ring-1"></div>
+            <div class="tech-ring ring-2"></div>
+            <div class="tech-ring ring-3"></div>
+            <img src="https://6937feda504a835c4ce351d7.imgix.net/sc.webp" alt="Samsco Loader" class="loader-img">
+        </div>
     </div>
 
     <!-- CONTEXT MENU -->
@@ -268,6 +350,11 @@
     </div>
 
     <div id="canvas-container"></div>
+    
+    <!-- IMAGE SEQUENCE CANVAS CONTAINER -->
+    <div id="video-background-container">
+        <canvas id="headset-canvas"></canvas>
+    </div>
 
     <nav class="fixed w-full top-0 z-50 px-6 py-6 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto flex justify-between items-center glass-card rounded-full px-8 py-4 cursor-hover">
@@ -594,14 +681,17 @@
         </div>
     </div>
 
-    <!-- LIGHTBOX OVERLAY (UPDATED) -->
+    <!-- LIGHTBOX OVERLAY (UPDATED WITH VIDEO) -->
     <div id="lightbox-modal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl">
         <button id="lightbox-close" class="absolute top-6 right-6 text-gray-400 hover:text-white text-3xl cursor-hover z-50">✕</button>
         <button id="lightbox-prev" class="nav-btn nav-prev cursor-hover z-50" style="left: 20px;">❮</button>
         <button id="lightbox-next" class="nav-btn nav-next cursor-hover z-50" style="right: 20px;">❯</button>
         
         <div class="relative max-w-5xl w-full h-full flex flex-col justify-center items-center">
+            <!-- Image Container -->
             <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6">
+            
+            <!-- Video Container (Hidden by default) -->
             <video id="lightbox-video" controls class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
                 <source src="" type="video/mp4">
             </video>
@@ -697,6 +787,12 @@
             
             // --- VIDEO (3D & VFX) ---
             { title: "VFX Intro Reel", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/intro.mp4" },
+            { title: "S24 Render", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/s24%20render.png" },
+            { title: "S24 Ultra Motion", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/s24%20ultra.mp4" },
+            { title: "iPad Air 2023", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Apple%20Ipad%20Air%202023%20(1).mp4" },
+            { title: "Reactive Headset", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/scroll%20reactive%20headset.mp4" },
+            { title: "Pixel 9 Pro", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Google%20Pixel%209%20Pro%20new.jpeg" },
+            { title: "HP Spectre X360", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/HP%20Spectre%20X360.png" },
             { title: "Random Render", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Just%20a%20random%20render.mp4" },
             { title: "Minimie Ad Concept", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Minimie.mp4" },
             { title: "Character FX Simulation", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/A%20character%20on%20Fire.mp4" },
@@ -1181,6 +1277,76 @@
         document.addEventListener('scroll', () => {
             ctxMenu.classList.remove('visible');
         });
+
+        // --- 10. SCROLL REACTIVE IMAGE SEQUENCE LOGIC (Using Canvas) ---
+        // Setup for the image sequence on canvas
+        const canvas = document.getElementById('headset-canvas');
+        const context = canvas.getContext('2d');
+
+        // Set high resolution for clarity
+        canvas.width = 1158; 
+        canvas.height = 770; 
+
+        // Define frame count and current state
+        const frameCount = 192;
+        const headset = { frame: 0 };
+        const images = [];
+
+        // Function to get image URL for a given index (1 to 192)
+        const currentFrame = index => (
+            `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg`
+        );
+
+        // Preload images
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            img.src = currentFrame(i);
+            images.push(img);
+        }
+
+        // Setup GSAP animation linked to scroll
+        // Wait for first image to load to avoid drawing empty
+        images[0].onload = render;
+
+        gsap.to(headset, {
+            frame: frameCount - 1,
+            snap: "frame",
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body", // Use the whole body as scroll container
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.5 // Smooth scrubbing effect
+            },
+            onUpdate: render // Render on every update from scroll
+        });
+
+        function render() {
+            // Clear canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw current frame image
+            // We use the integer part of headset.frame to pick the image from the array
+            // images array is 0-indexed, so we map 0 -> frame 1 (index 0)
+            const imgIndex = Math.round(headset.frame); 
+            if(images[imgIndex]) {
+                // Draw image to cover canvas while maintaining aspect ratio (basic contain logic here)
+                // Since user wants it centered focus
+                const img = images[imgIndex];
+                
+                // Calculate aspect ratios
+                const hRatio = canvas.width / img.width;
+                const vRatio = canvas.height / img.height;
+                const ratio = Math.max(hRatio, vRatio); // Max for 'cover', Min for 'contain'
+                
+                const centerShift_x = (canvas.width - img.width * ratio) / 2;
+                const centerShift_y = (canvas.height - img.height * ratio) / 2;  
+
+                context.drawImage(img, 0, 0, img.width, img.height, 
+                                  centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+            }
+        }
+        
     </script>
 </body>
 </html>
