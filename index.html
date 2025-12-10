@@ -54,6 +54,7 @@
             pointer-events: none; transform: translate(-50%, -50%);
             z-index: 9999; transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.5s;
             mix-blend-mode: difference; display: none;
+            will-change: transform, width, height;
         }
         #cursor.hovered {
             width: 50px; height: 50px;
@@ -111,10 +112,10 @@
         }
 
         /* UTILITIES */
-        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.1s; }
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.1s; will-change: width; }
         
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { animation: marquee 20s linear infinite; }
+        .animate-marquee { animation: marquee 20s linear infinite; will-change: transform; }
         
         html { scroll-behavior: smooth; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
@@ -129,11 +130,13 @@
             z-index: 1; /* Above ThreeJS canvas (0), below Content (10) */
             pointer-events: none;
             overflow: hidden;
-            opacity: 0.8; /* Subtle blend */
+            /* REDUCED OPACITY for better readability */
+            opacity: 0.4; 
             mix-blend-mode: screen; /* Holographic effect over black */
             display: flex;
             justify-content: center;
             align-items: center;
+            will-change: opacity;
         }
         
         /* The Canvas for Image Sequence */
@@ -144,22 +147,43 @@
 
         .neon-text { text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
         
-        /* Glass Card */
+        /* Glass Card - Optimized Blur */
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(12px); 
+            backdrop-filter: blur(8px); /* Reduced from 12px for performance */
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.05); 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
         .glass-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
         
+        /* --- FOCUS MODE GRID INTERACTION --- */
+        /* When hovering the grid, dim all cards that are NOT hovered */
+        #gallery-grid:hover .project-card:not(:hover) {
+            opacity: 0.4;
+            filter: blur(4px) grayscale(100%);
+            transform: scale(0.98) !important; /* Override inline styles safely */
+            transition: all 0.4s ease-out;
+        }
+
+        /* Focus on the specific card being hovered */
+        #gallery-grid .project-card:hover {
+            opacity: 1;
+            filter: blur(0) grayscale(0);
+            transform: scale(1.02) !important;
+            z-index: 10;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent-blue);
+            transition: all 0.4s ease-out;
+        }
+
         h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
         
         /* FLUID TEXT ANIMATIONS */
         .hero-text-mask { overflow: hidden; display: block; line-height: 1.1; }
-        .anim-heading { transform: translateY(100%); opacity: 0; display: inline-block; } 
-        .anim-text { transform: translateY(20px); opacity: 0; }
-        .anim-stagger { transform: translateY(30px); opacity: 0; }
+        .anim-heading { transform: translateY(100%); opacity: 0; display: inline-block; will-change: transform, opacity; } 
+        .anim-text { transform: translateY(20px); opacity: 0; will-change: transform, opacity; }
+        .anim-stagger { transform: translateY(30px); opacity: 0; will-change: transform, opacity; }
         
         /* PREMIUM LOADER ANIMATION */
         .loader { 
@@ -168,14 +192,15 @@
             display: flex;
             flex-direction: column; 
             justify-content: center; align-items: center; 
-            transition: opacity 0.5s ease; 
+            /* REMOVED CSS transition to let GSAP handle it perfectly */
+            will-change: transform;
         }
 
         .loader-content {
             position: relative;
             /* Tighter container for rings to be closer to logo */
-            width: 420px; 
-            height: 420px;
+            width: 220px; 
+            height: 220px;
             max-width: 90vw;
             max-height: 90vh;
             display: flex;
@@ -184,7 +209,7 @@
         }
         
         .loader-img {
-            width: 400px; 
+            width: 200px; 
             max-width: 95%; /* Responsive */
             height: auto;
             position: relative;
@@ -366,7 +391,8 @@
             <div class="tech-ring ring-1"></div>
             <div class="tech-ring ring-2"></div>
             <div class="tech-ring ring-3"></div>
-            <img src="https://6937feda504a835c4ce351d7.imgix.net/sc.webp" alt="Samsco Loader" class="loader-img">
+            <!-- REDUCED QUALITY LOADER IMAGE: Added ?q=50&w=300 -->
+            <img src="https://6937feda504a835c4ce351d7.imgix.net/sc.webp?q=50&w=300&auto=format" alt="Samsco Loader" class="loader-img">
         </div>
         <div class="loader-ui-container">
             <div class="loader-text">PLEASE WAIT...</div>
@@ -491,11 +517,11 @@
             <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
                 <div class="relative group" id="about-img-container">
                     <div class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg" 
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=800&q=70&auto=format" 
                              onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=800&q=80'"
                              alt="Samsco Portrait" 
                              class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg" 
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=800&q=70&auto=format" 
                              alt="Samsco Portrait Alternate" 
                              class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none"></div>
@@ -615,7 +641,7 @@
                          data-role="Creative Head"
                          data-desc="Leading the visual identity for the Covenant University Communication Students Association. overseeing graphics, layout, and corporate communications."
                          data-tags="Leadership,Creative Direction,Layout">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg" 
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg?w=800&q=60&auto=format" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="CUCSA Work">
                         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
                             <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">LEADERSHIP</span>
@@ -966,13 +992,22 @@
             item.setAttribute('data-title', `${configItem.title}`);
             item.setAttribute('data-cat', cat);
             item.setAttribute('data-type', isVideo ? 'video' : 'image');
-            item.setAttribute('data-url', configItem.url);
+            item.setAttribute('data-url', configItem.url); // Original High Res URL for lightbox
             
             let mediaContent = '';
+            
+            // OPTIMIZATION LOGIC FOR THUMBNAILS
+            // Only optimize if it's an imgix URL and NOT a video
+            let thumbUrl = configItem.url;
+            if(!isVideo && configItem.url.includes('imgix.net')) {
+                // Request a 500px wide version, quality 60%, auto format (webp/avif)
+                thumbUrl = configItem.url + "?w=500&q=60&auto=format";
+            }
+
             if(isVideo) {
                 mediaContent = `<video src="${configItem.url}" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
             } else {
-                mediaContent = `<img src="${configItem.url}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
+                mediaContent = `<img src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
             }
 
             item.innerHTML = `
@@ -1038,7 +1073,7 @@
             if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
             
             const item = visibleGalleryItems[currentLbIndex];
-            const url = item.getAttribute('data-url');
+            let url = item.getAttribute('data-url'); // Get original URL
             const type = item.getAttribute('data-type');
             const title = item.getAttribute('data-title');
             const cat = item.getAttribute('data-cat');
@@ -1054,6 +1089,12 @@
             } else {
                 lbVideo.classList.add('hidden');
                 lbImg.classList.remove('hidden');
+                
+                // Optimize Lightbox Image slightly (1200px is enough for most screens, no need for 4k)
+                if(url.includes('imgix.net')) {
+                    url += "?w=1200&q=80&auto=format";
+                }
+                
                 lbImg.src = url;
                 lbVideo.pause();
             }
@@ -1311,71 +1352,64 @@
         const headset = { frame: 0 };
         const images = [];
 
-        // Image URL Generator
-        const currentFrame = index => (
-            `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg`
-        );
+        // Image URL Generator (OPTIMIZED)
+        const currentFrame = index => {
+            return `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg?w=1000&q=25&auto=format`;
+        };
 
-        // --- REAL ASSET LOADING SYSTEM ---
+        // --- OPTIMIZED LOADING SYSTEM (CRITICAL PATH) ---
         const loaderBar = document.getElementById('loader-bar');
         const loaderPercent = document.getElementById('loader-percent');
         const loaderEl = document.getElementById('loader');
         
-        // Collect all assets to track
-        let assetsToLoad = [];
-        
-        // 1. Add Headset Frames
+        // 1. Define Critical Assets (First 36 frames + Static UI)
+        // This is enough for the initial hero section interaction
+        const criticalFrameCount = 36; 
+        const criticalAssets = [];
+        const deferredAssets = [];
+
+        // Add Headset Frames (Split into Critical and Deferred)
         for (let i = 1; i <= frameCount; i++) {
-            assetsToLoad.push(currentFrame(i));
+            const url = currentFrame(i);
+            if (i <= criticalFrameCount) {
+                criticalAssets.push(url);
+            } else {
+                deferredAssets.push(url);
+            }
         }
 
-        // 2. Add Vault/Gallery Images (Preload thumbnails)
-        galleryConfig.forEach(item => {
-            if(item.type !== 'video' && !item.url.endsWith('.mp4')) {
-                assetsToLoad.push(item.url);
-            }
-        });
-
-        // 3. Add Static UI Images found in DOM
+        // Add Static UI Images found in DOM (Always Critical)
         const staticImages = document.querySelectorAll('img');
         staticImages.forEach(img => {
-            if(img.src) assetsToLoad.push(img.src);
+            if(img.src) criticalAssets.push(img.src);
         });
 
-        let loadedCount = 0;
-        let totalAssets = assetsToLoad.length;
+        let loadedCriticalCount = 0;
+        let totalCriticalAssets = criticalAssets.length;
         
-        // If we have too many assets (e.g. > 200), we might want to artificially speed up 
-        // or prioritize critical ones. But per request, we load percentage of assets.
         // Optimization: Deduplicate URLs
-        assetsToLoad = [...new Set(assetsToLoad)];
-        totalAssets = assetsToLoad.length;
+        const uniqueCriticalAssets = [...new Set(criticalAssets)];
+        totalCriticalAssets = uniqueCriticalAssets.length;
 
         function updateLoader() {
-            loadedCount++;
-            const progress = Math.min((loadedCount / totalAssets) * 100, 100);
+            loadedCriticalCount++;
+            const progress = Math.min((loadedCriticalCount / totalCriticalAssets) * 100, 100);
             
             // Visual Update
             if(loaderBar) loaderBar.style.width = `${progress}%`;
             if(loaderPercent) loaderPercent.innerText = `${Math.floor(progress)}%`;
 
-            if (loadedCount >= totalAssets) {
-                // Done!
+            if (loadedCriticalCount >= totalCriticalAssets) {
+                // Done loading critical path!
                 finishLoading();
             }
         }
 
-        // Preload Logic
-        // For headset images, we store them in the 'images' array for the canvas to use later
-        // For others, we just create a dummy Image object to trigger cache
-        
-        assetsToLoad.forEach((url) => {
+        function loadImage(url, isCritical) {
             const img = new Image();
             
-            // If it belongs to headset sequence, store it
+            // Logic to store headset frames correctly
             if(url.includes('_MConverter.eu_scroll%20reactive%20headset-')) {
-                // Extract index to place in correct order if needed, but array push is fine if sequence matches
-                // Better: find index
                  const match = url.match(/headset-(\d+)\.jpg/);
                  if(match) {
                      const idx = parseInt(match[1]) - 1; // 0-indexed
@@ -1383,24 +1417,77 @@
                  }
             }
 
-            img.onload = updateLoader;
-            img.onerror = updateLoader; // Fail gracefully
+            if(isCritical) {
+                img.onload = updateLoader;
+                img.onerror = updateLoader; 
+            }
+            
             img.src = url;
-        });
+        }
+
+        // Start Loading Critical Assets
+        uniqueCriticalAssets.forEach(url => loadImage(url, true));
 
         function finishLoading() {
-             // Wait a tiny bit for UI smoothness then fade out
+             // 1. Force first render of headset NOW, while loader is still covering.
+             // This ensures when the curtain lifts, the image is there and not invisible.
+             if(images[0]) {
+                 headset.frame = 0;
+                 render(); 
+             }
+             
+             // 2. Initialize ScrollTrigger logic immediately (it's lightweight until scrolled)
+             initHeadsetAnimation();
+
+             // Wait a tiny bit for UI smoothness then slide up
              setTimeout(() => {
-                 gsap.to(loaderEl, { opacity: 0, duration: 0.8, onComplete: () => loaderEl.remove() });
-                 // Initialize ScrollTrigger for headset AFTER load
-                 initHeadsetAnimation();
+                 gsap.to(loaderEl, { 
+                     yPercent: -100, 
+                     duration: 1.5, 
+                     ease: "power4.inOut", 
+                     onComplete: () => {
+                         loaderEl.remove();
+                         
+                         // 3. ONLY start loading the heavy rest of the site after the transition is DONE
+                         // and give it another slight buffer. This prevents the "stutter".
+                         setTimeout(loadDeferredAssets, 1000); 
+                     } 
+                 });
              }, 500);
         }
 
-        // Fallback safety: If loading gets stuck (e.g. bad network), force finish after 15s
+        function loadDeferredAssets() {
+            // Load the remaining 150+ frames + Gallery Thumbs silently
+            const uniqueDeferred = [...new Set(deferredAssets)];
+            
+            // Add Gallery config items
+            galleryConfig.forEach(item => {
+                if(item.type !== 'video' && !item.url.endsWith('.mp4') && item.url.includes('imgix.net')) {
+                    uniqueDeferred.push(item.url + "?w=500&q=60&auto=format");
+                }
+            });
+
+            // Lazy load them with low priority (slower pace to avoid freezing UI)
+            let deferredIndex = 0;
+            function loadNextDeferred() {
+                if(deferredIndex >= uniqueDeferred.length) return;
+                
+                // Load 2 at a time instead of 1 to be slightly faster but still safe
+                for(let k=0; k<2 && deferredIndex < uniqueDeferred.length; k++) {
+                    loadImage(uniqueDeferred[deferredIndex], false);
+                    deferredIndex++;
+                }
+                
+                // Small delay between batches to yield back to main thread
+                setTimeout(loadNextDeferred, 50); 
+            }
+            loadNextDeferred();
+        }
+
+        // Fallback safety
         setTimeout(() => {
             if(document.getElementById('loader')) finishLoading();
-        }, 15000);
+        }, 8000); // reduced timeout since we load less
 
 
         function initHeadsetAnimation() {
@@ -1425,19 +1512,30 @@
         function render() {
             context.clearRect(0, 0, canvas.width, canvas.height);
             const imgIndex = Math.round(headset.frame); 
-            if(images[imgIndex]) {
-                const img = images[imgIndex];
-                
+            
+            // Fallback: If the exact frame isn't loaded yet (because we are lazy loading),
+            // find the nearest previous frame that IS loaded.
+            let renderImg = images[imgIndex];
+            if (!renderImg || !renderImg.complete) {
+                for(let i = imgIndex; i >= 0; i--) {
+                    if(images[i] && images[i].complete) {
+                        renderImg = images[i];
+                        break;
+                    }
+                }
+            }
+
+            if(renderImg) {
                 // Aspect Ratio Contain/Cover logic
-                const hRatio = canvas.width / img.width;
-                const vRatio = canvas.height / img.height;
+                const hRatio = canvas.width / renderImg.width;
+                const vRatio = canvas.height / renderImg.height;
                 const ratio = Math.max(hRatio, vRatio); 
                 
-                const centerShift_x = (canvas.width - img.width * ratio) / 2;
-                const centerShift_y = (canvas.height - img.height * ratio) / 2;  
+                const centerShift_x = (canvas.width - renderImg.width * ratio) / 2;
+                const centerShift_y = (canvas.height - renderImg.height * ratio) / 2;  
 
-                context.drawImage(img, 0, 0, img.width, img.height, 
-                                  centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+                context.drawImage(renderImg, 0, 0, renderImg.width, renderImg.height, 
+                                  centerShift_x, centerShift_y, renderImg.width * ratio, renderImg.height * ratio);
             }
         }
         
