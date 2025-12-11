@@ -49,7 +49,7 @@
         }
 
         #cursor {
-            position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+            position: fixed; top: 0; left: 0; width: 15px; height: 15px;
             border: 2px solid var(--neon-blue); border-radius: 50%;
             pointer-events: none; transform: translate(-50%, -50%);
             z-index: 9999; transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.5s;
@@ -57,7 +57,7 @@
             will-change: transform, width, height;
         }
         #cursor.hovered {
-            width: 50px; height: 50px;
+            width: 30px; height: 30px;
             background-color: rgba(0, 240, 255, 0.2);
             border-color: transparent; backdrop-filter: blur(2px);
         }
@@ -131,7 +131,7 @@
             pointer-events: none;
             overflow: hidden;
             /* REDUCED OPACITY for better readability */
-            opacity: 0.4; 
+            opacity: 0.6; 
             mix-blend-mode: screen; /* Holographic effect over black */
             display: flex;
             justify-content: center;
@@ -150,8 +150,8 @@
         /* Glass Card - Optimized Blur */
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(8px); /* Reduced from 12px for performance */
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(6px); /* Reduced from 12px for performance */
+            -webkit-backdrop-filter: blur(3px);
             border: 1px solid rgba(255, 255, 255, 0.05); 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
@@ -177,6 +177,19 @@
             transition: all 0.4s ease-out;
         }
 
+        /* --- DATA MOSHING / GLITCH TRANSITION --- */
+        @keyframes vertical-mosh {
+            0% { transform: scaleY(1); filter: hue-rotate(0deg); }
+            20% { transform: scaleY(3) scaleX(0.9) skewX(10deg); filter: hue-rotate(90deg) contrast(2); }
+            40% { transform: scaleY(0.5) scaleX(1.1) skewX(-10deg); filter: invert(1); }
+            60% { transform: scaleY(4) scaleX(0.8); filter: blur(2px) hue-rotate(180deg); }
+            100% { transform: scaleY(1); filter: none; }
+        }
+        
+        .mosh-active .project-card, .mosh-active .gallery-item {
+            animation: vertical-mosh 0.3s steps(5) forwards;
+        }
+
         h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
         
         /* FLUID TEXT ANIMATIONS */
@@ -185,128 +198,21 @@
         .anim-text { transform: translateY(20px); opacity: 0; will-change: transform, opacity; }
         .anim-stagger { transform: translateY(30px); opacity: 0; will-change: transform, opacity; }
         
-        /* PREMIUM LOADER ANIMATION */
+        /* --- OPTIMIZED GIF LOADER --- */
         .loader { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 9999; 
             display: flex;
-            flex-direction: column; 
             justify-content: center; align-items: center; 
-            /* REMOVED CSS transition to let GSAP handle it perfectly */
-            will-change: transform;
+            /* CRITICAL: Use will-change to prepare GPU for opacity fade */
+            will-change: opacity;
         }
 
-        .loader-content {
-            position: relative;
-            /* Tighter container for rings to be closer to logo */
-            width: 220px; 
-            height: 220px;
-            max-width: 90vw;
-            max-height: 90vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .loader-img {
-            width: 200px; 
-            max-width: 95%; /* Responsive */
+        .loader-video {
+            /* Adjust size as needed */
+            width: 450px;
             height: auto;
-            position: relative;
-            z-index: 10;
-            animation: premiumPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        .loader-ui-container {
-            margin-top: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .loader-text {
-            color: var(--text-gray);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.75rem; /* Reduced size */
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .loader-bar-wrapper {
-            width: 200px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loader-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--accent-blue);
-            box-shadow: 0 0 10px var(--accent-blue);
-            transition: width 0.1s linear;
-        }
-
-        .loader-percent {
-            font-size: 0.65rem;
-            color: var(--accent-blue);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: bold;
-            letter-spacing: 0.1em;
-        }
-
-        /* Tech Rings Animation - Adjusted Sizes */
-        .tech-ring {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 2px solid transparent;
-            pointer-events: none;
-        }
-
-        .ring-1 {
-            width: 100%; height: 100%;
-            border-top: 2px solid var(--accent-blue);
-            border-right: 2px solid transparent;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-        }
-
-        .ring-2 {
-            width: 110%; height: 110%; /* Smaller spread */
-            border-left: 1px solid var(--neon-blue);
-            border-bottom: 1px solid transparent;
-            opacity: 0.7;
-            animation: spin 4s linear infinite reverse;
-        }
-
-        .ring-3 {
-            width: 120%; height: 120%; /* Smaller spread */
-            border: 1px dashed rgba(255, 255, 255, 0.15);
-            animation: spin 10s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        @keyframes premiumPulse {
-            0%, 100% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 15px rgba(37, 99, 235, 0.6)) drop-shadow(0 0 30px rgba(37, 99, 235, 0.4));
-                opacity: 0.9;
-            }
-            50% {
-                transform: scale(1.02); /* More subtle pulse */
-                filter: drop-shadow(0 0 40px rgba(37, 99, 235, 1)) drop-shadow(0 0 80px rgba(0, 240, 255, 0.8));
-                opacity: 1;
-            }
+            object-fit: contain;
         }
 
         #mobile-menu { transform: translateX(100%); transition: transform 0.4s ease-in-out; }
@@ -385,22 +291,12 @@
         <span id="lagos-time">LAGOS: --:-- --</span>
     </div>
 
-    <!-- LOADER -->
+    <!-- OPTIMIZED VIDEO LOADER -->
     <div class="loader" id="loader">
-        <div class="loader-content">
-            <div class="tech-ring ring-1"></div>
-            <div class="tech-ring ring-2"></div>
-            <div class="tech-ring ring-3"></div>
-            <!-- REDUCED QUALITY LOADER IMAGE: Added ?q=50&w=300 -->
-            <img src="https://6937feda504a835c4ce351d7.imgix.net/sc.webp?q=50&w=300&auto=format" alt="Samsco Loader" class="loader-img">
-        </div>
-        <div class="loader-ui-container">
-            <div class="loader-text">PLEASE WAIT...</div>
-            <div class="loader-bar-wrapper">
-                <div class="loader-bar" id="loader-bar"></div>
-            </div>
-            <div class="loader-percent" id="loader-percent">0%</div>
-        </div>
+        <!-- Removed 'loop' attribute to control manually via JS -->
+        <video autoplay muted playsinline class="loader-video">
+            <source src="https://6937feda504a835c4ce351d7.imgix.net/sc%20preloader%20(1).mp4?w=200" type="video/mp4">
+        </video>
     </div>
 
     <!-- CONTEXT MENU -->
@@ -784,6 +680,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
+        // --- DEVTOOLS EASTER EGG ---
+        console.log(`%c
+  ____    _    __  __ ____   ____ ___ 
+ / ___|  / \\  |  \\/  / ___| / ___/ _ \\
+ \\___ \\ / _ \\ | |\\/| \\___ \\| |  | | | |
+  ___) / ___ \\| |  | |___) | |__| |_| |
+ |____/_/   \\_\\_|  |_|____/ \\____\\___/ 
+                                       
+`, "font-weight: bold; font-size: 20px; color: #2563eb; text-shadow: 2px 2px 0px #000");
+        console.log("%c⚠️ WAITING FOR SIGNAL... %c\nHey Developer! Checking under the hood? 🔧\nLet's build something futuristic together.", "color: #ff004c; font-weight:bold; font-size:14px;", "color: #fff; font-size: 12px;");
+        console.log("%cContact: samscocommunications@gmail.com", "color: #9ca3af; font-style: italic;");
+
         gsap.registerPlugin(ScrollTrigger);
 
         // --- 1. HERO ROTATOR ---
@@ -803,12 +711,22 @@
             currentIndex = (currentIndex + 1) % words.length;
             const nextWord = words[currentIndex];
             gsap.to([topText, bottomText], {
-                y: -100, opacity: 0, duration: 1, ease: "power4.in", stagger: 0.1,
+                yPercent: -120, // Use percentage to ensure it clears the height
+                opacity: 0, 
+                duration: 1, 
+                ease: "power4.in", 
+                stagger: 0.1,
                 onComplete: () => {
                     topText.innerText = nextWord.top;
                     bottomText.innerText = nextWord.bottom;
-                    gsap.set([topText, bottomText], { y: 100 });
-                    gsap.to([topText, bottomText], { y: 0, opacity: 1, duration: 1, ease: "power4.out", stagger: 0.1 });
+                    gsap.set([topText, bottomText], { yPercent: 120 }); // Reset to below
+                    gsap.to([topText, bottomText], { 
+                        yPercent: 0, 
+                        opacity: 1, 
+                        duration: 1, 
+                        ease: "power4.out", 
+                        stagger: 0.1 
+                    });
                 }
             });
         }
@@ -954,23 +872,35 @@
                 btn.classList.add('active', 'bg-blue-600', 'border-blue-600');
                 btn.classList.remove('bg-white/5', 'border-white/10');
                 
-                currentFilter = cat;
-                
-                // Update visible list
-                visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item')).filter(item => 
-                    currentFilter === 'ALL' || item.getAttribute('data-cat') === currentFilter
-                );
+                // --- DATA MOSHING EFFECT ---
+                // Add the glitch animation class to the container
+                galleryGrid.classList.add('mosh-active');
 
-                // Filtering Logic (Visuals)
-                const items = document.querySelectorAll('.gallery-item');
-                items.forEach(item => {
-                    const itemCat = item.getAttribute('data-cat');
-                    if(cat === 'ALL' || itemCat === cat) {
-                        gsap.to(item, { scale: 1, opacity: 1, duration: 0.3, display: 'block', ease: "power2.out" });
-                    } else {
-                        gsap.to(item, { scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
-                    }
-                });
+                // Delay the actual filtering logic slightly to allow the glitch to start
+                setTimeout(() => {
+                    currentFilter = cat;
+                    
+                    // Update visible list
+                    visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item')).filter(item => 
+                        currentFilter === 'ALL' || item.getAttribute('data-cat') === currentFilter
+                    );
+
+                    // Filtering Logic (Visuals)
+                    const items = document.querySelectorAll('.gallery-item');
+                    items.forEach(item => {
+                        const itemCat = item.getAttribute('data-cat');
+                        if(cat === 'ALL' || itemCat === cat) {
+                            gsap.to(item, { scale: 1, opacity: 1, duration: 0.3, display: 'block', ease: "power2.out" });
+                        } else {
+                            gsap.to(item, { scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
+                        }
+                    });
+
+                    // Remove the glitch class after the effect duration
+                    setTimeout(() => {
+                        galleryGrid.classList.remove('mosh-active');
+                    }, 300); // 300ms matches the animation duration
+                }, 200); // Trigger filter change mid-glitch
             });
             filterContainer.appendChild(btn);
         });
@@ -996,16 +926,21 @@
             
             let mediaContent = '';
             
-            // OPTIMIZATION LOGIC FOR THUMBNAILS
-            // Only optimize if it's an imgix URL and NOT a video
-            let thumbUrl = configItem.url;
+            // OPTIMIZATION LOGIC FOR THUMBNAILS (GRID VIEW)
+            // Strip existing params first to avoid duplication
+            let cleanUrl = configItem.url.split('?')[0];
+            let thumbUrl = cleanUrl;
+
             if(!isVideo && configItem.url.includes('imgix.net')) {
-                // Request a 500px wide version, quality 60%, auto format (webp/avif)
-                thumbUrl = configItem.url + "?w=500&q=60&auto=format";
+                // Request a smaller, lower quality version for the grid
+                // w=400: decent size for grid columns
+                // q=40: lower quality for speed
+                thumbUrl = cleanUrl + "?w=400&q=40&auto=format";
             }
 
             if(isVideo) {
-                mediaContent = `<video src="${configItem.url}" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
+                // For videos in grid, we keep them muted and preloaded only metadata
+                mediaContent = `<video src="${configItem.url}" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
             } else {
                 mediaContent = `<img src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
             }
@@ -1073,7 +1008,10 @@
             if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
             
             const item = visibleGalleryItems[currentLbIndex];
-            let url = item.getAttribute('data-url'); // Get original URL
+            let rawUrl = item.getAttribute('data-url'); // Get original URL
+            // Clean the URL of any existing parameters
+            let url = rawUrl.split('?')[0]; 
+            
             const type = item.getAttribute('data-type');
             const title = item.getAttribute('data-title');
             const cat = item.getAttribute('data-cat');
@@ -1084,15 +1022,19 @@
             if (type === 'video') {
                 lbImg.classList.add('hidden');
                 lbVideo.classList.remove('hidden');
-                lbVideo.src = url;
+                // Videos use the raw URL (Full Quality)
+                lbVideo.src = rawUrl; 
                 lbVideo.play();
             } else {
                 lbVideo.classList.add('hidden');
                 lbImg.classList.remove('hidden');
                 
-                // Optimize Lightbox Image slightly (1200px is enough for most screens, no need for 4k)
+                // OPTIMIZATION LOGIC FOR LIGHTBOX (FULL VIEW)
                 if(url.includes('imgix.net')) {
-                    url += "?w=1200&q=80&auto=format";
+                    // Force High Resolution and High Quality
+                    // w=1600: Full HD width
+                    // q=90: High quality
+                    url += "?w=1600&q=90&auto=format";
                 }
                 
                 lbImg.src = url;
@@ -1298,13 +1240,23 @@
         const particlesMesh = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.02, color: 0x2563eb, transparent: true, opacity: 0.6 }));
         scene.add(particlesMesh);
 
+        // --- OPTIMIZED RENDER LOOP ---
+        let isLoaded = false; // Flag to pause rendering during load
+
         function animate() {
             requestAnimationFrame(animate);
+            
+            // Only render heavy 3D if loaded or if it's essential
+            // We pause it slightly during the heavy exit transition to save frames
+            if (!isLoaded) return; 
+
             particlesMesh.rotation.y += 0.0005;
             grid.position.z = (Date.now() * 0.001) % 1; 
             renderer.render(scene, camera);
         }
-        animate();
+        // Start loop but it will skip rendering until isLoaded = true
+        animate(); 
+        
         window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
         function updateTime() {
@@ -1358,9 +1310,9 @@
         };
 
         // --- OPTIMIZED LOADING SYSTEM (CRITICAL PATH) ---
-        const loaderBar = document.getElementById('loader-bar');
-        const loaderPercent = document.getElementById('loader-percent');
+        // REFACTORED: Removed DOM updates for progress bar to improve performance.
         const loaderEl = document.getElementById('loader');
+        const loaderVideo = document.querySelector('.loader-video');
         
         // 1. Define Critical Assets (First 36 frames + Static UI)
         // This is enough for the initial hero section interaction
@@ -1391,17 +1343,33 @@
         const uniqueCriticalAssets = [...new Set(criticalAssets)];
         totalCriticalAssets = uniqueCriticalAssets.length;
 
+        // LOADER TIMING LOGIC
+        let assetsReady = false;
+        let loopCount = 0;
+        const minLoops = 2; // Force at least 2 loops
+        let isFinishCalled = false;
+
+        // Ensure we control the loop manually to count them
+        if (loaderVideo) {
+            loaderVideo.removeAttribute('loop'); 
+            loaderVideo.addEventListener('ended', () => {
+                loopCount++;
+                // If we have looped enough AND assets are ready, we finish.
+                // Otherwise, we play again.
+                if (loopCount >= minLoops && assetsReady) {
+                    finishLoading();
+                } else {
+                    loaderVideo.play();
+                }
+            });
+        }
+
         function updateLoader() {
             loadedCriticalCount++;
-            const progress = Math.min((loadedCriticalCount / totalCriticalAssets) * 100, 100);
             
-            // Visual Update
-            if(loaderBar) loaderBar.style.width = `${progress}%`;
-            if(loaderPercent) loaderPercent.innerText = `${Math.floor(progress)}%`;
-
             if (loadedCriticalCount >= totalCriticalAssets) {
-                // Done loading critical path!
-                finishLoading();
+                // Mark assets as ready, but wait for video loop logic to trigger finishLoading
+                assetsReady = true;
             }
         }
 
@@ -1428,7 +1396,15 @@
         // Start Loading Critical Assets
         uniqueCriticalAssets.forEach(url => loadImage(url, true));
 
+        // Function to start the text animation loop properly
+        function startTextAnimation() {
+            setInterval(rotateText, 4000);
+        }
+
         function finishLoading() {
+             if (isFinishCalled) return;
+             isFinishCalled = true;
+
              // 1. Force first render of headset NOW, while loader is still covering.
              // This ensures when the curtain lifts, the image is there and not invisible.
              if(images[0]) {
@@ -1439,21 +1415,25 @@
              // 2. Initialize ScrollTrigger logic immediately (it's lightweight until scrolled)
              initHeadsetAnimation();
 
-             // Wait a tiny bit for UI smoothness then slide up
+             // Wait a tiny bit for UI smoothness then FADE OUT
              setTimeout(() => {
                  gsap.to(loaderEl, { 
-                     yPercent: -100, 
-                     duration: 1.5, 
-                     ease: "power4.inOut", 
+                     opacity: 0, 
+                     duration: 1.0, 
+                     ease: "power2.inOut", 
                      onComplete: () => {
                          loaderEl.remove();
+                         isLoaded = true; // Enable 3D rendering now
                          
+                         // Start the text animation ONLY after loader is gone
+                         startTextAnimation();
+
                          // 3. ONLY start loading the heavy rest of the site after the transition is DONE
                          // and give it another slight buffer. This prevents the "stutter".
                          setTimeout(loadDeferredAssets, 1000); 
                      } 
                  });
-             }, 500);
+             }, 800); // Increased delay slightly to ensure stability before fade
         }
 
         function loadDeferredAssets() {
