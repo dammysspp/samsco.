@@ -9,7 +9,7 @@
     
     <meta property="og:title" content="Samsco Communications | Creativity Evolved">
     <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
-    <meta property="og:image" content="https://yourwebsite.com/og-image.jpg"> 
+    <meta property="og:image" content="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=1200"> 
     <meta property="og:type" content="website">
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico"> 
@@ -118,9 +118,11 @@
         .animate-marquee { animation: marquee 20s linear infinite; will-change: transform; }
         
         html { scroll-behavior: smooth; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; }
         
-        /* NEW: Scroll Reactive Video Background */
+        /* Optimization: transform: translateZ(0) promotes to new layer */
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; transform: translateZ(0); }
+        
+        /* Scroll Reactive Video Background */
         #video-background-container {
             position: fixed;
             top: 0;
@@ -130,13 +132,13 @@
             z-index: 1; /* Above ThreeJS canvas (0), below Content (10) */
             pointer-events: none;
             overflow: hidden;
-            /* REDUCED OPACITY for better readability */
             opacity: 0.6; 
-            mix-blend-mode: screen; /* Holographic effect over black */
+            mix-blend-mode: screen; 
             display: flex;
             justify-content: center;
             align-items: center;
             will-change: opacity;
+            transform: translateZ(0); /* Hardware accelerate */
         }
         
         /* The Canvas for Image Sequence */
@@ -150,7 +152,7 @@
         /* Glass Card - Optimized Blur */
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(6px); /* Reduced from 12px for performance */
+            backdrop-filter: blur(6px); 
             -webkit-backdrop-filter: blur(3px);
             border: 1px solid rgba(255, 255, 255, 0.05); 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
@@ -158,15 +160,13 @@
         .glass-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
         
         /* --- FOCUS MODE GRID INTERACTION --- */
-        /* When hovering the grid, dim all cards that are NOT hovered */
         #gallery-grid:hover .project-card:not(:hover) {
             opacity: 0.4;
             filter: blur(4px) grayscale(100%);
-            transform: scale(0.98) !important; /* Override inline styles safely */
+            transform: scale(0.98) !important;
             transition: all 0.4s ease-out;
         }
 
-        /* Focus on the specific card being hovered */
         #gallery-grid .project-card:hover {
             opacity: 1;
             filter: blur(0) grayscale(0);
@@ -204,12 +204,10 @@
             background: #000; z-index: 9999; 
             display: flex;
             justify-content: center; align-items: center; 
-            /* CRITICAL: Use will-change to prepare GPU for opacity fade */
             will-change: opacity;
         }
 
         .loader-video {
-            /* Adjust size as needed */
             width: 450px;
             height: auto;
             object-fit: contain;
@@ -293,7 +291,6 @@
 
     <!-- OPTIMIZED VIDEO LOADER -->
     <div class="loader" id="loader">
-        <!-- Removed 'loop' attribute to control manually via JS -->
         <video autoplay muted playsinline class="loader-video">
             <source src="https://6937feda504a835c4ce351d7.imgix.net/sc%20preloader%20(1).mp4?w=200" type="video/mp4">
         </video>
@@ -707,30 +704,50 @@
         const topText = document.getElementById("hero-word-1");
         const bottomText = document.getElementById("hero-word-2");
 
+        // Optimization: Pause when tab is inactive
+        let isTabActive = true;
+        document.addEventListener("visibilitychange", () => {
+            isTabActive = !document.hidden;
+        });
+
         function rotateText() {
+            if(!isTabActive) return; // Skip update if not visible
+
             currentIndex = (currentIndex + 1) % words.length;
             const nextWord = words[currentIndex];
+            
+            // Exit animation with blur
             gsap.to([topText, bottomText], {
-                yPercent: -120, // Use percentage to ensure it clears the height
-                opacity: 0, 
+                yPercent: -120,
+                opacity: 0,
+                filter: "blur(20px)",
                 duration: 1, 
                 ease: "power4.in", 
                 stagger: 0.1,
                 onComplete: () => {
                     topText.innerText = nextWord.top;
                     bottomText.innerText = nextWord.bottom;
-                    gsap.set([topText, bottomText], { yPercent: 120 }); // Reset to below
+                    
+                    // Set initial state for entrance (below viewport, invisible, blurred)
+                    gsap.set([topText, bottomText], { 
+                        yPercent: 120, 
+                        opacity: 0,
+                        filter: "blur(20px)"
+                    });
+                    
+                    // Entrance animation with unblur
                     gsap.to([topText, bottomText], { 
                         yPercent: 0, 
-                        opacity: 1, 
-                        duration: 1, 
+                        opacity: 1,
+                        filter: "blur(0px)",
+                        duration: 1.2, 
                         ease: "power4.out", 
                         stagger: 0.1 
                     });
                 }
             });
         }
-        setInterval(rotateText, 4000);
+        
 
         // --- 2. EASY ACCESS GALLERY CONFIGURATION ---
         const galleryConfig = [
@@ -933,9 +950,8 @@
 
             if(!isVideo && configItem.url.includes('imgix.net')) {
                 // Request a smaller, lower quality version for the grid
-                // w=400: decent size for grid columns
-                // q=40: lower quality for speed
-                thumbUrl = cleanUrl + "?w=400&q=40&auto=format";
+                // w=350: Reduced slightly for better grid performance
+                thumbUrl = cleanUrl + "?w=350&q=40&auto=format";
             }
 
             if(isVideo) {
@@ -1200,7 +1216,19 @@
         const cursor = document.getElementById('cursor');
         if (window.matchMedia("(pointer: fine)").matches) {
             cursor.style.display = 'block';
-            document.addEventListener('mousemove', (e) => gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 }));
+            
+            // OPTIMIZED CURSOR MOVEMENT
+            // Changed duration from 0.1 to 0.02 for instant response (removes "heavy" feel)
+            // Added overwrite: "auto" to improve performance
+            document.addEventListener('mousemove', (e) => {
+                gsap.to(cursor, { 
+                    x: e.clientX, 
+                    y: e.clientY, 
+                    duration: 0.01, 
+                    ease: "power2.out", 
+                    overwrite: "auto" 
+                });
+            });
             
             document.querySelectorAll('a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item').forEach(el => {
                 el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
@@ -1233,7 +1261,7 @@
         scene.add(grid);
         
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 600;
+        const particlesCount = 300;
         const posArray = new Float32Array(particlesCount * 3);
         for(let i=0; i<particlesCount*3; i++) posArray[i] = (Math.random()-0.5)*25;
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
@@ -1241,21 +1269,32 @@
         scene.add(particlesMesh);
 
         // --- OPTIMIZED RENDER LOOP ---
-        let isLoaded = false; // Flag to pause rendering during load
+        let isLoaded = false; 
 
-        function animate() {
+        // Throttle FPS for Three.js (Background doesn't need 60FPS)
+        let lastTime = 0;
+        const fpsInterval = 1000 / 30; // Cap at 30 FPS for battery saving
+
+        function animate(currentTime) {
             requestAnimationFrame(animate);
+
+            // 1. Pause if tab is hidden
+            if(!isTabActive) return;
             
-            // Only render heavy 3D if loaded or if it's essential
-            // We pause it slightly during the heavy exit transition to save frames
+            // 2. Pause if site not loaded yet
             if (!isLoaded) return; 
 
-            particlesMesh.rotation.y += 0.0005;
-            grid.position.z = (Date.now() * 0.001) % 1; 
-            renderer.render(scene, camera);
+            // 3. FPS Throttling
+            const elapsed = currentTime - lastTime;
+            if (elapsed > fpsInterval) {
+                lastTime = currentTime - (elapsed % fpsInterval);
+
+                particlesMesh.rotation.y += 0.0005;
+                grid.position.z = (Date.now() * 0.001) % 1; 
+                renderer.render(scene, camera);
+            }
         }
-        // Start loop but it will skip rendering until isLoaded = true
-        animate(); 
+        animate(0); 
         
         window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
@@ -1297,8 +1336,8 @@
         // Setup for the image sequence on canvas
         const canvas = document.getElementById('headset-canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 1158; 
-        canvas.height = 770; 
+        canvas.width = 579; 
+        canvas.height = 385; 
 
         const frameCount = 192;
         const headset = { frame: 0 };
@@ -1429,11 +1468,15 @@
                          startTextAnimation();
 
                          // 3. ONLY start loading the heavy rest of the site after the transition is DONE
-                         // and give it another slight buffer. This prevents the "stutter".
-                         setTimeout(loadDeferredAssets, 1000); 
+                         // Optimization: Use requestIdleCallback for heavy lifting to avoid frame drops
+                         if ('requestIdleCallback' in window) {
+                            requestIdleCallback(() => loadDeferredAssets());
+                         } else {
+                            setTimeout(loadDeferredAssets, 1000); 
+                         }
                      } 
                  });
-             }, 800); // Increased delay slightly to ensure stability before fade
+             }, 800); 
         }
 
         function loadDeferredAssets() {
@@ -1449,19 +1492,32 @@
 
             // Lazy load them with low priority (slower pace to avoid freezing UI)
             let deferredIndex = 0;
-            function loadNextDeferred() {
-                if(deferredIndex >= uniqueDeferred.length) return;
-                
-                // Load 2 at a time instead of 1 to be slightly faster but still safe
-                for(let k=0; k<2 && deferredIndex < uniqueDeferred.length; k++) {
+            
+            function loadNextDeferred(deadline) {
+                // Load assets as long as we have time remaining in this idle frame
+                while (deferredIndex < uniqueDeferred.length && (deadline.timeRemaining() > 0 || deadline.didTimeout)) {
                     loadImage(uniqueDeferred[deferredIndex], false);
                     deferredIndex++;
                 }
-                
-                // Small delay between batches to yield back to main thread
-                setTimeout(loadNextDeferred, 50); 
+
+                if (deferredIndex < uniqueDeferred.length) {
+                    requestIdleCallback(loadNextDeferred);
+                }
             }
-            loadNextDeferred();
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(loadNextDeferred);
+            } else {
+                 // Fallback for Safari/Older browsers
+                 let legacyInterval = setInterval(() => {
+                     if(deferredIndex >= uniqueDeferred.length) {
+                         clearInterval(legacyInterval);
+                         return;
+                     }
+                     loadImage(uniqueDeferred[deferredIndex], false);
+                     deferredIndex++;
+                 }, 50);
+            }
         }
 
         // Fallback safety
@@ -1489,9 +1545,14 @@
             });
         }
 
+        // Optimization: Cache last rendered index to avoid over-drawing
+        let lastRenderedIndex = -1;
+
         function render() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
             const imgIndex = Math.round(headset.frame); 
+            
+            // Optimization: Skip draw if frame hasn't changed
+            if (imgIndex === lastRenderedIndex) return;
             
             // Fallback: If the exact frame isn't loaded yet (because we are lazy loading),
             // find the nearest previous frame that IS loaded.
@@ -1505,7 +1566,9 @@
                 }
             }
 
-            if(renderImg) {
+            if(renderImg && renderImg.complete && renderImg.naturalWidth > 0) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                
                 // Aspect Ratio Contain/Cover logic
                 const hRatio = canvas.width / renderImg.width;
                 const vRatio = canvas.height / renderImg.height;
@@ -1516,6 +1579,8 @@
 
                 context.drawImage(renderImg, 0, 0, renderImg.width, renderImg.height, 
                                   centerShift_x, centerShift_y, renderImg.width * ratio, renderImg.height * ratio);
+                                  
+                lastRenderedIndex = imgIndex;
             }
         }
         
