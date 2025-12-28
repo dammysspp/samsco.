@@ -52,7 +52,7 @@
             position: fixed; top: 0; left: 0; width: 15px; height: 15px;
             border: 2px solid var(--neon-blue); border-radius: 50%;
             pointer-events: none; transform: translate(-50%, -50%);
-            z-index: 9999; transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.5s;
+            z-index: 9999; transition: width 0.1s, height 0.1s, background-color 0.1s, border-color 0.1s;
             mix-blend-mode: difference; display: none;
             will-change: transform, width, height;
         }
@@ -112,7 +112,7 @@
         }
 
         /* UTILITIES */
-        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.1s; will-change: width; }
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.05s; will-change: width; }
         
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .animate-marquee { animation: marquee 20s linear infinite; will-change: transform; }
@@ -122,7 +122,7 @@
         /* Optimization: transform: translateZ(0) promotes to new layer */
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; transform: translateZ(0); }
         
-        /* Scroll Reactive Video Background */
+        /* Scroll Reactive Video Background (PC) */
         #video-background-container {
             position: fixed;
             top: 0;
@@ -132,13 +132,34 @@
             z-index: 1; /* Above ThreeJS canvas (0), below Content (10) */
             pointer-events: none;
             overflow: hidden;
-            opacity: 0.6; 
+            opacity: 0.5; 
             mix-blend-mode: screen; 
             display: flex;
             justify-content: center;
             align-items: center;
             will-change: opacity;
-            transform: translateZ(0); /* Hardware accelerate */
+            transform: translateZ(0);
+            contain: layout style paint;
+        }
+
+        /* MOBILE 3D CONTAINER (Hidden on PC) */
+        #mobile-model-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100vh;
+            z-index: 5; /* Below content, above particles */
+            pointer-events: none;
+            display: none;
+        }
+
+        /* MEDIA QUERY: WHEN ON MOBILE/TABLET (< 768px) */
+        @media (max-width: 768px) {
+            #video-background-container { display: none !important; }
+            #mobile-model-container { display: block; }
+            .hero-content h1 { font-size: 3.5rem; }
         }
         
         /* The Canvas for Image Sequence */
@@ -152,43 +173,33 @@
         /* Glass Card - Optimized Blur */
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(6px); 
-            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(4px); 
+            -webkit-backdrop-filter: blur(2px);
             border: 1px solid rgba(255, 255, 255, 0.05); 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
         }
         .glass-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
         
         /* --- FOCUS MODE GRID INTERACTION --- */
         #gallery-grid:hover .project-card:not(:hover) {
-            opacity: 0.4;
-            filter: blur(4px) grayscale(100%);
+            opacity: 0.5;
+            filter: grayscale(100%);
             transform: scale(0.98) !important;
-            transition: all 0.4s ease-out;
+            transition: all 0.3s ease-out;
         }
 
         #gallery-grid .project-card:hover {
             opacity: 1;
-            filter: blur(0) grayscale(0);
+            filter: grayscale(0);
             transform: scale(1.02) !important;
             z-index: 10;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             border-color: var(--accent-blue);
-            transition: all 0.4s ease-out;
+            transition: all 0.3s ease-out;
         }
 
-        /* --- DATA MOSHING / GLITCH TRANSITION --- */
-        @keyframes vertical-mosh {
-            0% { transform: scaleY(1); filter: hue-rotate(0deg); }
-            20% { transform: scaleY(3) scaleX(0.9) skewX(10deg); filter: hue-rotate(90deg) contrast(2); }
-            40% { transform: scaleY(0.5) scaleX(1.1) skewX(-10deg); filter: invert(1); }
-            60% { transform: scaleY(4) scaleX(0.8); filter: blur(2px) hue-rotate(180deg); }
-            100% { transform: scaleY(1); filter: none; }
-        }
-        
-        .mosh-active .project-card, .mosh-active .gallery-item {
-            animation: vertical-mosh 0.3s steps(5) forwards;
-        }
+        /* --- REMOVED DATA MOSHING / GLITCH TRANSITION --- */
 
         h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
         
@@ -208,7 +219,7 @@
         }
 
         .loader-video {
-            width: 450px;
+            width: 350px;
             height: auto;
             object-fit: contain;
         }
@@ -291,8 +302,8 @@
 
     <!-- OPTIMIZED VIDEO LOADER -->
     <div class="loader" id="loader">
-        <video autoplay muted playsinline class="loader-video">
-            <source src="https://6937feda504a835c4ce351d7.imgix.net/sc%20preloader%20(1).mp4?w=200" type="video/mp4">
+        <video autoplay muted playsinline class="loader-video" id="loader-video">
+            <source src="https://6937feda504a835c4ce351d7.imgix.net/sc%20preloader%20(1).mp4?w=150&q=30" type="video/mp4">
         </video>
     </div>
 
@@ -318,9 +329,13 @@
         </div>
     </div>
 
+    <!-- MAIN 3D BG CONTAINER -->
     <div id="canvas-container"></div>
+
+    <!-- MOBILE HEADSET CONTAINER -->
+    <div id="mobile-model-container"></div>
     
-    <!-- IMAGE SEQUENCE CANVAS CONTAINER -->
+    <!-- PC HEADSET CANVAS CONTAINER -->
     <div id="video-background-container">
         <canvas id="headset-canvas"></canvas>
     </div>
@@ -410,11 +425,11 @@
             <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
                 <div class="relative group" id="about-img-container">
                     <div class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=800&q=70&auto=format" 
-                             onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=800&q=80'"
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=600&q=60&auto=format" 
+                             onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=600&q=70'"
                              alt="Samsco Portrait" 
                              class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=800&q=70&auto=format" 
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=600&q=60&auto=format" 
                              alt="Samsco Portrait Alternate" 
                              class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none"></div>
@@ -510,7 +525,7 @@
                          data-tags="Photoshop,Illustrator,Canva,Strategy">
                         <img src="https://www.brandessencenigeria.com/wp-content/uploads/2025/12/IMG-20251208-WA0168-1024x819.jpg" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Modion Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
                             <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">INTERNSHIP</span>
                             <h3 class="text-2xl font-bold text-white">Modion Comms</h3>
                         </div>
@@ -523,7 +538,7 @@
                          data-tags="Blender,Cycles">
                         <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="3D Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
                             <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">3D VISUALIZATION</span>
                             <h3 class="text-2xl font-bold text-white">AI Mix Agency</h3>
                         </div>
@@ -534,9 +549,9 @@
                          data-role="Creative Head"
                          data-desc="Leading the visual identity for the Covenant University Communication Students Association. overseeing graphics, layout, and corporate communications."
                          data-tags="Leadership,Creative Direction,Layout">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg?w=800&q=60&auto=format" 
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg?w=600&q=50&auto=format" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="CUCSA Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
                             <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">LEADERSHIP</span>
                             <h3 class="text-2xl font-bold text-white">CUCSA Creative Head</h3>
                         </div>
@@ -549,7 +564,7 @@
                          data-tags="Python,Excel,Research,Data Viz">
                         <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Data Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6 backdrop-blur-sm">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
                             <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">ANALYTICS</span>
                             <h3 class="text-2xl font-bold text-white">Data Analysis</h3>
                         </div>
@@ -686,8 +701,6 @@
  |____/_/   \\_\\_|  |_|____/ \\____\\___/ 
                                        
 `, "font-weight: bold; font-size: 20px; color: #2563eb; text-shadow: 2px 2px 0px #000");
-        console.log("%c⚠️ WAITING FOR SIGNAL... %c\nHey Developer! Checking under the hood? 🔧\nLet's build something futuristic together.", "color: #ff004c; font-weight:bold; font-size:14px;", "color: #fff; font-size: 12px;");
-        console.log("%cContact: samscocommunications@gmail.com", "color: #9ca3af; font-style: italic;");
 
         gsap.registerPlugin(ScrollTrigger);
 
@@ -704,51 +717,32 @@
         const topText = document.getElementById("hero-word-1");
         const bottomText = document.getElementById("hero-word-2");
 
-        // Optimization: Pause when tab is inactive
         let isTabActive = true;
         document.addEventListener("visibilitychange", () => {
             isTabActive = !document.hidden;
         });
 
         function rotateText() {
-            if(!isTabActive) return; // Skip update if not visible
+            if(!isTabActive) return;
 
             currentIndex = (currentIndex + 1) % words.length;
             const nextWord = words[currentIndex];
             
-            // Exit animation with blur
             gsap.to([topText, bottomText], {
-                yPercent: -120,
-                opacity: 0,
-                filter: "blur(20px)",
-                duration: 1, 
-                ease: "power4.in", 
-                stagger: 0.1,
+                yPercent: -120, opacity: 0,
+                duration: 0.8, ease: "power3.in", stagger: 0.08,
                 onComplete: () => {
                     topText.innerText = nextWord.top;
                     bottomText.innerText = nextWord.bottom;
-                    
-                    // Set initial state for entrance (below viewport, invisible, blurred)
-                    gsap.set([topText, bottomText], { 
-                        yPercent: 120, 
-                        opacity: 0,
-                        filter: "blur(20px)"
-                    });
-                    
-                    // Entrance animation with unblur
+                    gsap.set([topText, bottomText], { yPercent: 120, opacity: 0 });
                     gsap.to([topText, bottomText], { 
-                        yPercent: 0, 
-                        opacity: 1,
-                        filter: "blur(0px)",
-                        duration: 1.2, 
-                        ease: "power4.out", 
-                        stagger: 0.1 
+                        yPercent: 0, opacity: 1,
+                        duration: 0.9, ease: "power3.out", stagger: 0.08
                     });
                 }
             });
         }
         
-
         // --- 2. EASY ACCESS GALLERY CONFIGURATION ---
         const galleryConfig = [
             // --- GRAPHICS DESIGN (Batch 1) ---
@@ -771,7 +765,7 @@
             { title: "Graphic Art 17", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_32_2025-12-09_19-59-08.jpg" },
             { title: "Graphic Art 18", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_31_2025-12-09_19-59-08.jpg" },
 
-            // --- GRAPHICS DESIGN (Batch 2 - New Additions) ---
+            // --- GRAPHICS DESIGN (Batch 2) ---
             { title: "Satisfied", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/satisfied.jpg" },
             { title: "CCH 2024", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/cch%202024.jpg" },
             { title: "Project Oct", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2024-10-18_14-08-16.jpg" },
@@ -814,42 +808,12 @@
             { title: "Car VFX Still", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/car%20vfx.jpg" },
 
             // --- VIDEO EDITING ---
-            { 
-                title: "Hypo Ad Campaign", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/%E2%80%9CWhen%20life%20gives%20you%20stains,%20Hypo%20gives%20you%20hope%20%F0%9F%98%85%F0%9F%AB%A7%20A%20campaign%20that%20never%20made%20it%20to%20class,%20but%20made%20it%20to%20IG!%20CREDITS-%20Editor-%20@samsco.s1%20Actors-%20@mr_a.l.u.c.a.r.d%20@i__zeke%20%F0%9F%8E%A5-%20@kendavid.na%20%20" 
-            },
-            { 
-                title: "Situation of Nigeria 2024", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/THE%20SITUATION%20OF%20NIGERIA%20IN%202024%20@motola_savage%20@temi.babs%20@mrlastborn1%20%20%F0%9F%93%B8%20@iamch_uks%20Edited%20by%20@samsco.s1%20" 
-            },
-            { 
-                title: "Na Hunger Cause Am", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/Na%20hunger%20cause%20am%20@motola_savage%20@iamch_uks%20@temi.babs%20@thebosstehila%20%20Edited%20by%20@samsco.s1%20%20Shot%20by%20@mrlastborn1%20@samsco.s1%20%20We%20are%20THEM%20(Content%20Creators)%20" 
-            },
-            { 
-                title: "The Pen Skit", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/The%20pen%20%E2%9C%8D%EF%B8%8F%F0%9F%99%86%F0%9F%8F%BD%F0%9F%98%82%20A%20new%20video%20from%20THEM%20%F0%9F%98%82%20%20@motola_savage%20@temi.babs%20%20@iamch_uks%20@thebosstehila%20%20%20Shot-%20@samsco.s1%20%20Edited-%20@mrlastborn1%20%20@samsco.s1%20%20%20Appreciation-%20God%20Almighty%20for%20the%20success%20of%20this.%20%20" 
-            },
-            { 
-                title: "POV: Maths Teacher", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/POV-%20YOU%20MET%20YOUR%20SECONDARY%20SCHOOL%20MATHS%20TEACHER.mp4" 
-            },
-            { 
-                title: "La La Land Skit", 
-                cat: "Video Editing", 
-                type: "video", 
-                url: "https://6937feda504a835c4ce351d7.imgix.net/When%20your%20bestie%20lives%20in%20La%20La%20Land%20%F0%9F%92%AD%20Me-%20%E2%80%9CWe%20need%20to%20be%20realistic.%E2%80%9D%20Her-%20%E2%80%9CI%20saw%20a%20sign%20in%20the%20clouds%20shaped%20like%20a%20heart%E2%80%A6%20it%E2%80%99s%20destiny.%E2%80%9D%20%F0%9F%92%80%F0%9F%92%80%F0%9F%92%80%20%20Tag%20that%20one%20friend%20who%20stays%20in%20dreamland%2024-7%20%F0%9F%98%AD%E2%9C%A8%20%20%20" 
-            },
+            { title: "Hypo Ad Campaign", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/%E2%80%9CWhen%20life%20gives%20you%20stains,%20Hypo%20gives%20you%20hope%20%F0%9F%98%85%F0%9F%AB%A7%20A%20campaign%20that%20never%20made%20it%20to%20class,%20but%20made%20it%20to%20IG!%20CREDITS-%20Editor-%20@samsco.s1%20Actors-%20@mr_a.l.u.c.a.r.d%20@i__zeke%20%F0%9F%8E%A5-%20@kendavid.na%20%20" },
+            { title: "Situation of Nigeria 2024", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/THE%20SITUATION%20OF%20NIGERIA%20IN%202024%20@motola_savage%20@temi.babs%20@mrlastborn1%20%20%F0%9F%93%B8%20@iamch_uks%20Edited%20by%20@samsco.s1%20" },
+            { title: "Na Hunger Cause Am", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Na%20hunger%20cause%20am%20@motola_savage%20@iamch_uks%20@temi.babs%20@thebosstehila%20%20Edited%20by%20@samsco.s1%20%20Shot%20by%20@mrlastborn1%20@samsco.s1%20%20We%20are%20THEM%20(Content%20Creators)%20" },
+            { title: "The Pen Skit", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/The%20pen%20%E2%9C%8D%EF%B8%8F%F0%9F%99%86%F0%9F%8F%BD%F0%9F%98%82%20A%20new%20video%20from%20THEM%20%F0%9F%98%82%20%20@motola_savage%20@temi.babs%20%20@iamch_uks%20@thebosstehila%20%20%20Shot-%20@samsco.s1%20%20Edited-%20@mrlastborn1%20%20@samsco.s1%20%20%20Appreciation-%20God%20Almighty%20for%20the%20success%20of%20this.%20%20" },
+            { title: "POV: Maths Teacher", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/POV-%20YOU%20MET%20YOUR%20SECONDARY%20SCHOOL%20MATHS%20TEACHER.mp4" },
+            { title: "La La Land Skit", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/When%20your%20bestie%20lives%20in%20La%20La%20Land%20%F0%9F%92%AD%20Me-%20%E2%80%9CWe%20need%20to%20be%20realistic.%E2%80%9D%20Her-%20%E2%80%9CI%20saw%20a%20sign%20in%20the%20clouds%20shaped%20like%20a%20heart%E2%80%A6%20it%E2%80%99s%20destiny.%E2%80%9D%20%F0%9F%92%80%F0%9F%92%80%F0%9F%92%80%20%20Tag%20that%20one%20friend%20who%20stays%20in%20dreamland%2024-7%20%F0%9F%98%AD%E2%9C%A8%20%20%20" },
 
             // --- AI GENERATION ---
             { title: "AI Animation 1", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/AI%20Video%20Generator%20-%20Animate%20Photos%20&%20Frames%20Online%20-%20Kling%20AI.mp4" },
@@ -870,7 +834,7 @@
         
         let currentFilter = 'ALL';
         let galleryItems = []; 
-        let visibleGalleryItems = []; // Subset based on filter
+        let visibleGalleryItems = [];
 
         // Generate Filters
         const allCategories = ["ALL", ...galleryCategories];
@@ -881,7 +845,6 @@
             btn.setAttribute('data-filter', cat);
             
             btn.addEventListener('click', () => {
-                // Active State
                 document.querySelectorAll('.vault-filter-btn').forEach(b => {
                     b.classList.remove('active', 'bg-blue-600', 'border-blue-600');
                     b.classList.add('bg-white/5', 'border-white/10');
@@ -889,20 +852,14 @@
                 btn.classList.add('active', 'bg-blue-600', 'border-blue-600');
                 btn.classList.remove('bg-white/5', 'border-white/10');
                 
-                // --- DATA MOSHING EFFECT ---
-                // Add the glitch animation class to the container
-                galleryGrid.classList.add('mosh-active');
+                // Removed mosh-active class to prevent transition effect
 
-                // Delay the actual filtering logic slightly to allow the glitch to start
                 setTimeout(() => {
                     currentFilter = cat;
-                    
-                    // Update visible list
                     visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item')).filter(item => 
                         currentFilter === 'ALL' || item.getAttribute('data-cat') === currentFilter
                     );
 
-                    // Filtering Logic (Visuals)
                     const items = document.querySelectorAll('.gallery-item');
                     items.forEach(item => {
                         const itemCat = item.getAttribute('data-cat');
@@ -912,23 +869,16 @@
                             gsap.to(item, { scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
                         }
                     });
-
-                    // Remove the glitch class after the effect duration
-                    setTimeout(() => {
-                        galleryGrid.classList.remove('mosh-active');
-                    }, 300); // 300ms matches the animation duration
-                }, 200); // Trigger filter change mid-glitch
+                    // Removed mosh-active class removal as the class is no longer added
+                }, 200);
             });
             filterContainer.appendChild(btn);
         });
 
-        // Generate Items from Config
         const totalItemsToGenerate = galleryConfig.length; 
         
         for(let i = 0; i < totalItemsToGenerate; i++) {
             const configItem = galleryConfig[i];
-            const displayIndex = i + 1;
-            
             const cat = configItem.cat; 
             const isVideo = configItem.type === 'video' || configItem.url.endsWith('.mp4');
 
@@ -939,23 +889,17 @@
             item.setAttribute('data-title', `${configItem.title}`);
             item.setAttribute('data-cat', cat);
             item.setAttribute('data-type', isVideo ? 'video' : 'image');
-            item.setAttribute('data-url', configItem.url); // Original High Res URL for lightbox
+            item.setAttribute('data-url', configItem.url); 
             
             let mediaContent = '';
-            
-            // OPTIMIZATION LOGIC FOR THUMBNAILS (GRID VIEW)
-            // Strip existing params first to avoid duplication
             let cleanUrl = configItem.url.split('?')[0];
             let thumbUrl = cleanUrl;
 
-            if(!isVideo && configItem.url.includes('imgix.net')) {
-                // Request a smaller, lower quality version for the grid
-                // w=350: Reduced slightly for better grid performance
-                thumbUrl = cleanUrl + "?w=350&q=40&auto=format";
+            if(configItem.url.includes('imgix.net')) {
+                thumbUrl = cleanUrl + "?w=300&q=30&auto=format";
             }
 
             if(isVideo) {
-                // For videos in grid, we keep them muted and preloaded only metadata
                 mediaContent = `<video src="${configItem.url}" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
             } else {
                 mediaContent = `<img src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
@@ -971,7 +915,6 @@
             galleryGrid.appendChild(item);
         }
         
-        // Initial population of visible items
         visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item'));
 
         // --- 4. GALLERY MODAL LOGIC ---
@@ -985,8 +928,8 @@
                     galleryModal.classList.add('active');
                     document.body.style.overflow = 'hidden';
                     gsap.fromTo(".gallery-item", 
-                        { y: 50, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, delay: 0.2 }
+                        { y: 30, opacity: 0 },
+                        { y: 0, opacity: 1, duration: 0.4, stagger: 0.03, delay: 0.1 }
                     );
                 });
             }
@@ -997,7 +940,7 @@
             document.body.style.overflow = 'auto';
         });
 
-        // --- 5. LIGHTBOX LOGIC (UPDATED WITH CONTEXT AWARENESS) ---
+        // --- 5. LIGHTBOX LOGIC ---
         const lightbox = document.getElementById('lightbox-modal');
         const lbImg = document.getElementById('lightbox-img');
         const lbVideo = document.getElementById('lightbox-video');
@@ -1005,7 +948,6 @@
         const lbCat = document.getElementById('lightbox-cat');
         let currentLbIndex = 0;
         
-        // Add click listeners to items
         const allGalleryItems = document.querySelectorAll('.gallery-item');
         allGalleryItems.forEach((item) => {
             item.addEventListener('click', () => {
@@ -1014,7 +956,6 @@
         });
 
         function openLightbox(clickedItem) {
-            // Find index relative to VISIBLE items
             currentLbIndex = visibleGalleryItems.indexOf(clickedItem);
             updateLightboxContent();
             lightbox.classList.add('active');
@@ -1024,8 +965,7 @@
             if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
             
             const item = visibleGalleryItems[currentLbIndex];
-            let rawUrl = item.getAttribute('data-url'); // Get original URL
-            // Clean the URL of any existing parameters
+            let rawUrl = item.getAttribute('data-url');
             let url = rawUrl.split('?')[0]; 
             
             const type = item.getAttribute('data-type');
@@ -1038,21 +978,14 @@
             if (type === 'video') {
                 lbImg.classList.add('hidden');
                 lbVideo.classList.remove('hidden');
-                // Videos use the raw URL (Full Quality)
                 lbVideo.src = rawUrl; 
                 lbVideo.play();
             } else {
                 lbVideo.classList.add('hidden');
                 lbImg.classList.remove('hidden');
-                
-                // OPTIMIZATION LOGIC FOR LIGHTBOX (FULL VIEW)
                 if(url.includes('imgix.net')) {
-                    // Force High Resolution and High Quality
-                    // w=1600: Full HD width
-                    // q=90: High quality
-                    url += "?w=1600&q=90&auto=format";
+                    url += "?w=1200&q=75&auto=format";
                 }
-                
                 lbImg.src = url;
                 lbVideo.pause();
             }
@@ -1077,48 +1010,48 @@
         document.getElementById('lightbox-next').addEventListener('click', nextLightboxItem);
         document.getElementById('lightbox-prev').addEventListener('click', prevLightboxItem);
 
-        // KEYBOARD SUPPORT
         document.addEventListener('keydown', (e) => {
             if (!lightbox.classList.contains('active')) return;
-            
-            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-                e.preventDefault();
-                nextLightboxItem();
-            }
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
-                e.preventDefault();
-                prevLightboxItem();
-            }
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                closeLightbox();
-            }
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); nextLightboxItem(); }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); prevLightboxItem(); }
+            if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
         });
 
         // --- 6. FLUID TEXT ANIMATION SYSTEM ---
         gsap.utils.toArray('.anim-heading').forEach(text => {
             gsap.to(text, {
-                scrollTrigger: { trigger: text, start: "top 85%" },
-                y: 0, opacity: 1, duration: 1.2, ease: "power4.out"
+                scrollTrigger: { 
+                    trigger: text, 
+                    start: "top 85%",
+                    once: true
+                },
+                y: 0, opacity: 1, duration: 1, ease: "power3.out"
             });
         });
 
         gsap.utils.toArray('.anim-text').forEach(text => {
             gsap.to(text, {
-                scrollTrigger: { trigger: text, start: "top 90%" },
-                y: 0, opacity: 1, duration: 1.5, ease: "power2.out"
+                scrollTrigger: { 
+                    trigger: text, 
+                    start: "top 90%",
+                    once: true
+                },
+                y: 0, opacity: 1, duration: 1, ease: "power2.out"
             });
         });
 
         gsap.utils.toArray('.anim-stagger').forEach((item, i) => {
             gsap.to(item, {
-                scrollTrigger: { trigger: item, start: "top 90%" },
-                y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)"
+                scrollTrigger: { 
+                    trigger: item, 
+                    start: "top 90%",
+                    once: true
+                },
+                y: 0, opacity: 1, duration: 0.7, ease: "back.out(1.5)"
             });
         });
 
-        // --- 7. STANDARD SETUP & MAGNETIC BUTTONS ---
-        
+        // --- 7. STANDARD UI INTERACTIONS ---
         const bubble = document.getElementById("identity-bubble");
         const trigger = document.querySelector(".identity-trigger");
         const identities = ["Aiyedun Samuel", "Visual Engineer", "Samsco Personal"];
@@ -1216,25 +1149,21 @@
         const cursor = document.getElementById('cursor');
         if (window.matchMedia("(pointer: fine)").matches) {
             cursor.style.display = 'block';
-            
-            // OPTIMIZED CURSOR MOVEMENT
-            // Changed duration from 0.1 to 0.02 for instant response (removes "heavy" feel)
-            // Added overwrite: "auto" to improve performance
+            let mouseX = 0, mouseY = 0;
             document.addEventListener('mousemove', (e) => {
-                gsap.to(cursor, { 
-                    x: e.clientX, 
-                    y: e.clientY, 
-                    duration: 0.01, 
-                    ease: "power2.out", 
-                    overwrite: "auto" 
-                });
+                mouseX = e.clientX;
+                mouseY = e.clientY;
             });
             
+            function updateCursor() {
+                gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.05, ease: "sine.out", overwrite: "auto" });
+                requestAnimationFrame(updateCursor);
+            }
+            updateCursor();
             document.querySelectorAll('a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item').forEach(el => {
                 el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
                 el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
             });
-
             document.querySelectorAll(".magnetic-btn").forEach(btn => {
                 btn.addEventListener("mousemove", (e) => {
                     const rect = btn.getBoundingClientRect();
@@ -1247,56 +1176,6 @@
                 });
             });
         }
-
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-        
-        const grid = new THREE.GridHelper(50, 50, 0x1a1a1a, 0x0a0a0a);
-        grid.position.y = -2;
-        scene.add(grid);
-        
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 300;
-        const posArray = new Float32Array(particlesCount * 3);
-        for(let i=0; i<particlesCount*3; i++) posArray[i] = (Math.random()-0.5)*25;
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMesh = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.02, color: 0x2563eb, transparent: true, opacity: 0.6 }));
-        scene.add(particlesMesh);
-
-        // --- OPTIMIZED RENDER LOOP ---
-        let isLoaded = false; 
-
-        // Throttle FPS for Three.js (Background doesn't need 60FPS)
-        let lastTime = 0;
-        const fpsInterval = 1000 / 30; // Cap at 30 FPS for battery saving
-
-        function animate(currentTime) {
-            requestAnimationFrame(animate);
-
-            // 1. Pause if tab is hidden
-            if(!isTabActive) return;
-            
-            // 2. Pause if site not loaded yet
-            if (!isLoaded) return; 
-
-            // 3. FPS Throttling
-            const elapsed = currentTime - lastTime;
-            if (elapsed > fpsInterval) {
-                lastTime = currentTime - (elapsed % fpsInterval);
-
-                particlesMesh.rotation.y += 0.0005;
-                grid.position.z = (Date.now() * 0.001) % 1; 
-                renderer.render(scene, camera);
-            }
-        }
-        animate(0); 
-        
-        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
         function updateTime() {
             const time = new Date().toLocaleTimeString('en-US', { timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit' });
@@ -1311,278 +1190,374 @@
         closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
         document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
         
-        // --- 9. CUSTOM CONTEXT MENU (Re-Implemented) ---
         const ctxMenu = document.getElementById('custom-context-menu');
-
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            let x = e.clientX;
-            let y = e.clientY;
-            const winWidth = window.innerWidth;
-            const winHeight = window.innerHeight;
-            const menuWidth = 200;
-            const menuHeight = 200; 
-            if (x + menuWidth > winWidth) x = winWidth - menuWidth;
-            if (y + menuHeight > winHeight) y = winHeight - menuHeight;
-            ctxMenu.style.left = `${x}px`;
-            ctxMenu.style.top = `${y}px`;
+            let x = e.clientX; let y = e.clientY;
+            const winWidth = window.innerWidth; const winHeight = window.innerHeight;
+            if (x + 200 > winWidth) x = winWidth - 200;
+            if (y + 200 > winHeight) y = winHeight - 200;
+            ctxMenu.style.left = `${x}px`; ctxMenu.style.top = `${y}px`;
             ctxMenu.classList.add('visible');
         });
-
         document.addEventListener('click', () => ctxMenu.classList.remove('visible'));
-        document.addEventListener('scroll', () => ctxMenu.classList.remove('visible'));
+        document.addEventListener('scroll', () => ctxMenu.classList.remove('visible'), { passive: true });
 
-        // --- 10. SCROLL REACTIVE IMAGE SEQUENCE & LOADER LOGIC ---
-        // Setup for the image sequence on canvas
-        const canvas = document.getElementById('headset-canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = 579; 
-        canvas.height = 385; 
-
-        const frameCount = 192;
-        const headset = { frame: 0 };
-        const images = [];
-
-        // Image URL Generator (OPTIMIZED)
-        const currentFrame = index => {
-            return `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg?w=1000&q=25&auto=format`;
-        };
-
-        // --- OPTIMIZED LOADING SYSTEM (CRITICAL PATH) ---
-        // REFACTORED: Removed DOM updates for progress bar to improve performance.
-        const loaderEl = document.getElementById('loader');
-        const loaderVideo = document.querySelector('.loader-video');
-        
-        // 1. Define Critical Assets (First 36 frames + Static UI)
-        // This is enough for the initial hero section interaction
-        const criticalFrameCount = 36; 
-        const criticalAssets = [];
-        const deferredAssets = [];
-
-        // Add Headset Frames (Split into Critical and Deferred)
-        for (let i = 1; i <= frameCount; i++) {
-            const url = currentFrame(i);
-            if (i <= criticalFrameCount) {
-                criticalAssets.push(url);
-            } else {
-                deferredAssets.push(url);
+        // Optimized scroll progress
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const progress = (scrollTop / docHeight) * 100;
+                    document.getElementById('scroll-progress').style.width = progress + '%';
+                    ticking = false;
+                });
+                ticking = true;
             }
+        }, { passive: true });
+
+        // ==========================================
+        //      CORE 3D & ANIMATION SYSTEM
+        // ==========================================
+
+        // --- DEVICE DETECTION ---
+        const isMobile = window.innerWidth < 768;
+
+        // --- THREE.JS BACKGROUND SETUP ---
+        // We use different containers for Mobile model vs PC background particles
+        const container = document.getElementById(isMobile ? 'mobile-model-container' : 'canvas-container');
+        const scene = new THREE.Scene();
+        
+        // Camera setup
+        const fov = isMobile ? 60 : 75; 
+        const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = isMobile ? 4 : 5; 
+        
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); 
+        container.appendChild(renderer.domElement);
+
+        // --- LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const pointLight = new THREE.PointLight(0x2563eb, 2, 10);
+        pointLight.position.set(2, 2, 2);
+        scene.add(pointLight);
+
+        const redLight = new THREE.PointLight(0xff0000, 2, 10);
+        redLight.position.set(-2, -1, 2);
+        scene.add(redLight);
+
+        // --- PARTICLES ---
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = isMobile ? 80 : 150; 
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i=0; i<particlesCount*3; i++) posArray[i] = (Math.random()-0.5)*25;
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMesh = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.02, color: 0x2563eb, transparent: true, opacity: 0.6 }));
+        scene.add(particlesMesh);
+
+        // ==========================================
+        //      MOBILE SPECIFIC: PROCEDURAL HEADSET
+        // ==========================================
+        let mobileHeadsetGroup;
+
+        if (isMobile) {
+            mobileHeadsetGroup = new THREE.Group();
+
+            // 1. GENERATE LOGO TEXTURE (Code-generated image)
+            function createLogoTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512; canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                
+                // Black Background
+                ctx.fillStyle = '#050505'; 
+                ctx.fillRect(0, 0, 512, 512);
+                
+                // Red Ring
+                ctx.strokeStyle = '#dc2626';
+                ctx.lineWidth = 15;
+                ctx.beginPath();
+                ctx.arc(256, 256, 230, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // The Big "S"
+                ctx.fillStyle = '#ffffff'; 
+                ctx.font = 'bold 280px "Space Grotesk", Arial'; 
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('S', 256, 220);
+
+                // "SAMSCO" Text
+                ctx.fillStyle = '#dc2626'; 
+                ctx.font = 'bold 50px "Space Grotesk", Arial';
+                ctx.fillText('SAMSCO', 256, 380);
+                
+                const tex = new THREE.CanvasTexture(canvas);
+                return tex;
+            }
+
+            const logoTexture = createLogoTexture();
+
+            // Materials
+            const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3, metalness: 0.8 });
+            const redMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
+            const logoMat = new THREE.MeshStandardMaterial({ map: logoTexture, roughness: 0.4, metalness: 0.2 });
+
+            // 2. BUILD HEADSET GEOMETRY
+            const cupGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.4, 32);
+            const rightCup = new THREE.Mesh(cupGeo, blackMat);
+            rightCup.rotation.z = Math.PI / 2;
+            rightCup.position.set(1.1, 0, 0);
+
+            const leftCup = new THREE.Mesh(cupGeo, blackMat);
+            leftCup.rotation.z = Math.PI / 2;
+            leftCup.position.set(-1.1, 0, 0);
+
+            const plateGeo = new THREE.CircleGeometry(0.7, 32);
+            const rightPlate = new THREE.Mesh(plateGeo, logoMat);
+            rightPlate.rotation.y = Math.PI / 2;
+            rightPlate.position.set(1.31, 0, 0); 
+            
+            const leftPlate = new THREE.Mesh(plateGeo, logoMat);
+            leftPlate.rotation.y = -Math.PI / 2;
+            leftPlate.position.set(-1.31, 0, 0); 
+
+            const bandGeo = new THREE.TorusGeometry(1.1, 0.15, 16, 50, Math.PI);
+            const headBand = new THREE.Mesh(bandGeo, blackMat);
+            headBand.position.set(0, 0, 0);
+            
+            const wireGeo = new THREE.TorusGeometry(1.1, 0.05, 8, 50, Math.PI);
+            const redWire = new THREE.Mesh(wireGeo, redMat);
+            redWire.position.set(0, 0.08, 0);
+
+            mobileHeadsetGroup.add(rightCup);
+            mobileHeadsetGroup.add(leftCup);
+            mobileHeadsetGroup.add(rightPlate);
+            mobileHeadsetGroup.add(leftPlate);
+            mobileHeadsetGroup.add(headBand);
+            mobileHeadsetGroup.add(redWire);
+
+            scene.add(mobileHeadsetGroup);
+            mobileHeadsetGroup.scale.set(0.8, 0.8, 0.8);
+            mobileHeadsetGroup.position.y = 0.5; 
         }
 
-        // Add Static UI Images found in DOM (Always Critical)
-        const staticImages = document.querySelectorAll('img');
-        staticImages.forEach(img => {
-            if(img.src) criticalAssets.push(img.src);
-        });
-
-        let loadedCriticalCount = 0;
-        let totalCriticalAssets = criticalAssets.length;
+        // ==========================================
+        //      PC SPECIFIC: IMAGE SEQUENCE SETUP
+        // ==========================================
+        const canvas = document.getElementById('headset-canvas');
+        const context = canvas ? canvas.getContext('2d') : null;
+        let headset = { frame: 0 };
+        let images = [];
+        const frameCount = 96; // Reduced from 192 for performance
         
-        // Optimization: Deduplicate URLs
-        const uniqueCriticalAssets = [...new Set(criticalAssets)];
-        totalCriticalAssets = uniqueCriticalAssets.length;
+        if (!isMobile && canvas) {
+            canvas.width = 480; 
+            canvas.height = 320; 
+        }
 
-        // LOADER TIMING LOGIC
-        let assetsReady = false;
-        let loopCount = 0;
-        const minLoops = 2; // Force at least 2 loops
-        let isFinishCalled = false;
+        // --- SHARED ANIMATION LOOP ---
+        let lastTime = 0;
+        const fpsInterval = 1000 / 30; // 30 FPS cap
+        let isLoaded = false;
+        let frameSkip = 0;
 
-        // Ensure we control the loop manually to count them
-        if (loaderVideo) {
-            loaderVideo.removeAttribute('loop'); 
-            loaderVideo.addEventListener('ended', () => {
-                loopCount++;
-                // If we have looped enough AND assets are ready, we finish.
-                // Otherwise, we play again.
-                if (loopCount >= minLoops && assetsReady) {
-                    finishLoading();
-                } else {
-                    loaderVideo.play();
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+
+            if(!isTabActive) return;
+
+            const elapsed = currentTime - lastTime;
+            if (elapsed > fpsInterval) {
+                lastTime = currentTime - (elapsed % fpsInterval);
+                
+                // Skip every other frame for better performance
+                frameSkip++;
+                if (frameSkip % 2 === 0) {
+                    if(particlesMesh) particlesMesh.rotation.y += 0.001;
+
+                    // ANIMATE MOBILE HEADSET
+                    if (isMobile && mobileHeadsetGroup) {
+                        // Kept the floating effect for "aliveness"
+                        mobileHeadsetGroup.position.y = 0.5 + Math.sin(currentTime * 0.002) * 0.1; 
+                    }
+
+                    renderer.render(scene, camera);
                 }
+            }
+        }
+        animate(0);
+
+        // --- LOADING LOGIC ---
+        const loaderEl = document.getElementById('loader');
+        const loaderVideo = document.getElementById('loader-video');
+
+        // Force loader to disappear after max 4 seconds
+        const emergencyTimeout = setTimeout(() => {
+            console.warn('Emergency timeout - forcing load');
+            if (loaderEl && loaderEl.parentNode) {
+                loaderEl.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                isLoaded = true;
+                startTextAnimation();
+                initHeadsetAnimation();
+            }
+        }, 4000);
+
+        function finishLoading() {
+            clearTimeout(emergencyTimeout);
+            if (!loaderEl) return;
+            gsap.to(loaderEl, { 
+                opacity: 0, duration: 0.8, ease: "power2.inOut", 
+                onComplete: () => {
+                    if (loaderEl && loaderEl.parentNode) {
+                        loaderEl.remove();
+                    }
+                    isLoaded = true;
+                    startTextAnimation();
+                    initHeadsetAnimation();
+                } 
             });
         }
 
-        function updateLoader() {
-            loadedCriticalCount++;
-            
-            if (loadedCriticalCount >= totalCriticalAssets) {
-                // Mark assets as ready, but wait for video loop logic to trigger finishLoading
-                assetsReady = true;
-            }
-        }
-
-        function loadImage(url, isCritical) {
-            const img = new Image();
-            
-            // Logic to store headset frames correctly
-            if(url.includes('_MConverter.eu_scroll%20reactive%20headset-')) {
-                 const match = url.match(/headset-(\d+)\.jpg/);
-                 if(match) {
-                     const idx = parseInt(match[1]) - 1; // 0-indexed
-                     images[idx] = img;
-                 }
-            }
-
-            if(isCritical) {
-                img.onload = updateLoader;
-                img.onerror = updateLoader; 
-            }
-            
-            img.src = url;
-        }
-
-        // Start Loading Critical Assets
-        uniqueCriticalAssets.forEach(url => loadImage(url, true));
-
-        // Function to start the text animation loop properly
         function startTextAnimation() {
             setInterval(rotateText, 4000);
         }
 
-        function finishLoading() {
-             if (isFinishCalled) return;
-             isFinishCalled = true;
-
-             // 1. Force first render of headset NOW, while loader is still covering.
-             // This ensures when the curtain lifts, the image is there and not invisible.
-             if(images[0]) {
-                 headset.frame = 0;
-                 render(); 
-             }
-             
-             // 2. Initialize ScrollTrigger logic immediately (it's lightweight until scrolled)
-             initHeadsetAnimation();
-
-             // Wait a tiny bit for UI smoothness then FADE OUT
-             setTimeout(() => {
-                 gsap.to(loaderEl, { 
-                     opacity: 0, 
-                     duration: 1.0, 
-                     ease: "power2.inOut", 
-                     onComplete: () => {
-                         loaderEl.remove();
-                         isLoaded = true; // Enable 3D rendering now
-                         
-                         // Start the text animation ONLY after loader is gone
-                         startTextAnimation();
-
-                         // 3. ONLY start loading the heavy rest of the site after the transition is DONE
-                         // Optimization: Use requestIdleCallback for heavy lifting to avoid frame drops
-                         if ('requestIdleCallback' in window) {
-                            requestIdleCallback(() => loadDeferredAssets());
-                         } else {
-                            setTimeout(loadDeferredAssets, 1000); 
-                         }
-                     } 
-                 });
-             }, 800); 
-        }
-
-        function loadDeferredAssets() {
-            // Load the remaining 150+ frames + Gallery Thumbs silently
-            const uniqueDeferred = [...new Set(deferredAssets)];
+        // LOAD ASSETS
+        console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
+        
+        if (isMobile) {
+            // FAST LOAD FOR MOBILE
+            console.log('Mobile: using fast load timeout');
+            setTimeout(finishLoading, 800); 
+        } else {
+            // PC LOADING LOGIC (Optimized with fallback)
+            console.log('Desktop: loading image sequence');
+            const currentFrame = index => `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg?w=600&q=20&auto=format`;
+            const criticalFrameCount = 15; // Further reduced
+            let loadedCount = 0;
             
-            // Add Gallery config items
-            galleryConfig.forEach(item => {
-                if(item.type !== 'video' && !item.url.endsWith('.mp4') && item.url.includes('imgix.net')) {
-                    uniqueDeferred.push(item.url + "?w=500&q=60&auto=format");
+            // Add timeout fallback in case images fail to load
+            const loadTimeout = setTimeout(() => {
+                if (!isLoaded) {
+                    console.warn('Image loading timeout, loaded:', loadedCount, '/', criticalFrameCount);
+                    finishLoading();
                 }
-            });
-
-            // Lazy load them with low priority (slower pace to avoid freezing UI)
-            let deferredIndex = 0;
+            }, 2500);
             
-            function loadNextDeferred(deadline) {
-                // Load assets as long as we have time remaining in this idle frame
-                while (deferredIndex < uniqueDeferred.length && (deadline.timeRemaining() > 0 || deadline.didTimeout)) {
-                    loadImage(uniqueDeferred[deferredIndex], false);
-                    deferredIndex++;
-                }
-
-                if (deferredIndex < uniqueDeferred.length) {
-                    requestIdleCallback(loadNextDeferred);
-                }
+            for (let i = 1; i <= criticalFrameCount; i++) {
+                const img = new Image();
+                img.onload = () => {
+                    loadedCount++;
+                    console.log('Loaded frame', i, '- Total:', loadedCount);
+                    if (loadedCount >= criticalFrameCount) {
+                        clearTimeout(loadTimeout);
+                        console.log('All frames loaded, finishing...');
+                        finishLoading();
+                    }
+                };
+                img.onerror = () => {
+                    loadedCount++; // Count errors too to prevent freeze
+                    console.warn('Failed to load frame', i);
+                    if (loadedCount >= criticalFrameCount) {
+                        clearTimeout(loadTimeout);
+                        console.log('Finished with errors, proceeding...');
+                        finishLoading();
+                    }
+                };
+                img.src = currentFrame(i);
+                images[i-1] = img; 
             }
-
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(loadNextDeferred);
-            } else {
-                 // Fallback for Safari/Older browsers
-                 let legacyInterval = setInterval(() => {
-                     if(deferredIndex >= uniqueDeferred.length) {
-                         clearInterval(legacyInterval);
-                         return;
-                     }
-                     loadImage(uniqueDeferred[deferredIndex], false);
-                     deferredIndex++;
-                 }, 50);
-            }
+            // Load rest lazily with lower priority
+            setTimeout(() => {
+                console.log('Lazy loading remaining frames...');
+                for(let i = criticalFrameCount + 1; i <= Math.min(frameCount, 50); i++) {
+                    const img = new Image();
+                    img.src = currentFrame(i);
+                    images[i-1] = img;
+                }
+            }, 4000);
         }
-
-        // Fallback safety
-        setTimeout(() => {
-            if(document.getElementById('loader')) finishLoading();
-        }, 8000); // reduced timeout since we load less
-
 
         function initHeadsetAnimation() {
-            // Setup GSAP animation linked to scroll
-            // Only start rendering when first image is surely there
-            if(images[0]) render();
+            // 1. MOBILE 3D SCROLL LOGIC
+            if(isMobile && mobileHeadsetGroup) {
+                 gsap.to(mobileHeadsetGroup.rotation, {
+                    y: Math.PI * 4, // Rotate 2 full circles (720 degrees) over the page length
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: "body", 
+                        start: "top top", 
+                        end: "bottom bottom", 
+                        scrub: 1 // Smooth scrubbing
+                    }
+                });
+                return; // Exit function, no need for PC logic
+            }
+
+            // 2. PC IMAGE SEQUENCE LOGIC
+            // Render first frame immediately
+            if(images[0]) {
+                 headset.frame = 0;
+                 renderPCFrame();
+            }
 
             gsap.to(headset, {
                 frame: frameCount - 1,
                 snap: "frame",
                 ease: "none",
                 scrollTrigger: {
-                    trigger: "body", 
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 0.5 
+                    trigger: "body", start: "top top", end: "bottom bottom", scrub: 1
                 },
-                onUpdate: render 
+                onUpdate: renderPCFrame
             });
         }
 
-        // Optimization: Cache last rendered index to avoid over-drawing
         let lastRenderedIndex = -1;
-
-        function render() {
-            const imgIndex = Math.round(headset.frame); 
+        function renderPCFrame() {
+            if(isMobile || !context) return;
+            const imgIndex = Math.round(headset.frame);
             
-            // Optimization: Skip draw if frame hasn't changed
             if (imgIndex === lastRenderedIndex) return;
-            
-            // Fallback: If the exact frame isn't loaded yet (because we are lazy loading),
-            // find the nearest previous frame that IS loaded.
-            let renderImg = images[imgIndex];
-            if (!renderImg || !renderImg.complete) {
+
+            let img = images[imgIndex];
+            // Fallback for lazy loading
+            if (!img || !img.complete) {
                 for(let i = imgIndex; i >= 0; i--) {
                     if(images[i] && images[i].complete) {
-                        renderImg = images[i];
-                        break;
+                        img = images[i]; break;
                     }
                 }
             }
 
-            if(renderImg && renderImg.complete && renderImg.naturalWidth > 0) {
+            if (img && img.complete) {
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Aspect Ratio Contain/Cover logic
-                const hRatio = canvas.width / renderImg.width;
-                const vRatio = canvas.height / renderImg.height;
-                const ratio = Math.max(hRatio, vRatio); 
+                const hRatio = canvas.width / img.width;
+                const vRatio = canvas.height / img.height;
+                const ratio = Math.max(hRatio, vRatio);
                 
-                const centerShift_x = (canvas.width - renderImg.width * ratio) / 2;
-                const centerShift_y = (canvas.height - renderImg.height * ratio) / 2;  
-
-                context.drawImage(renderImg, 0, 0, renderImg.width, renderImg.height, 
-                                  centerShift_x, centerShift_y, renderImg.width * ratio, renderImg.height * ratio);
-                                  
+                const centerShift_x = (canvas.width - img.width * ratio) / 2;
+                const centerShift_y = (canvas.height - img.height * ratio) / 2;  
+                
+                context.drawImage(img, 0, 0, img.width, img.height, 
+                                  centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
                 lastRenderedIndex = imgIndex;
             }
         }
+
+        window.addEventListener('resize', () => { 
+            camera.aspect = window.innerWidth/window.innerHeight; 
+            camera.updateProjectionMatrix(); 
+            renderer.setSize(window.innerWidth, window.innerHeight); 
+        });
         
     </script>
 </body>
