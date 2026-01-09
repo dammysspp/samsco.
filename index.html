@@ -1,310 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>Samsco Communications | Aiyedun Samuel</title>
-    <meta name="description" content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & Mass Comm Student at Covenant University.">
-    
+    <meta name="description"
+        content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & Mass Comm Student at Covenant University.">
+
     <meta property="og:title" content="Samsco Communications | Creativity Evolved">
     <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
-    <meta property="og:image" content="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=1200"> 
+    <meta property="og:image" content="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=1200">
     <meta property="og:type" content="website">
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico"> 
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        display: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#0071e3',
+                            cyan: '#64d2ff',
+                            gray: { 100: '#f5f5f7', 200: '#d2d2d7', 500: '#86868b', 800: '#1d1d1f' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-    <style>
-        :root {
-            --bg-dark: #050505;
-            --accent-blue: #2563eb;
-            --neon-blue: #00f0ff;
-            --text-gray: #9ca3af;
-        }
-
-        body.god-mode {
-            --accent-blue: #dc2626; 
-            --neon-blue: #ff004c;   
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: white;
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-            margin: 0;
-            -webkit-user-select: none; -ms-user-select: none; user-select: none;
-        }
-
-        /* CUSTOM CURSOR */
-        @media (pointer: fine) {
-            body { cursor: none; }
-            a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item { cursor: none; }
-        }
-
-        #cursor {
-            position: fixed; top: 0; left: 0; width: 15px; height: 15px;
-            border: 2px solid var(--neon-blue); border-radius: 50%;
-            pointer-events: none; transform: translate(-50%, -50%);
-            z-index: 9999; transition: width 0.1s, height 0.1s, background-color 0.1s, border-color 0.1s;
-            mix-blend-mode: difference; display: none;
-            will-change: transform, width, height;
-        }
-        #cursor.hovered {
-            width: 30px; height: 30px;
-            background-color: rgba(0, 240, 255, 0.2);
-            border-color: transparent; backdrop-filter: blur(2px);
-        }
-        body.god-mode #cursor.hovered { background-color: rgba(255, 0, 76, 0.2); }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
-
-        /* LAGOS BADGE */
-        .lagos-badge {
-            position: fixed; bottom: 30px; right: 20px; 
-            background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 20px; border-radius: 50px;
-            display: flex; align-items: center; gap: 10px;
-            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
-            z-index: 80; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-        }
-        .lagos-badge:hover { border-color: var(--accent-blue); transform: translateY(-3px); }
-        .live-dot {
-            width: 6px; height: 6px; background-color: #22c55e; border-radius: 50%;
-            box-shadow: 0 0 10px #22c55e; animation: pulse-dot 2s infinite;
-        }
-        @keyframes pulse-dot { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        /* IDENTITY BUBBLE */
-        .identity-trigger { position: relative; display: inline-block; cursor: help; }
-        #identity-bubble {
-            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px);
-            background: rgba(37, 99, 235, 0.9); padding: 8px 16px; border-radius: 20px;
-            font-size: 0.8rem; font-weight: bold; white-space: nowrap;
-            opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px var(--accent-blue); z-index: 100;
-            margin-bottom: 10px;
-        }
-        body.god-mode #identity-bubble { background: rgba(220, 38, 38, 0.9); box-shadow: 0 0 15px var(--accent-blue); }
-        #identity-bubble::after {
-            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-            border-width: 5px; border-style: solid;
-            border-color: rgba(37, 99, 235, 0.9) transparent transparent transparent;
-        }
-        body.god-mode #identity-bubble::after { border-color: rgba(220, 38, 38, 0.9) transparent transparent transparent; }
-        .identity-trigger:hover #identity-bubble { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        .filter-btn.active, .vault-filter-btn.active {
-            background-color: var(--accent-blue); color: white;
-            box-shadow: 0 0 15px var(--accent-blue);
-            border-color: var(--accent-blue);
-        }
-
-        /* UTILITIES */
-        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--accent-blue), var(--neon-blue)); width: 0%; z-index: 100; transition: width 0.05s; will-change: width; }
-        
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { animation: marquee 20s linear infinite; will-change: transform; }
-        
-        html { scroll-behavior: smooth; }
-        
-        /* Optimization: transform: translateZ(0) promotes to new layer */
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; pointer-events: none; transform: translateZ(0); }
-        
-        /* Scroll Reactive Video Background (PC) */
-        #video-background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 1; /* Above ThreeJS canvas (0), below Content (10) */
-            pointer-events: none;
-            overflow: hidden;
-            opacity: 0.5; 
-            mix-blend-mode: screen; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            will-change: opacity;
-            transform: translateZ(0);
-            contain: layout style paint;
-        }
-
-        /* MOBILE 3D CONTAINER (Hidden on PC) */
-        #mobile-model-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100vh;
-            z-index: 5; /* Below content, above particles */
-            pointer-events: none;
-            display: none;
-        }
-
-        /* MEDIA QUERY: WHEN ON MOBILE/TABLET (< 768px) */
-        @media (max-width: 768px) {
-            #video-background-container { display: none !important; }
-            #mobile-model-container { display: block; }
-            .hero-content h1 { font-size: 3.5rem; }
-        }
-        
-        /* The Canvas for Image Sequence */
-        #headset-canvas {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .neon-text { text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
-        
-        /* Glass Card - Optimized Blur */
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(4px); 
-            -webkit-backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform;
-        }
-        .glass-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
-        
-        /* --- FOCUS MODE GRID INTERACTION --- */
-        #gallery-grid:hover .project-card:not(:hover) {
-            opacity: 0.5;
-            filter: grayscale(100%);
-            transform: scale(0.98) !important;
-            transition: all 0.3s ease-out;
-        }
-
-        #gallery-grid .project-card:hover {
-            opacity: 1;
-            filter: grayscale(0);
-            transform: scale(1.02) !important;
-            z-index: 10;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border-color: var(--accent-blue);
-            transition: all 0.3s ease-out;
-        }
-
-        /* --- REMOVED DATA MOSHING / GLITCH TRANSITION --- */
-
-        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
-        
-        /* FLUID TEXT ANIMATIONS */
-        .hero-text-mask { overflow: hidden; display: block; line-height: 1.1; }
-        .anim-heading { transform: translateY(100%); opacity: 0; display: inline-block; will-change: transform, opacity; } 
-        .anim-text { transform: translateY(20px); opacity: 0; will-change: transform, opacity; }
-        .anim-stagger { transform: translateY(30px); opacity: 0; will-change: transform, opacity; }
-        
-        /* --- OPTIMIZED GIF LOADER --- */
-        .loader { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; 
-            display: flex;
-            justify-content: center; align-items: center; 
-            will-change: opacity;
-        }
-
-        .loader-video {
-            width: 350px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        #mobile-menu { transform: translateX(100%); transition: transform 0.4s ease-in-out; }
-        #mobile-menu.open { transform: translateX(0); }
-
-        /* MODAL (Single Project) */
-        #project-modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        #project-modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content { transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #project-modal.active .modal-content { transform: scale(1); }
-
-        /* BIG GALLERY MODAL (Grid) */
-        #full-gallery-modal { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
-        #full-gallery-modal.active { opacity: 1; pointer-events: auto; }
-        
-        /* LIGHTBOX (View Image) */
-        #lightbox-modal { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        #lightbox-modal.active { opacity: 1; pointer-events: auto; }
-
-        /* CUSTOM CONTEXT MENU */
-        #custom-context-menu {
-            position: fixed;
-            z-index: 99999;
-            width: 200px;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-            padding: 8px 0;
-            display: none;
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.15s ease, transform 0.15s ease;
-        }
-        #custom-context-menu.visible { display: block; opacity: 1; transform: scale(1); }
-        
-        .ctx-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            color: #d1d5db;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-left: 2px solid transparent;
-        }
-        .ctx-item:hover {
-            background: rgba(37, 99, 235, 0.1);
-            color: white;
-            border-left-color: var(--accent-blue);
-            padding-left: 20px;
-        }
-        .ctx-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 6px 0; }
-        .ctx-shortcut { font-size: 0.7rem; color: #6b7280; font-family: monospace; }
-        
-        .nav-btn {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(255,255,255,0.05); color: white; width: 50px; height: 50px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .nav-btn:hover { background: var(--accent-blue); border-color: var(--accent-blue); }
-        .nav-prev { left: -80px; } .nav-next { right: -80px; }
-        @media (max-width: 768px) { .nav-prev { left: 0; top: auto; bottom: -70px; } .nav-next { right: 0; top: auto; bottom: -70px; } }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="antialiased selection:bg-blue-500 selection:text-white">
 
-    <div id="scroll-progress"></div>
-    <div id="cursor"></div>
-    
-    <div class="lagos-badge">
+<body class="antialiased selection:bg-apple-blue selection:text-white font-sans">
+
+    <!-- SVG FILTERS (Hidden) -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="liquidTurbulence">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" result="warp" />
+                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+            </filter>
+            <filter id="rgbSplit">
+                <feOffset in="SourceGraphic" dx="2" dy="0" result="offX" />
+                <feColorMatrix in="offX" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+                    result="red" />
+                <feOffset in="SourceGraphic" dx="-2" dy="0" result="offY" />
+                <feColorMatrix in="offY" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"
+                    result="cyan" />
+                <feBlend in="red" in2="cyan" mode="screen" result="blend" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Accessibility: Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div id="scroll-progress" role="progressbar" aria-label="Page scroll progress"></div>
+    <div id="cursor" aria-hidden="true"></div>
+
+    <!-- PREMIUM ANIMATED BACKGROUND -->
+    <!-- PREMIUM ANIMATED BACKGROUND - STATIC FALLBACK -->
+    <div class="fixed inset-0 bg-black -z-10">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-transparent opacity-50"></div>
+    </div>
+
+
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" aria-label="Scroll to top" title="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 4l-8 8h5v8h6v-8h5z" />
+        </svg>
+    </button>
+
+    <div class="lagos-badge" aria-label="Current time in Lagos">
         <div class="live-dot"></div>
         <span id="lagos-time">LAGOS: --:-- --</span>
     </div>
 
-    <!-- OPTIMIZED VIDEO LOADER -->
-    <div class="loader" id="loader">
-        <video autoplay muted playsinline class="loader-video" id="loader-video">
-            <source src="https://6937feda504a835c4ce351d7.imgix.net/sc%20preloader%20(1).mp4?w=150&q=30" type="video/mp4">
-        </video>
+    <!-- THEME ACCENT SWITCHER -->
+    <div id="theme-switcher">
+        <div class="theme-handle">🎨</div>
+        <div class="theme-switcher-panel">
+            <div class="theme-dot active" style="background: #0071e3;" data-accent="blue" title="Apple Blue"></div>
+            <div class="theme-dot" style="background: #bf5af2;" data-accent="purple" title="Cosmic Purple"></div>
+            <div class="theme-dot" style="background: #ff375f;" data-accent="pink" title="Vibrant Pink"></div>
+            <div class="theme-dot" style="background: #30d158;" data-accent="green" title="Matrix Green"></div>
+            <div class="theme-dot" style="background: #ff9f0a;" data-accent="orange" title="Sunset Orange"></div>
+        </div>
+    </div>
+
+    <!-- KEYBOARD SHORTCUTS MODAL -->
+    <div id="shortcuts-modal">
+        <div class="shortcuts-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">⌨️ Keyboard Shortcuts</h3>
+                <button id="close-shortcuts" class="text-white/50 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Show this help</span>
+                <span class="shortcut-key"><span class="key">?</span></span>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Go to top</span>
+                <span class="shortcut-key"><span class="key">T</span></span>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Open Gallery</span>
+                <span class="shortcut-key"><span class="key">G</span></span>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Contact Section</span>
+                <span class="shortcut-key"><span class="key">C</span></span>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Toggle God Mode</span>
+                <span class="shortcut-key"><span class="key">R</span></span>
+            </div>
+            <div class="shortcut-item">
+                <span class="text-white/70">Close modals</span>
+                <span class="shortcut-key"><span class="key">Esc</span></span>
+            </div>
+            <p class="text-white/30 text-xs mt-6 text-center">Press <span class="key">?</span> anytime to see this</p>
+        </div>
+    </div>
+
+    <!-- PURE CSS PRELOADER (GPU Accelerated - No Stutter) -->
+    <!-- APPLE-STYLE PRELOADER -->
+    <div id="preloader" class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center">
+        <!-- CSS Scrolling Text -->
+        <div class="loader-phrases">
+            <div class="loader-phrases-track">
+                <span>Loading Vision</span>
+                <span>Preparing Experience</span>
+                <span>Rendering Reality</span>
+                <span>Engineering Design</span>
+                <span>Crafting Digital</span>
+                <span>Building Future</span>
+                <span>Creating Magic</span>
+                <span>Almost Ready</span>
+                <span>Loading Vision</span>
+                <span>Preparing Experience</span>
+            </div>
+        </div>
+
+        <!-- Percentage & Progress - Apple Style -->
+        <div class="text-center mt-10">
+            <p class="text-5xl font-semibold text-white/90 tracking-tight font-display">
+                <span id="loader-percent">0</span><span class="text-[#0071e3]">%</span>
+            </p>
+            <div class="w-40 h-1 bg-white/10 rounded-full overflow-hidden mt-4 mx-auto">
+                <div id="loader-bar"
+                    class="h-full bg-gradient-to-r from-[#0071e3] to-[#64d2ff] rounded-full transition-all duration-100"
+                    style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Footer Brand -->
+        <div class="absolute bottom-10 text-center">
+            <p class="text-xs text-white/30 tracking-[0.3em] font-medium">SAMSCO<span class="text-[#0071e3]">.</span>
+            </p>
+        </div>
     </div>
 
     <!-- CONTEXT MENU -->
@@ -329,33 +200,27 @@
         </div>
     </div>
 
-    <!-- MAIN 3D BG CONTAINER -->
-    <div id="canvas-container"></div>
-
-    <!-- MOBILE HEADSET CONTAINER -->
-    <div id="mobile-model-container"></div>
-    
-    <!-- PC HEADSET CANVAS CONTAINER -->
-    <div id="video-background-container">
-        <canvas id="headset-canvas"></canvas>
-    </div>
-
-    <nav class="fixed w-full top-0 z-50 px-6 py-6 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto flex justify-between items-center glass-card rounded-full px-8 py-4 cursor-hover">
-            <div class="text-xl font-bold tracking-tighter cursor-pointer" onclick="window.scrollTo(0,0)">
-                SAMSCO<span class="text-blue-500">.</span>
+    <!-- APPLE-STYLE NAVIGATION -->
+    <nav class="fixed w-full top-0 z-50 px-4 md:px-6 py-4 md:py-5 transition-all duration-500" id="navbar">
+        <div
+            class="max-w-6xl mx-auto flex justify-between items-center glass-card rounded-full px-6 md:px-8 py-3.5 cursor-hover">
+            <div class="text-lg md:text-xl font-semibold tracking-tight cursor-pointer font-display"
+                onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                SAMSCO<span class="text-[#0071e3]">.</span>
             </div>
-            <div class="hidden md:flex gap-10 text-xs font-bold tracking-widest">
-                <a href="#about" class="hover:text-blue-400 transition-colors">ABOUT</a>
-                <a href="#services" class="hover:text-blue-400 transition-colors">EXPERTISE</a>
-                <a href="#portfolio" class="hover:text-blue-400 transition-colors">WORK</a>
-                <a href="#contact" class="hover:text-blue-400 transition-colors">CONTACT</a>
+            <div class="hidden md:flex gap-8 text-[11px] font-medium tracking-[0.1em] text-white/70">
+                <a href="#about" class="hover:text-white transition-colors duration-300">ABOUT</a>
+                <a href="#services" class="hover:text-white transition-colors duration-300">EXPERTISE</a>
+                <a href="#portfolio" class="hover:text-white transition-colors duration-300">WORK</a>
+                <a href="#contact" class="hover:text-white transition-colors duration-300">CONTACT</a>
             </div>
-            <div class="md:hidden text-2xl cursor-pointer" id="menu-btn">☰</div>
+            <div class="md:hidden text-xl cursor-pointer text-white/70 hover:text-white transition-colors"
+                id="menu-btn">☰</div>
         </div>
     </nav>
 
-    <div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 flex flex-col justify-center items-center gap-8 md:hidden">
+    <div id="mobile-menu"
+        class="fixed inset-0 z-40 bg-black/95 flex flex-col justify-center items-center gap-8 md:hidden">
         <button id="close-menu" class="absolute top-8 right-8 text-3xl text-white hover:text-blue-500">✕</button>
         <a href="#about" class="text-3xl font-bold hover:text-blue-500 mobile-link">ABOUT</a>
         <a href="#services" class="text-3xl font-bold hover:text-blue-500 mobile-link">EXPERTISE</a>
@@ -364,20 +229,33 @@
     </div>
 
     <!-- PROJECT DETAILS MODAL -->
-    <div id="project-modal" class="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-black/90 backdrop-blur-xl">
-        <div class="modal-content glass-card p-8 md:p-12 max-w-3xl w-full rounded-3xl relative border border-white/10 shadow-2xl">
-            <button id="close-modal" class="absolute top-6 right-6 text-gray-400 hover:text-white text-xl bg-white/5 w-10 h-10 rounded-full flex items-center justify-center cursor-hover z-30 transition-colors">✕</button>
-            
+    <div id="project-modal"
+        class="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-black/90 backdrop-blur-xl">
+        <div
+            class="modal-content glass-card p-8 md:p-12 max-w-3xl w-full rounded-3xl relative border border-white/10 shadow-2xl">
+            <button id="close-modal"
+                class="absolute top-6 right-6 text-gray-400 hover:text-white text-xl bg-white/5 w-10 h-10 rounded-full flex items-center justify-center cursor-hover z-30 transition-colors">✕</button>
+
             <button id="prev-project" class="nav-btn nav-prev cursor-hover">❮</button>
             <button id="next-project" class="nav-btn nav-next cursor-hover">❯</button>
 
-            <span id="modal-category" class="text-blue-500 text-xs font-bold tracking-[0.2em] mb-4 block">CATEGORY</span>
+            <span id="modal-category"
+                class="text-blue-500 text-xs font-bold tracking-[0.2em] mb-4 block">CATEGORY</span>
             <h2 id="modal-title" class="text-3xl md:text-5xl font-bold mb-6 text-white">Project Title</h2>
-            
+
             <div class="grid md:grid-cols-3 gap-8 mb-8 border-y border-white/10 py-6">
-                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">CLIENT/ORG</h4><p id="modal-client" class="text-white text-sm">Global Tech</p></div>
-                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">YEAR</h4><p id="modal-year" class="text-white text-sm">2024</p></div>
-                 <div><h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">ROLE</h4><p id="modal-role" class="text-white text-sm">Creative Lead</p></div>
+                <div>
+                    <h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">CLIENT/ORG</h4>
+                    <p id="modal-client" class="text-white text-sm">Global Tech</p>
+                </div>
+                <div>
+                    <h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">YEAR</h4>
+                    <p id="modal-year" class="text-white text-sm">2024</p>
+                </div>
+                <div>
+                    <h4 class="text-xs text-gray-500 font-bold mb-1 tracking-widest">ROLE</h4>
+                    <p id="modal-role" class="text-white text-sm">Creative Lead</p>
+                </div>
             </div>
 
             <div class="space-y-6 text-gray-300 text-lg leading-relaxed font-light">
@@ -393,52 +271,134 @@
     <!-- MAIN CONTENT -->
     <main class="relative z-10" id="main-content">
 
-        <section id="home" class="h-screen flex flex-col justify-center items-center text-center px-4 relative">
-            <div class="hero-content z-20 mt-20">
-                <div class="inline-block border border-blue-500/30 bg-blue-500/10 px-4 py-1 rounded-full mb-6 backdrop-blur-md">
-                    <span class="text-blue-400 tracking-[0.2em] text-xs font-bold">19 Y/O • SAMSCO COMMUNICATIONS</span>
+        <!-- HERO SECTION - Clean & Performant -->
+        <section id="home"
+            class="min-h-screen flex flex-col justify-center items-center text-center px-6 relative pt-24">
+
+            <!-- Simple gradient background (no blur, performant) -->
+            <!-- Simple gradient background removed for Premium Mesh -->
+
+
+            <div class="hero-content z-20 max-w-5xl">
+                <!-- Status Badge -->
+                <div
+                    class="inline-flex items-center gap-3 border border-white/10 bg-white/[0.03] px-6 py-2.5 rounded-full mb-10 backdrop-blur-sm">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#30d158] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#30d158]"></span>
+                    </span>
+                    <span class="text-white/60 tracking-[0.15em] text-[10px] font-medium">AVAILABLE FOR PROJECTS</span>
                 </div>
-                <h1 class="text-6xl md:text-9xl font-bold mb-6 leading-[0.9] tracking-tight">
-                    <div class="hero-text-mask"><span id="hero-word-1" class="anim-heading">VISION</span></div> 
-                    <div class="hero-text-mask"><span id="hero-word-2" class="anim-heading text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">ENGINEERED</span></div>
+
+                <!-- Hero Typography -->
+                <h1
+                    class="text-5xl sm:text-7xl md:text-8xl lg:text-[130px] font-bold mb-8 leading-[0.9] tracking-tighter font-display">
+                    <div class="hero-text-mask overflow-hidden">
+                        <span id="hero-word-1" class="anim-heading inline-block">VISION</span>
+                    </div>
+                    <div class="hero-text-mask overflow-hidden">
+                        <span id="hero-word-2"
+                            class="anim-heading inline-block gradient-text-animated">ENGINEERED</span>
+                    </div>
                 </h1>
-                <p class="max-w-xl mx-auto text-gray-400 text-lg mb-10 leading-relaxed font-light anim-text">
-                    Final Year Mass Communication Student & Creative Technologist. <br class="hidden md:block">Blending futuristic design, code, and storytelling.
+
+                <!-- Subtext -->
+                <p class="max-w-xl mx-auto text-white/60 text-lg md:text-xl mb-14 leading-relaxed anim-text">
+                    Creative Technologist crafting <span class="text-white font-medium">futuristic digital
+                        experiences</span>
+                    through 3D, VFX, and innovative code.
                 </p>
-                <div class="flex justify-center gap-4 anim-stagger">
-                    <button id="open-gallery-hero" class="magnetic-btn bg-white text-black px-8 py-4 rounded-full font-bold transition-all hover:bg-blue-50 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                        Open The Vault
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row justify-center gap-5 anim-stagger">
+                    <button id="open-gallery-hero"
+                        class="magnetic-btn group bg-white text-black px-10 py-5 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.25)]">
+                        <span class="flex items-center justify-center gap-2">
+                            Explore My Work
+                            <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </span>
                     </button>
-                    <a href="#contact" class="magnetic-btn border border-white/20 hover:border-white hover:bg-white/5 px-8 py-4 rounded-full font-bold transition-all">Contact Me</a>
+
+                    <a href="#contact"
+                        class="magnetic-btn border-2 border-white/20 text-white hover:border-[#0071e3] hover:bg-[#0071e3]/10 px-10 py-5 rounded-full font-semibold text-sm transition-all duration-300">
+                        <span class="flex items-center justify-center gap-2">
+                            Let's Talk
+                            <span class="w-2 h-2 bg-[#0071e3] rounded-full"></span>
+                        </span>
+                    </a>
                 </div>
+
+                <!-- Quick Stats -->
+                <div class="flex justify-center gap-12 mt-16 anim-stagger">
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">50+</div>
+                        <div class="text-xs text-white/40 tracking-wider uppercase">Projects</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-white mb-1">3+</div>
+                        <div class="text-xs text-white/40 tracking-wider uppercase">Years Exp</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl md:text-4xl font-bold text-[#0071e3] mb-1">∞</div>
+                        <div class="text-xs text-white/40 tracking-wider uppercase">Ideas</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div
+                class="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30">
+                <div class="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center pt-2">
+                    <div class="w-1 h-2 bg-white/60 rounded-full animate-bounce"></div>
+                </div>
+                <span class="text-[10px] tracking-[0.3em] font-medium text-white/30">SCROLL</span>
             </div>
         </section>
 
-        <div class="w-full bg-black border-y border-white/10 overflow-hidden py-6 relative z-20 mt-12">
-            <div class="whitespace-nowrap flex gap-12 text-lg font-bold text-gray-500 animate-marquee tracking-widest">
-                <span>3D VISUALIZATION</span> <span>•</span> <span>VFX</span> <span>•</span> <span>VIBE-CODING</span> <span>•</span> <span>GRAPHICS</span> <span>•</span>
-                <span>DATA ANALYTICS</span> <span>•</span> <span>AI AUTOMATION</span> <span>•</span> <span>C#</span> <span>•</span> <span>MOTION GRAPHICS</span> <span>•</span>
+        <!-- SKILLS MARQUEE - Apple Minimal -->
+        <div class="w-full bg-black/50 border-y border-white/5 overflow-hidden py-5 relative z-20">
+            <div
+                class="whitespace-nowrap flex gap-10 text-sm font-medium text-white/30 animate-marquee tracking-[0.15em]">
+                <span>3D VISUALIZATION</span> <span class="text-[#0071e3]">•</span>
+                <span>VFX</span> <span class="text-[#0071e3]">•</span>
+                <span>CREATIVE CODING</span> <span class="text-[#0071e3]">•</span>
+                <span>GRAPHICS</span> <span class="text-[#0071e3]">•</span>
+                <span>DATA ANALYTICS</span> <span class="text-[#0071e3]">•</span>
+                <span>AI AUTOMATION</span> <span class="text-[#0071e3]">•</span>
+                <span>MOTION DESIGN</span> <span class="text-[#0071e3]">•</span>
+                <span>3D VISUALIZATION</span> <span class="text-[#0071e3]">•</span>
+                <span>VFX</span> <span class="text-[#0071e3]">•</span>
+                <span>CREATIVE CODING</span> <span class="text-[#0071e3]">•</span>
             </div>
         </div>
 
         <section id="about" class="py-32 px-6 bg-gradient-to-b from-transparent to-black/80">
             <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
                 <div class="relative group" id="about-img-container">
-                    <div class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=600&q=60&auto=format" 
-                             onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=600&q=70'"
-                             alt="Samsco Portrait" 
-                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=600&q=60&auto=format" 
-                             alt="Samsco Portrait Alternate" 
-                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none"></div>
+                    <div
+                        class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5 liquid-img-container">
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=300&q=30&auto=format"
+                            onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=300&q=35'"
+                            alt="Samsco Portrait" loading="lazy"
+                            class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
+                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=600&q=60&auto=format"
+                            alt="Samsco Portrait Alternate" loading="lazy"
+                            class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none">
+                        </div>
                     </div>
                 </div>
                 <div>
                     <div class="mb-8">
-                        <h2 class="text-4xl md:text-6xl font-bold anim-heading">Hello, I'm 
-                            <span class="text-blue-500 relative cursor-help identity-trigger inline-block border-b-2 border-blue-500/30 hover:border-blue-500 transition-colors">
+                        <h2 class="text-4xl md:text-6xl font-bold anim-heading">Hello, I'm
+                            <span
+                                class="text-blue-500 relative cursor-help identity-trigger inline-block border-b-2 border-blue-500/30 hover:border-blue-500 transition-colors">
                                 Samsco
                                 <div id="identity-bubble">Aiyedun Samuel</div>
                             </span>.
@@ -446,40 +406,355 @@
                     </div>
 
                     <p class="text-xl text-gray-300 mb-6 leading-relaxed font-light anim-text">
-                        19-Year-Old Multi-Disciplinary Talent. Final Year Student at <span class="text-white font-bold">Covenant University</span>.
+                        19-Year-Old Multi-Disciplinary Talent. Final Year Student at <span
+                            class="text-white font-bold">Covenant University</span>.
                     </p>
                     <p class="text-gray-400 mb-8 leading-relaxed anim-text">
-                        I bridge the gap between Mass Communication and Creative Technology. My personality is a blend of youthful energy and a serious, growth-focused mindset. I don't just design; I create futuristic, interactive experiences using AI, Code, and 3D.
+                        I bridge the gap between Mass Communication and Creative Technology. My personality is a blend
+                        of youthful energy and a serious, growth-focused mindset. I don't just design; I create
+                        futuristic, interactive experiences using AI, Code, and 3D.
                     </p>
-                    
+
                     <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm font-bold tracking-wide text-white/80">
-                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> 3D & Product Viz</div>
-                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Vibe-Coding (C#, JS)</div>
-                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Data Analytics</div>
-                        <div class="flex items-center gap-3 anim-stagger"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> Gaming & AI</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span
+                                class="w-2 h-2 bg-blue-500 rounded-full"></span> 3D & Product Viz</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span
+                                class="w-2 h-2 bg-blue-500 rounded-full"></span> Vibe-Coding (C#, JS)</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span
+                                class="w-2 h-2 bg-blue-500 rounded-full"></span> Data Analytics</div>
+                        <div class="flex items-center gap-3 anim-stagger"><span
+                                class="w-2 h-2 bg-blue-500 rounded-full"></span> Gaming & AI</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="services" class="py-32 px-6 bg-black">
-            <div class="max-w-7xl mx-auto">
-                <div class="hero-text-mask mb-20 text-center"><h2 class="text-3xl md:text-5xl font-bold anim-heading">Core Expertise</h2></div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
-                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">❖</div>
-                        <h3 class="text-2xl font-bold mb-4">3D & VFX</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">Product visualization and visual effects that push boundaries. Clean layouts with futuristic aesthetics.</p>
+        <!-- SERVICES SECTION - Apple Feature Grid -->
+        <section id="services" class="py-24 md:py-32 px-6 bg-black relative">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 md:mb-20">
+                    <span class="text-[#0071e3] text-xs font-medium tracking-[0.2em] mb-4 block">WHAT I DO</span>
+                    <div class="hero-text-mask">
+                        <h2 class="text-3xl md:text-5xl lg:text-6xl font-semibold anim-heading font-display">Core
+                            Expertise</h2>
                     </div>
-                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
-                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">⚡</div>
-                        <h3 class="text-2xl font-bold mb-4">Design & Motion</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">Graphics design and fluid motion graphics. I create tech-inspired designs that tell a story.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="glass-card p-8 md:p-10 rounded-3xl service-card group cursor-hover anim-stagger">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0071e3]/20 to-[#64d2ff]/20 flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-semibold mb-4 font-display">3D & VFX</h3>
+                        <p class="text-white/50 leading-relaxed text-sm">Product visualization and visual effects that
+                            push boundaries. Clean layouts with futuristic aesthetics.</p>
                     </div>
-                    <div class="glass-card p-10 rounded-2xl service-card group cursor-hover hover:bg-white/5 anim-stagger">
-                        <div class="text-4xl mb-8 group-hover:scale-110 transition-transform duration-300 text-blue-500">⌬</div>
-                        <h3 class="text-2xl font-bold mb-4">Code & Data</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">Creative coding (HTML/CSS/JS/C#) and Data Analytics. Building interactive and automated AI solutions.</p>
+
+                    <!-- Card 2 -->
+                    <div class="glass-card p-8 md:p-10 rounded-3xl service-card group cursor-hover anim-stagger">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#bf5af2]/20 to-[#ff375f]/20 flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-[#bf5af2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-semibold mb-4 font-display">Design & Motion</h3>
+                        <p class="text-white/50 leading-relaxed text-sm">Graphics design and fluid motion graphics.
+                            Tech-inspired designs that tell compelling stories.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="glass-card p-8 md:p-10 rounded-3xl service-card group cursor-hover anim-stagger">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#30d158]/20 to-[#64d2ff]/20 flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-[#30d158]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-semibold mb-4 font-display">Code & Data</h3>
+                        <p class="text-white/50 leading-relaxed text-sm">Creative coding and Data Analytics. Building
+                            interactive, automated AI-powered solutions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SKILLS SECTION - Animated Progress Bars -->
+        <section id="skills" class="py-24 md:py-32 px-6 bg-gradient-to-b from-black via-black/95 to-black relative">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-16 items-start">
+                    <!-- Skills Left -->
+                    <div>
+                        <span class="text-[#0071e3] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">TECH
+                            STACK</span>
+                        <h2 class="text-3xl md:text-5xl font-semibold mb-8 font-display anim-heading">Skills & Tools
+                        </h2>
+                        <p class="text-white/50 leading-relaxed mb-10 anim-text">Mastering the intersection of
+                            creativity and technology. Here's my toolkit for turning ideas into reality.</p>
+
+                        <div class="space-y-6" id="skills-container">
+                            <div class="skill-item" data-skill="95">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-white font-medium">Blender / 3D Modeling</span>
+                                    <span class="text-[#64d2ff] font-bold">95%</span>
+                                </div>
+                                <div class="skill-bar-container">
+                                    <div class="skill-bar-fill" style="--skill-level: 95%"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="90">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-white font-medium">Adobe Suite (Ps, Ai, Pr)</span>
+                                    <span class="text-[#64d2ff] font-bold">90%</span>
+                                </div>
+                                <div class="skill-bar-container">
+                                    <div class="skill-bar-fill" style="--skill-level: 90%"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="60">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-white font-medium">JavaScript / Web Dev</span>
+                                    <span class="text-[#64d2ff] font-bold">60%</span>
+                                </div>
+                                <div class="skill-bar-container">
+                                    <div class="skill-bar-fill" style="--skill-level: 60%"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="80">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-white font-medium">Python / Data Analytics</span>
+                                    <span class="text-[#64d2ff] font-bold">80%</span>
+                                </div>
+                                <div class="skill-bar-container">
+                                    <div class="skill-bar-fill" style="--skill-level: 80%"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-item" data-skill="88">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-white font-medium">Motion Graphics / VFX</span>
+                                    <span class="text-[#64d2ff] font-bold">88%</span>
+                                </div>
+                                <div class="skill-bar-container">
+                                    <div class="skill-bar-fill" style="--skill-level: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience Timeline -->
+                    <div>
+                        <span
+                            class="text-[#bf5af2] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">JOURNEY</span>
+                        <h2 class="text-3xl md:text-5xl font-semibold mb-8 font-display anim-heading">Experience</h2>
+
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2025</div>
+                                <div class="timeline-title">Creative Head</div>
+                                <div class="timeline-subtitle">CUCSA - Covenant University Comm Students Association
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">Summer 2024</div>
+                                <div class="timeline-title">Media Specialist Intern</div>
+                                <div class="timeline-subtitle">Modion Communications - 50+ designs delivered</div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2020 - Present</div>
+                                <div class="timeline-title">Freelance 3D Artist</div>
+                                <div class="timeline-subtitle">Product visualization & brand assets for clients</div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="timeline-date">2022 - Present</div>
+                                <div class="timeline-title">Mass Communication Student</div>
+                                <div class="timeline-subtitle">Covenant University - Final Year</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FUN STATS SECTION - Animated Counters -->
+        <section id="fun-stats" class="py-20 px-6 bg-black relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0071e3]/5 via-transparent to-[#bf5af2]/5"></div>
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <span class="text-[#30d158] text-xs font-medium tracking-[0.2em] mb-4 block">BY THE NUMBERS</span>
+                    <h2 class="text-3xl md:text-4xl font-semibold font-display">Fun Facts</h2>
+                </div>
+
+                <div class="grid grid-cols-2 max-w-3xl mx-auto gap-6">
+                    <div class="fun-fact-card">
+                        <span class="fun-fact-icon">🎨</span>
+                        <div class="fun-fact-value text-4xl md:text-5xl font-bold text-white mb-2 font-display">
+                            <span class="counter-value" data-target="150">0</span>+
+                        </div>
+                        <p class="text-white/50 text-sm">Design Iterations</p>
+                    </div>
+
+                    <div class="fun-fact-card">
+                        <span class="fun-fact-icon">💡</span>
+                        <div class="fun-fact-value text-4xl md:text-5xl font-bold text-white mb-2 font-display">
+                            <span class="counter-value" data-target="200">0</span>+
+                        </div>
+                        <p class="text-white/50 text-sm">Ideas Generated</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS SECTION - Auto-scrolling Carousel -->
+        <section id="testimonials" class="py-24 px-6 bg-black overflow-hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <span class="text-[#ff375f] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">WHAT THEY
+                        SAY</span>
+                    <h2 class="text-3xl md:text-5xl font-semibold font-display anim-heading">Client Love</h2>
+                </div>
+            </div>
+
+            <div class="overflow-hidden">
+                <div class="testimonials-track">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"The best 3D artist I’ve seen in CU (Covenant
+                            University). His work is simply outstanding."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0071e3] to-[#64d2ff] flex items-center justify-center text-white font-bold">
+                                A</div>
+                            <div>
+                                <div class="text-white font-semibold">Alexander Tobi</div>
+                                <div class="text-white/40 text-sm">@alexandertobi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the whole
+                            of Mass Communication at Covenant University."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#bf5af2] to-[#ff375f] flex items-center justify-center text-white font-bold">
+                                T</div>
+                            <div>
+                                <div class="text-white font-semibold">Dr. Tunji Oyedepo</div>
+                                <div class="text-white/40 text-sm">Faculty, Covenant University</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency and a
+                            deep understanding of modern digital tools."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#30d158] to-[#64d2ff] flex items-center justify-center text-white font-bold">
+                                T</div>
+                            <div>
+                                <div class="text-white font-semibold">Dr. Tolu</div>
+                                <div class="text-white/40 text-sm">Faculty, High Impact</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 4 -->
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every single
+                            time."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff9f0a] to-[#ff375f] flex items-center justify-center text-white font-bold">
+                                A</div>
+                            <div>
+                                <div class="text-white font-semibold">Abraham</div>
+                                <div class="text-white/40 text-sm">Detailed Client</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duplicated for infinite scroll effect -->
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"The best 3D artist I’ve seen in CU (Covenant
+                            University). His work is simply outstanding."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0071e3] to-[#64d2ff] flex items-center justify-center text-white font-bold">
+                                A</div>
+                            <div>
+                                <div class="text-white font-semibold">Alexander Tobi</div>
+                                <div class="text-white/40 text-sm">@alexandertobi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the whole
+                            of Mass Communication at Covenant University."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#bf5af2] to-[#ff375f] flex items-center justify-center text-white font-bold">
+                                T</div>
+                            <div>
+                                <div class="text-white font-semibold">Dr. Tunji Oyedepo</div>
+                                <div class="text-white/40 text-sm">Faculty, Covenant University</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency and a
+                            deep understanding of modern digital tools."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#30d158] to-[#64d2ff] flex items-center justify-center text-white font-bold">
+                                T</div>
+                            <div>
+                                <div class="text-white font-semibold">Dr. Tolu</div>
+                                <div class="text-white/40 text-sm">Faculty, High Impact</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars mb-4">★★★★★</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every single
+                            time."</p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff9f0a] to-[#ff375f] flex items-center justify-center text-white font-bold">
+                                A</div>
+                            <div>
+                                <div class="text-white font-semibold">Abraham</div>
+                                <div class="text-white/40 text-sm">Detailed Client</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -490,1075 +765,330 @@
             <div class="max-w-7xl mx-auto text-center relative z-10">
                 <span class="text-blue-500 font-bold tracking-widest text-sm mb-4 block anim-text">THE ARCHIVE</span>
                 <div class="hero-text-mask mb-8">
-                    <h2 class="text-5xl md:text-8xl font-black anim-heading uppercase">Visual <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Vault</span></h2>
+                    <h2 class="text-5xl md:text-8xl font-black anim-heading uppercase">Visual <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Vault</span>
+                    </h2>
                 </div>
                 <p class="text-gray-400 max-w-2xl mx-auto mb-12 text-lg anim-text">
-                    A comprehensive collection of my designs, 3D renders, and coding experiments. Explore over 30+ archived works from Modion, CUCSA, and personal labs.
+                    A comprehensive collection of my designs, 3D renders, and coding experiments. Explore over 30+
+                    archived works from Modion, CUCSA, and personal labs.
                 </p>
-                <button id="open-gallery-main" class="group relative inline-flex items-center justify-center px-12 py-6 overflow-hidden font-bold text-white transition-all duration-300 bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-400 magnetic-btn anim-stagger">
+                <button id="open-gallery-main"
+                    class="group relative inline-flex items-center justify-center px-12 py-6 overflow-hidden font-bold text-white transition-all duration-300 bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-400 magnetic-btn anim-stagger">
                     <span class="relative text-xl tracking-widest">EXPLORE GALLERY ❖</span>
                 </button>
             </div>
         </section>
 
-        <section id="portfolio" class="py-32 px-6 bg-gradient-to-t from-gray-900 to-black">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                    <div>
-                        <span class="text-blue-500 font-bold tracking-widest text-sm anim-text">SELECTED WORKS</span>
-                        <div class="hero-text-mask"><h2 class="text-3xl md:text-5xl font-bold mt-4 anim-heading">Previous Experiences</h2></div>
-                    </div>
-                    
-                    <div class="flex gap-2 flex-wrap anim-stagger">
-                        <button class="filter-btn active px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="all">ALL</button>
-                        <button class="filter-btn px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="design">DESIGN</button>
-                        <button class="filter-btn px-6 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-xs font-bold tracking-wider" data-filter="vfx">3D/VFX</button>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8" id="gallery-grid">
-                    
-                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
-                         data-title="Brand Media Campaign" data-category="GRAPHICS DESIGN" data-client="Modion Communications" data-year="2024"
-                         data-role="Media Specialist Intern"
-                         data-desc="Executed over 50 professional designs for high-profile clients during a 2-month internship. Focused on brand consistency and digital engagement."
-                         data-tags="Photoshop,Illustrator,Canva,Strategy">
-                        <img src="https://www.brandessencenigeria.com/wp-content/uploads/2025/12/IMG-20251208-WA0168-1024x819.jpg" 
-                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Modion Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
-                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">INTERNSHIP</span>
-                            <h3 class="text-2xl font-bold text-white">Modion Comms</h3>
-                        </div>
-                    </div>
-
-                    <div class="project-card vfx all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
-                         data-title="Product Visualization" data-category="3D ART & VFX" data-client="AI Mix Agency" data-year="2024"
-                         data-role="3D Artist"
-                         data-desc="Created high-fidelity 3D assets and product visualizations as a requirement for the agency course. Focused on lighting and texture realism."
-                         data-tags="Blender,Cycles">
-                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" 
-                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="3D Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
-                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">3D VISUALIZATION</span>
-                            <h3 class="text-2xl font-bold text-white">AI Mix Agency</h3>
-                        </div>
-                    </div>
-
-                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
-                         data-title="Student Association Rebrand" data-category="CREATIVE DIRECTION" data-client="CUCSA (Covenant Univ)" data-year="2024-25"
-                         data-role="Creative Head"
-                         data-desc="Leading the visual identity for the Covenant University Communication Students Association. overseeing graphics, layout, and corporate communications."
-                         data-tags="Leadership,Creative Direction,Layout">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/cucsa_imgupscaler.ai_General_4K.jpg?w=600&q=50&auto=format" 
-                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="CUCSA Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
-                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">LEADERSHIP</span>
-                            <h3 class="text-2xl font-bold text-white">CUCSA Creative Head</h3>
-                        </div>
-                    </div>
-
-                    <div class="project-card design all group relative aspect-video bg-gray-800 rounded-xl overflow-hidden cursor-pointer anim-stagger"
-                         data-title="Data Trends Analysis" data-category="DATA ANALYTICS" data-client="Coding Community" data-year="2024"
-                         data-role="Data Analyst"
-                         data-desc="Researching and analyzing data sets to provide insights for the community. Utilizing Python and Excel for data storytelling."
-                         data-tags="Python,Excel,Research,Data Viz">
-                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
-                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Data Work">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-center p-6">
-                            <span class="text-xs text-blue-400 font-bold tracking-widest mb-2">ANALYTICS</span>
-                            <h3 class="text-2xl font-bold text-white">Data Analysis</h3>
-                        </div>
-                    </div>
-
+        <!-- CONTACT SECTION - Apple CTA Style -->
+        <section id="contact" class="py-24 md:py-32 px-6 flex items-center justify-center relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute inset-0">
+                <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0071e3]/10 rounded-full blur-[150px]">
                 </div>
             </div>
-        </section>
 
-        <section id="contact" class="py-32 px-6 flex items-center justify-center relative overflow-hidden">
-            <div class="absolute inset-0 bg-blue-900/10 blur-[120px]"></div>
-            <div class="max-w-4xl w-full text-center relative z-10 glass-card p-16 rounded-[3rem] border-t border-blue-500/30">
-                <div class="hero-text-mask mb-8"><h2 class="text-5xl md:text-7xl font-bold anim-heading">Let's Create the Future.</h2></div>
-                <p class="text-gray-300 mb-12 text-xl font-light anim-text">Available for freelance projects in 3D, Design, and Creative Coding.</p>
-                
-                <div class="flex flex-col md:flex-row justify-center gap-6 flex-wrap anim-stagger mb-8">
-                    <a href="mailto:samscocommunications@gmail.com" class="magnetic-btn inline-block bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all shadow-xl">
+            <div class="max-w-3xl w-full text-center relative z-10 glass-card p-10 md:p-16 rounded-[2.5rem]">
+                <div class="hero-text-mask mb-6">
+                    <h2 class="text-4xl md:text-6xl lg:text-7xl font-semibold anim-heading font-display leading-tight">
+                        Let's Create<br>the Future.</h2>
+                </div>
+                <p class="text-white/50 mb-12 text-lg md:text-xl font-light anim-text max-w-md mx-auto">Available for
+                    freelance projects in 3D, Design, and Creative Coding.</p>
+
+                <!-- Primary CTAs -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4 anim-stagger mb-10">
+                    <a href="mailto:samscocommunications@gmail.com"
+                        class="magnetic-btn group inline-flex items-center justify-center gap-2 bg-[#0071e3] text-white px-8 py-4 rounded-full font-medium text-sm hover:bg-[#0077ed] transition-all duration-300 shadow-[0_4px_20px_rgba(0,113,227,0.4)]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
                         Send Email
                     </a>
-                    <a href="tel:09072483594" class="magnetic-btn inline-block bg-transparent border border-white/20 text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all">
+                    <a href="tel:09072483594"
+                        class="magnetic-btn inline-flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white px-8 py-4 rounded-full font-medium text-sm hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                            </path>
+                        </svg>
                         +234 907 248 3594
                     </a>
                 </div>
 
-                <div class="flex flex-wrap justify-center gap-4 anim-stagger">
-                    <a href="https://linkedin.com/in/samsco" class="magnetic-btn inline-flex items-center justify-center text-white px-8 py-3 rounded-full font-bold text-md hover:scale-105 transition-all shadow-lg" style="background-color: #0A66C2;">
+                <!-- Social Links - Apple Minimal Pills -->
+                <div class="flex flex-wrap justify-center gap-3 anim-stagger">
+                    <a href="https://linkedin.com/in/samsco" target="_blank" rel="noopener noreferrer"
+                        class="magnetic-btn inline-flex items-center gap-2 text-white/70 hover:text-white px-5 py-2.5 rounded-full font-medium text-xs bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300"
+                        aria-label="Visit LinkedIn profile">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
                         LinkedIn
                     </a>
-                    <a href="https://t.me/i_am_samsco/" class="magnetic-btn inline-flex items-center justify-center text-white px-8 py-3 rounded-full font-bold text-md hover:scale-105 transition-all shadow-lg" style="background-color: #24A1DE;">
+                    <a href="#" id="telegram-btn"
+                        class="magnetic-btn inline-flex items-center gap-2 text-white/70 hover:text-white px-5 py-2.5 rounded-full font-medium text-xs bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300"
+                        aria-label="Open Telegram options">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                        </svg>
                         Telegram
                     </a>
-                    <a href="https://instagram.com/samsco.s1" class="magnetic-btn inline-flex items-center justify-center text-white px-8 py-3 rounded-full font-bold text-md hover:scale-105 transition-all shadow-lg" style="background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);">
+                    <a href="https://instagram.com/samsco.s1" target="_blank" rel="noopener noreferrer"
+                        class="magnetic-btn inline-flex items-center gap-2 text-white/70 hover:text-white px-5 py-2.5 rounded-full font-medium text-xs bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300"
+                        aria-label="Visit Instagram profile">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                        </svg>
                         Instagram
                     </a>
                 </div>
             </div>
         </section>
 
-        <footer class="bg-black pt-20 pb-10 border-t border-white/10 text-sm">
-            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 mb-16">
+        <!-- FOOTER - Apple Minimal -->
+        <footer class="bg-black pt-16 md:pt-20 pb-8 border-t border-white/5 text-sm">
+            <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-10 md:gap-12 mb-12">
                 <div class="col-span-1 md:col-span-2">
-                    <h2 class="text-2xl font-bold mb-4">SAMSCO<span class="text-blue-500">.</span></h2>
-                    <p class="text-gray-500 max-w-sm leading-relaxed">
-                        Visual Engineering for the Modern Web. <br>
-                        Enhancing creativity, communication, and digital experiences through technology.
+                    <h2 class="text-xl font-semibold mb-4 font-display">SAMSCO<span class="text-[#0071e3]">.</span></h2>
+                    <p class="text-white/40 max-w-sm leading-relaxed text-sm">
+                        Visual Engineering for the Modern Web.<br>
+                        Enhancing creativity through technology.
                     </p>
                 </div>
-                
+
                 <div>
-                    <h4 class="font-bold text-white mb-6 tracking-widest text-xs">NAVIGATION</h4>
-                    <ul class="space-y-4 text-gray-500">
-                        <li><a href="#home" class="hover:text-blue-500 transition-colors footer-link">Home</a></li>
-                        <li><a href="#portfolio" class="hover:text-blue-500 transition-colors footer-link">Work</a></li>
-                        <li><a href="#services" class="hover:text-blue-500 transition-colors footer-link">Services</a></li>
-                        <li><a href="#contact" class="hover:text-blue-500 transition-colors footer-link">Contact</a></li>
+                    <h4 class="font-medium text-white/80 mb-5 tracking-[0.1em] text-[10px]">NAVIGATION</h4>
+                    <ul class="space-y-3 text-white/40">
+                        <li><a href="#home"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Home</a>
+                        </li>
+                        <li><a href="#portfolio"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Work</a>
+                        </li>
+                        <li><a href="#services"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Services</a>
+                        </li>
+                        <li><a href="#contact"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Contact</a>
+                        </li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="font-bold text-white mb-6 tracking-widest text-xs">CONNECT</h4>
-                    <ul class="space-y-4 text-gray-500">
-                        <li><a href="https://linkedin.com/in/samsco" class="hover:text-blue-500 transition-colors footer-link">LinkedIn</a></li>
-                        <li><a href="https://t.me/i_am_samsco/" class="hover:text-blue-500 transition-colors footer-link">Telegram</a></li>
-                        <li><a href="https://instagram.com/samsco.s1" class="hover:text-blue-500 transition-colors footer-link">Instagram</a></li>
-                        <li><span class="text-gray-700">Lagos, NG (WAT)</span></li>
+                    <h4 class="font-medium text-white/80 mb-5 tracking-[0.1em] text-[10px]">CONNECT</h4>
+                    <ul class="space-y-3 text-white/40">
+                        <li><a href="https://linkedin.com/in/samsco" target="_blank" rel="noopener noreferrer"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">LinkedIn</a>
+                        </li>
+                        <li><a href="https://t.me/i_am_samsco/" target="_blank" rel="noopener noreferrer"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Telegram</a>
+                        </li>
+                        <li><a href="https://instagram.com/samsco.s1" target="_blank" rel="noopener noreferrer"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm">Instagram</a>
+                        </li>
+                        <li><span class="text-white/20 text-sm">Lagos, Nigeria</span></li>
                     </ul>
                 </div>
             </div>
-            
-            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-gray-600 text-xs">
-                <p>&copy; 2025 Samsco Communications. All Rights Reserved.</p>
-                <p>Designed & Engineered by Samsco.</p>
+
+            <div
+                class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center pt-6 border-t border-white/5 text-white/30 text-xs gap-2">
+                <p>© 2026 Samsco Communications. All Rights Reserved.</p>
+                <p>Designed & Engineered with <span class="text-[#ff375f]">♥</span> by Samsco.</p>
             </div>
         </footer>
 
     </main>
 
-    <!-- GALLERY OVERLAY (UPDATED WITH FILTERS) -->
-    <div id="full-gallery-modal" class="fixed inset-0 z-[90] bg-black overflow-y-auto">
-        <div class="min-h-screen px-4 py-12 md:px-12">
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 sticky top-0 bg-black/90 backdrop-blur-md py-6 z-20 border-b border-white/10 -mx-4 px-4 md:-mx-12 md:px-12">
-                <div class="mb-4 md:mb-0">
-                    <h2 class="text-3xl font-bold">THE VAULT</h2>
-                    <p class="text-gray-500 text-sm">Archived Works: 30+</p>
-                </div>
-                
-                <div id="vault-filters" class="flex flex-wrap gap-2">
-                    <!-- Filters injected here -->
-                </div>
-
-                <button id="close-gallery" class="absolute top-6 right-4 md:static text-white hover:text-blue-500 text-2xl font-bold cursor-hover bg-white/10 w-12 h-12 rounded-full flex items-center justify-center transition-colors">✕</button>
+    <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
+    <div id="full-gallery-modal" class="fixed inset-0 z-[90] overflow-y-auto gallery-modal-bg">
+        <!-- Animated Background -->
+        <div class="fixed inset-0 pointer-events-none">
+            <div
+                class="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-[#0071e3]/20 via-transparent to-transparent blur-3xl animate-pulse">
             </div>
-            
-            <div id="gallery-grid-content" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-24 md:mt-0">
+            <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-[#bf5af2]/15 via-transparent to-transparent blur-3xl"
+                style="animation: pulse 4s ease-in-out infinite alternate;"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-[#30d158]/5 via-transparent to-transparent blur-3xl">
+            </div>
+        </div>
+
+        <div class="min-h-screen px-4 py-8 md:px-8 lg:px-16 relative z-10">
+            <!-- Premium Header -->
+            <div class="sticky top-0 z-30 pt-4 pb-6">
+                <div class="glass-card rounded-2xl p-6 md:p-8 border border-white/10 backdrop-blur-2xl bg-black/60">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                        <!-- Title Section -->
+                        <div class="flex items-center gap-6">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[2px]">
+                                <div class="w-full h-full rounded-2xl bg-black flex items-center justify-center">
+                                    <span class="text-2xl font-bold text-white">⚡</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h2
+                                    class="text-4xl md:text-5xl font-black bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent">
+                                    THE VAULT</h2>
+                                <p class="text-white/40 text-sm mt-1 flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-[#30d158] rounded-full animate-pulse"></span>
+                                    <span id="gallery-count">60+ Creative Works</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="flex flex-wrap gap-2" id="vault-filters">
+                            <!-- Filters injected here -->
+                        </div>
+
+                        <!-- Close Button -->
+                        <button id="close-gallery"
+                            class="group absolute top-4 right-4 lg:static w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#ff375f] hover:border-[#ff375f] transition-all duration-300 cursor-hover">
+                            <svg class="w-5 h-5 text-white/60 group-hover:text-white transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Grid with Masonry Effect -->
+            <div id="gallery-grid-content"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mt-6 gallery-masonry">
                 <!-- JS will inject images here -->
+            </div>
+
+            <!-- Floating Stats -->
+            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex">
+                <div class="glass-card px-6 py-3 rounded-full border border-white/10 flex items-center gap-6 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#0071e3]">🖼️</span>
+                        <span class="text-white/60">Graphics</span>
+                        <span class="text-white font-bold">40+</span>
+                    </div>
+                    <div class="w-px h-4 bg-white/10"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#bf5af2]">🎬</span>
+                        <span class="text-white/60">Videos</span>
+                        <span class="text-white font-bold">15+</span>
+                    </div>
+                    <div class="w-px h-4 bg-white/10"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#30d158]">🤖</span>
+                        <span class="text-white/60">AI</span>
+                        <span class="text-white font-bold">5+</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- LIGHTBOX OVERLAY (UPDATED WITH VIDEO) -->
-    <div id="lightbox-modal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl">
-        <button id="lightbox-close" class="absolute top-6 right-6 text-gray-400 hover:text-white text-3xl cursor-hover z-50">✕</button>
+    <div id="lightbox-modal"
+        class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl">
+        <button id="lightbox-close"
+            class="absolute top-6 right-6 text-gray-400 hover:text-white text-3xl cursor-hover z-50">✕</button>
         <button id="lightbox-prev" class="nav-btn nav-prev cursor-hover z-50" style="left: 20px;">❮</button>
         <button id="lightbox-next" class="nav-btn nav-next cursor-hover z-50" style="right: 20px;">❯</button>
-        
+
         <div class="relative max-w-5xl w-full h-full flex flex-col justify-center items-center">
             <!-- Image Container -->
-            <img id="lightbox-img" src="" class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6">
-            
+            <img id="lightbox-img" src=""
+                class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6">
+
             <!-- Video Container (Hidden by default) -->
-            <video id="lightbox-video" controls class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
+            <video id="lightbox-video" controls
+                class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
                 <source src="" type="video/mp4">
             </video>
 
             <div class="text-center">
                 <h3 id="lightbox-title" class="text-2xl font-bold text-white mb-1">Project Name</h3>
-                <span id="lightbox-cat" class="text-blue-500 text-xs font-bold tracking-widest uppercase">Category</span>
+                <span id="lightbox-cat"
+                    class="text-blue-500 text-xs font-bold tracking-widest uppercase">Category</span>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- TELEGRAM MODAL -->
+    <div id="telegram-modal"
+        class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div
+            class="glass-card max-w-md w-full p-8 rounded-3xl relative transform scale-90 transition-transform duration-300">
+            <button id="telegram-close" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <div class="text-center mb-8">
+                <div
+                    class="w-16 h-16 bg-[#0088cc] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">Connect on Telegram</h3>
+                <p class="text-white/60 text-sm">Choose a profile to start a conversation</p>
+            </div>
+
+            <div class="space-y-4">
+                <a href="https://t.me/i_am_samsco" target="_blank"
+                    class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:scale-[1.02] transition-all duration-300 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center font-bold text-white">
+                        S</div>
+                    <div class="flex-1">
+                        <div class="text-white font-medium group-hover:text-blue-400 transition-colors">@i_am_samsco
+                        </div>
+                        <div class="text-white/40 text-xs">+234 907 248 3594</div>
+                    </div>
+                    <svg class="w-5 h-5 text-white/30 group-hover:text-white transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3">
+                        </path>
+                    </svg>
+                </a>
+
+                <a href="https://t.me/samscocommunications" target="_blank"
+                    class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:scale-[1.02] transition-all duration-300 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white">
+                        C</div>
+                    <div class="flex-1">
+                        <div class="text-white font-medium group-hover:text-purple-400 transition-colors">
+                            @samscocommunications</div>
+                        <div class="text-white/40 text-xs">+1 539 585 6804</div>
+                    </div>
+                    <svg class="w-5 h-5 text-white/30 group-hover:text-white transition-colors" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3">
+                        </path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    <script>
-        // --- DEVTOOLS EASTER EGG ---
-        console.log(`%c
-  ____    _    __  __ ____   ____ ___ 
- / ___|  / \\  |  \\/  / ___| / ___/ _ \\
- \\___ \\ / _ \\ | |\\/| \\___ \\| |  | | | |
-  ___) / ___ \\| |  | |___) | |__| |_| |
- |____/_/   \\_\\_|  |_|____/ \\____\\___/ 
-                                       
-`, "font-weight: bold; font-size: 20px; color: #2563eb; text-shadow: 2px 2px 0px #000");
-
-        gsap.registerPlugin(ScrollTrigger);
-
-        // --- 1. HERO ROTATOR ---
-        const words = [
-            { top: "VISION", bottom: "ENGINEERED" },
-            { top: "REALITY", bottom: "RENDERED" },
-            { top: "DIGITAL", bottom: "ALCHEMY" },
-            { top: "LOGIC", bottom: "DEFYING" },
-            { top: "ART", bottom: "INTELLIGENT" }
-        ];
-
-        let currentIndex = 0;
-        const topText = document.getElementById("hero-word-1");
-        const bottomText = document.getElementById("hero-word-2");
-
-        let isTabActive = true;
-        document.addEventListener("visibilitychange", () => {
-            isTabActive = !document.hidden;
-        });
-
-        function rotateText() {
-            if(!isTabActive) return;
-
-            currentIndex = (currentIndex + 1) % words.length;
-            const nextWord = words[currentIndex];
-            
-            gsap.to([topText, bottomText], {
-                yPercent: -120, opacity: 0,
-                duration: 0.8, ease: "power3.in", stagger: 0.08,
-                onComplete: () => {
-                    topText.innerText = nextWord.top;
-                    bottomText.innerText = nextWord.bottom;
-                    gsap.set([topText, bottomText], { yPercent: 120, opacity: 0 });
-                    gsap.to([topText, bottomText], { 
-                        yPercent: 0, opacity: 1,
-                        duration: 0.9, ease: "power3.out", stagger: 0.08
-                    });
-                }
-            });
-        }
-        
-        // --- 2. EASY ACCESS GALLERY CONFIGURATION ---
-        const galleryConfig = [
-            // --- GRAPHICS DESIGN (Batch 1) ---
-            { title: "Graphic Art 01", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-13_08-20-06.jpg" },
-            { title: "Graphic Art 02", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-13_08-23-54.jpg" },
-            { title: "Graphic Art 03", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-06-07_15-42-05.jpg" },
-            { title: "Graphic Art 04", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-11_17-48-06.jpg" },
-            { title: "Graphic Art 05", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2025-05-16_17-25-47.jpg" },
-            { title: "Graphic Art 06", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_22_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 07", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_20_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 08", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_21_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 09", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_24_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 10", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_23_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 11", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_26_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 12", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_25_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 13", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_27_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 14", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_29_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 15", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_28_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 16", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_30_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 17", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_32_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 18", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_31_2025-12-09_19-59-08.jpg" },
-
-            // --- GRAPHICS DESIGN (Batch 2) ---
-            { title: "Satisfied", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/satisfied.jpg" },
-            { title: "CCH 2024", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/cch%202024.jpg" },
-            { title: "Project Oct", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2024-10-18_14-08-16.jpg" },
-            { title: "Graphic Art 19", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_7_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 20", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_6_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 21", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_5_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 22", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_4_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 23", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_3_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 24", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_1_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 25", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_31_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 26", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_32_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 27", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2_2025-12-09_19-44-05.jpg" },
-            { title: "Graphic Art 28", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_15_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 29", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_12_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 30", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_11_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 31", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_9_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 32", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_14_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 33", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_10_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 34", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_7_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 35", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_2_2025-12-09_20-06-29.jpg" },
-            { title: "Graphic Art 36", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/Untitled-1.png" },
-            { title: "Graphic Art 37", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_4_2025-12-09_19-59-08.jpg" },
-            { title: "Graphic Art 38", cat: "Graphics Design", url: "https://6937feda504a835c4ce351d7.imgix.net/photo_6_2025-12-09_19-59-08.jpg" },
-            
-            // --- VIDEO (3D & VFX) ---
-            { title: "VFX Intro Reel", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/intro.mp4" },
-            { title: "S24 Render", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/s24%20render.png" },
-            { title: "S24 Ultra Motion", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/s24%20ultra.mp4" },
-            { title: "iPad Air 2023", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Apple%20Ipad%20Air%202023%20(1).mp4" },
-            { title: "Reactive Headset", cat: "3D & VFX", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/scroll%20reactive%20headset.mp4" },
-            { title: "Pixel 9 Pro", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Google%20Pixel%209%20Pro%20new.jpeg" },
-            { title: "HP Spectre X360", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/HP%20Spectre%20X360.png" },
-            { title: "Random Render", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Just%20a%20random%20render.mp4" },
-            { title: "Minimie Ad Concept", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Minimie.mp4" },
-            { title: "Character FX Simulation", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/A%20character%20on%20Fire.mp4" },
-            { title: "VFX Car Shot", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/VFX%20Car%20Shot.mp4" },
-            { title: "Instagram VFX", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Instagram.mp4" },
-            { title: "Random Render B", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Random%20Renderr.mp4" },
-            { title: "Random Concept", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/Random%20a.mp4" },
-            { title: "Car VFX Still", cat: "3D & VFX", url: "https://6937feda504a835c4ce351d7.imgix.net/car%20vfx.jpg" },
-
-            // --- VIDEO EDITING ---
-            { title: "Hypo Ad Campaign", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/%E2%80%9CWhen%20life%20gives%20you%20stains,%20Hypo%20gives%20you%20hope%20%F0%9F%98%85%F0%9F%AB%A7%20A%20campaign%20that%20never%20made%20it%20to%20class,%20but%20made%20it%20to%20IG!%20CREDITS-%20Editor-%20@samsco.s1%20Actors-%20@mr_a.l.u.c.a.r.d%20@i__zeke%20%F0%9F%8E%A5-%20@kendavid.na%20%20" },
-            { title: "Situation of Nigeria 2024", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/THE%20SITUATION%20OF%20NIGERIA%20IN%202024%20@motola_savage%20@temi.babs%20@mrlastborn1%20%20%F0%9F%93%B8%20@iamch_uks%20Edited%20by%20@samsco.s1%20" },
-            { title: "Na Hunger Cause Am", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Na%20hunger%20cause%20am%20@motola_savage%20@iamch_uks%20@temi.babs%20@thebosstehila%20%20Edited%20by%20@samsco.s1%20%20Shot%20by%20@mrlastborn1%20@samsco.s1%20%20We%20are%20THEM%20(Content%20Creators)%20" },
-            { title: "The Pen Skit", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/The%20pen%20%E2%9C%8D%EF%B8%8F%F0%9F%99%86%F0%9F%8F%BD%F0%9F%98%82%20A%20new%20video%20from%20THEM%20%F0%9F%98%82%20%20@motola_savage%20@temi.babs%20%20@iamch_uks%20@thebosstehila%20%20%20Shot-%20@samsco.s1%20%20Edited-%20@mrlastborn1%20%20@samsco.s1%20%20%20Appreciation-%20God%20Almighty%20for%20the%20success%20of%20this.%20%20" },
-            { title: "POV: Maths Teacher", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/POV-%20YOU%20MET%20YOUR%20SECONDARY%20SCHOOL%20MATHS%20TEACHER.mp4" },
-            { title: "La La Land Skit", cat: "Video Editing", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/When%20your%20bestie%20lives%20in%20La%20La%20Land%20%F0%9F%92%AD%20Me-%20%E2%80%9CWe%20need%20to%20be%20realistic.%E2%80%9D%20Her-%20%E2%80%9CI%20saw%20a%20sign%20in%20the%20clouds%20shaped%20like%20a%20heart%E2%80%A6%20it%E2%80%99s%20destiny.%E2%80%9D%20%F0%9F%92%80%F0%9F%92%80%F0%9F%92%80%20%20Tag%20that%20one%20friend%20who%20stays%20in%20dreamland%2024-7%20%F0%9F%98%AD%E2%9C%A8%20%20%20" },
-
-            // --- AI GENERATION ---
-            { title: "AI Animation 1", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/AI%20Video%20Generator%20-%20Animate%20Photos%20&%20Frames%20Online%20-%20Kling%20AI.mp4" },
-            { title: "AI Animation 2", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/AI%20Video%20Generator%20-%20Animate%20Photos%20&%20Frames%20Online%20-%20Kling%20AI_2.mp4" },
-            { title: "A Guy Trying", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/A_guy_trying_202512081219.mp4" },
-            { title: "Me (AI Generated)", cat: "AI", type: "video", url: "https://6937feda504a835c4ce351d7.imgix.net/Me.mp4" },
-
-            // --- CODING PLACEHOLDERS ---
-            { title: "Data Dashboard", cat: "Coding & Data Analytics", url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80" },
-            { title: "Code Interface", cat: "Coding & Data Analytics", url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" }
-        ];
-
-        const galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI"];
-
-        // --- 3. DYNAMIC GALLERY & FILTER GENERATOR ---
-        const galleryGrid = document.getElementById('gallery-grid-content');
-        const filterContainer = document.getElementById('vault-filters');
-        
-        let currentFilter = 'ALL';
-        let galleryItems = []; 
-        let visibleGalleryItems = [];
-
-        // Generate Filters
-        const allCategories = ["ALL", ...galleryCategories];
-        allCategories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.className = `vault-filter-btn px-4 py-1 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-wider transition-all ${cat === 'ALL' ? 'active bg-blue-600 border-blue-600' : ''}`;
-            btn.textContent = cat;
-            btn.setAttribute('data-filter', cat);
-            
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.vault-filter-btn').forEach(b => {
-                    b.classList.remove('active', 'bg-blue-600', 'border-blue-600');
-                    b.classList.add('bg-white/5', 'border-white/10');
-                });
-                btn.classList.add('active', 'bg-blue-600', 'border-blue-600');
-                btn.classList.remove('bg-white/5', 'border-white/10');
-                
-                // Removed mosh-active class to prevent transition effect
-
-                setTimeout(() => {
-                    currentFilter = cat;
-                    visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item')).filter(item => 
-                        currentFilter === 'ALL' || item.getAttribute('data-cat') === currentFilter
-                    );
-
-                    const items = document.querySelectorAll('.gallery-item');
-                    items.forEach(item => {
-                        const itemCat = item.getAttribute('data-cat');
-                        if(cat === 'ALL' || itemCat === cat) {
-                            gsap.to(item, { scale: 1, opacity: 1, duration: 0.3, display: 'block', ease: "power2.out" });
-                        } else {
-                            gsap.to(item, { scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
-                        }
-                    });
-                    // Removed mosh-active class removal as the class is no longer added
-                }, 200);
-            });
-            filterContainer.appendChild(btn);
-        });
-
-        const totalItemsToGenerate = galleryConfig.length; 
-        
-        for(let i = 0; i < totalItemsToGenerate; i++) {
-            const configItem = galleryConfig[i];
-            const cat = configItem.cat; 
-            const isVideo = configItem.type === 'video' || configItem.url.endsWith('.mp4');
-
-            const item = document.createElement('div');
-            item.className = 'gallery-item relative aspect-square bg-gray-800 rounded-lg overflow-hidden group cursor-pointer border border-white/5';
-            
-            item.setAttribute('data-index', i);
-            item.setAttribute('data-title', `${configItem.title}`);
-            item.setAttribute('data-cat', cat);
-            item.setAttribute('data-type', isVideo ? 'video' : 'image');
-            item.setAttribute('data-url', configItem.url); 
-            
-            let mediaContent = '';
-            let cleanUrl = configItem.url.split('?')[0];
-            let thumbUrl = cleanUrl;
-
-            if(configItem.url.includes('imgix.net')) {
-                thumbUrl = cleanUrl + "?w=300&q=30&auto=format";
-            }
-
-            if(isVideo) {
-                mediaContent = `<video src="${configItem.url}" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100"></video>`;
-            } else {
-                mediaContent = `<img src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">`;
-            }
-
-            item.innerHTML = `
-                ${mediaContent}
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 pointer-events-none">
-                    <span class="text-blue-400 text-[10px] font-bold tracking-widest mb-1 uppercase">${cat}</span>
-                    <h4 class="text-white text-lg font-bold">${configItem.title}</h4>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        }
-        
-        visibleGalleryItems = Array.from(document.querySelectorAll('.gallery-item'));
-
-        // --- 4. GALLERY MODAL LOGIC ---
-        const galleryModal = document.getElementById('full-gallery-modal');
-        const openGalleryBtns = [document.getElementById('open-gallery-hero'), document.getElementById('open-gallery-main')];
-        const closeGalleryBtn = document.getElementById('close-gallery');
-
-        openGalleryBtns.forEach(btn => {
-            if(btn) {
-                btn.addEventListener('click', () => {
-                    galleryModal.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    gsap.fromTo(".gallery-item", 
-                        { y: 30, opacity: 0 },
-                        { y: 0, opacity: 1, duration: 0.4, stagger: 0.03, delay: 0.1 }
-                    );
-                });
-            }
-        });
-
-        closeGalleryBtn.addEventListener('click', () => {
-            galleryModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
-
-        // --- 5. LIGHTBOX LOGIC ---
-        const lightbox = document.getElementById('lightbox-modal');
-        const lbImg = document.getElementById('lightbox-img');
-        const lbVideo = document.getElementById('lightbox-video');
-        const lbTitle = document.getElementById('lightbox-title');
-        const lbCat = document.getElementById('lightbox-cat');
-        let currentLbIndex = 0;
-        
-        const allGalleryItems = document.querySelectorAll('.gallery-item');
-        allGalleryItems.forEach((item) => {
-            item.addEventListener('click', () => {
-                openLightbox(item);
-            });
-        });
-
-        function openLightbox(clickedItem) {
-            currentLbIndex = visibleGalleryItems.indexOf(clickedItem);
-            updateLightboxContent();
-            lightbox.classList.add('active');
-        }
-
-        function updateLightboxContent() {
-            if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
-            
-            const item = visibleGalleryItems[currentLbIndex];
-            let rawUrl = item.getAttribute('data-url');
-            let url = rawUrl.split('?')[0]; 
-            
-            const type = item.getAttribute('data-type');
-            const title = item.getAttribute('data-title');
-            const cat = item.getAttribute('data-cat');
-
-            lbTitle.innerText = title;
-            lbCat.innerText = cat;
-
-            if (type === 'video') {
-                lbImg.classList.add('hidden');
-                lbVideo.classList.remove('hidden');
-                lbVideo.src = rawUrl; 
-                lbVideo.play();
-            } else {
-                lbVideo.classList.add('hidden');
-                lbImg.classList.remove('hidden');
-                if(url.includes('imgix.net')) {
-                    url += "?w=1200&q=75&auto=format";
-                }
-                lbImg.src = url;
-                lbVideo.pause();
-            }
-        }
-
-        function nextLightboxItem() {
-            currentLbIndex = (currentLbIndex + 1) % visibleGalleryItems.length;
-            updateLightboxContent();
-        }
-
-        function prevLightboxItem() {
-            currentLbIndex = (currentLbIndex - 1 + visibleGalleryItems.length) % visibleGalleryItems.length;
-            updateLightboxContent();
-        }
-
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            lbVideo.pause();
-        }
-
-        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-        document.getElementById('lightbox-next').addEventListener('click', nextLightboxItem);
-        document.getElementById('lightbox-prev').addEventListener('click', prevLightboxItem);
-
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); nextLightboxItem(); }
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); prevLightboxItem(); }
-            if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
-        });
-
-        // --- 6. FLUID TEXT ANIMATION SYSTEM ---
-        gsap.utils.toArray('.anim-heading').forEach(text => {
-            gsap.to(text, {
-                scrollTrigger: { 
-                    trigger: text, 
-                    start: "top 85%",
-                    once: true
-                },
-                y: 0, opacity: 1, duration: 1, ease: "power3.out"
-            });
-        });
-
-        gsap.utils.toArray('.anim-text').forEach(text => {
-            gsap.to(text, {
-                scrollTrigger: { 
-                    trigger: text, 
-                    start: "top 90%",
-                    once: true
-                },
-                y: 0, opacity: 1, duration: 1, ease: "power2.out"
-            });
-        });
-
-        gsap.utils.toArray('.anim-stagger').forEach((item, i) => {
-            gsap.to(item, {
-                scrollTrigger: { 
-                    trigger: item, 
-                    start: "top 90%",
-                    once: true
-                },
-                y: 0, opacity: 1, duration: 0.7, ease: "back.out(1.5)"
-            });
-        });
-
-        // --- 7. STANDARD UI INTERACTIONS ---
-        const bubble = document.getElementById("identity-bubble");
-        const trigger = document.querySelector(".identity-trigger");
-        const identities = ["Aiyedun Samuel", "Visual Engineer", "Samsco Personal"];
-        let idIndex = 0;
-        let idInterval;
-        
-        if(trigger && bubble) {
-            trigger.addEventListener("mouseenter", () => {
-                idInterval = setInterval(() => {
-                    idIndex = (idIndex + 1) % identities.length;
-                    bubble.innerText = identities[idIndex];
-                }, 1500);
-            });
-            trigger.addEventListener("mouseleave", () => {
-                clearInterval(idInterval);
-                bubble.innerText = "Aiyedun Samuel"; 
-            });
-        }
-
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const projectCards = document.querySelectorAll('.project-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const filter = btn.getAttribute('data-filter');
-                projectCards.forEach(item => {
-                    if (filter === 'all' || item.classList.contains(filter)) {
-                        gsap.to(item, { scale: 1, opacity: 1, duration: 0.4, display: 'block', ease: "power2.out" });
-                    } else {
-                        gsap.to(item, { scale: 0.9, opacity: 0, duration: 0.3, onComplete: () => item.style.display = 'none' });
-                    }
-                });
-            });
-        });
-
-        const projectModal = document.getElementById('project-modal');
-        const closeModalBtn = document.getElementById('close-modal');
-        const prevBtn = document.getElementById('prev-project');
-        const nextBtn = document.getElementById('next-project');
-        
-        const mTitle = document.getElementById('modal-title');
-        const mCat = document.getElementById('modal-category');
-        const mDesc = document.getElementById('modal-desc');
-        const mClient = document.getElementById('modal-client');
-        const mYear = document.getElementById('modal-year');
-        const mRole = document.getElementById('modal-role');
-        const mTags = document.getElementById('modal-tags');
-
-        let currentProjectIndex = 0;
-        const projectArray = Array.from(projectCards);
-
-        function openProjectModal(index) {
-            currentProjectIndex = index;
-            const card = projectArray[index];
-            mTitle.innerText = card.getAttribute('data-title');
-            mCat.innerText = card.getAttribute('data-category');
-            mDesc.innerText = card.getAttribute('data-desc');
-            mClient.innerText = card.getAttribute('data-client') || "Private Client";
-            mYear.innerText = card.getAttribute('data-year') || "2024";
-            mRole.innerText = card.getAttribute('data-role') || "Creative Lead";
-            
-            const tags = card.getAttribute('data-tags').split(',');
-            mTags.innerHTML = ''; 
-            tags.forEach(tag => {
-                const span = document.createElement('span');
-                span.className = 'px-3 py-1 bg-white/10 border border-white/5 rounded-full text-xs text-blue-300 tracking-wide';
-                span.innerText = tag;
-                mTags.appendChild(span);
-            });
-            projectModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-        }
-
-        function closeProjectModal() { projectModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
-        
-        function nextProjectFunc() {
-            let nextIndex = (currentProjectIndex + 1) % projectArray.length;
-            while(projectArray[nextIndex].style.display === 'none') { nextIndex = (nextIndex + 1) % projectArray.length; }
-            openProjectModal(nextIndex);
-        }
-        function prevProjectFunc() {
-            let prevIndex = (currentProjectIndex - 1 + projectArray.length) % projectArray.length;
-            while(projectArray[prevIndex].style.display === 'none') { prevIndex = (prevIndex - 1 + projectArray.length) % projectArray.length; }
-            openProjectModal(prevIndex);
-        }
-
-        projectArray.forEach((card, index) => card.addEventListener('click', () => openProjectModal(index)));
-        closeModalBtn.addEventListener('click', closeProjectModal);
-        nextBtn.addEventListener('click', nextProjectFunc);
-        prevBtn.addEventListener('click', prevProjectFunc);
-        projectModal.addEventListener('click', (e) => { if (e.target === projectModal) closeProjectModal(); });
-
-        const cursor = document.getElementById('cursor');
-        if (window.matchMedia("(pointer: fine)").matches) {
-            cursor.style.display = 'block';
-            let mouseX = 0, mouseY = 0;
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-            
-            function updateCursor() {
-                gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.05, ease: "sine.out", overwrite: "auto" });
-                requestAnimationFrame(updateCursor);
-            }
-            updateCursor();
-            document.querySelectorAll('a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item').forEach(el => {
-                el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-                el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
-            });
-            document.querySelectorAll(".magnetic-btn").forEach(btn => {
-                btn.addEventListener("mousemove", (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = (e.clientX - rect.left - rect.width / 2) * 0.5;
-                    const y = (e.clientY - rect.top - rect.height / 2) * 0.5;
-                    gsap.to(btn, { x: x, y: y, duration: 0.3, ease: "power2.out" });
-                });
-                btn.addEventListener("mouseleave", () => {
-                    gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
-                });
-            });
-        }
-
-        function updateTime() {
-            const time = new Date().toLocaleTimeString('en-US', { timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit' });
-            document.getElementById('lagos-time').innerText = `LAGOS: ${time}`;
-        }
-        setInterval(updateTime, 1000); updateTime();
-        
-        const menuBtn = document.getElementById('menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
-        closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
-        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
-        
-        const ctxMenu = document.getElementById('custom-context-menu');
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            let x = e.clientX; let y = e.clientY;
-            const winWidth = window.innerWidth; const winHeight = window.innerHeight;
-            if (x + 200 > winWidth) x = winWidth - 200;
-            if (y + 200 > winHeight) y = winHeight - 200;
-            ctxMenu.style.left = `${x}px`; ctxMenu.style.top = `${y}px`;
-            ctxMenu.classList.add('visible');
-        });
-        document.addEventListener('click', () => ctxMenu.classList.remove('visible'));
-        document.addEventListener('scroll', () => ctxMenu.classList.remove('visible'), { passive: true });
-
-        // Optimized scroll progress
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-                    const progress = (scrollTop / docHeight) * 100;
-                    document.getElementById('scroll-progress').style.width = progress + '%';
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        }, { passive: true });
-
-        // ==========================================
-        //      CORE 3D & ANIMATION SYSTEM
-        // ==========================================
-
-        // --- DEVICE DETECTION ---
-        const isMobile = window.innerWidth < 768;
-
-        // --- THREE.JS BACKGROUND SETUP ---
-        // We use different containers for Mobile model vs PC background particles
-        const container = document.getElementById(isMobile ? 'mobile-model-container' : 'canvas-container');
-        const scene = new THREE.Scene();
-        
-        // Camera setup
-        const fov = isMobile ? 60 : 75; 
-        const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = isMobile ? 4 : 5; 
-        
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); 
-        container.appendChild(renderer.domElement);
-
-        // --- LIGHTING ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        
-        const pointLight = new THREE.PointLight(0x2563eb, 2, 10);
-        pointLight.position.set(2, 2, 2);
-        scene.add(pointLight);
-
-        const redLight = new THREE.PointLight(0xff0000, 2, 10);
-        redLight.position.set(-2, -1, 2);
-        scene.add(redLight);
-
-        // --- PARTICLES ---
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = isMobile ? 80 : 150; 
-        const posArray = new Float32Array(particlesCount * 3);
-        for(let i=0; i<particlesCount*3; i++) posArray[i] = (Math.random()-0.5)*25;
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMesh = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.02, color: 0x2563eb, transparent: true, opacity: 0.6 }));
-        scene.add(particlesMesh);
-
-        // ==========================================
-        //      MOBILE SPECIFIC: PROCEDURAL HEADSET
-        // ==========================================
-        let mobileHeadsetGroup;
-
-        if (isMobile) {
-            mobileHeadsetGroup = new THREE.Group();
-
-            // 1. GENERATE LOGO TEXTURE (Code-generated image)
-            function createLogoTexture() {
-                const canvas = document.createElement('canvas');
-                canvas.width = 512; canvas.height = 512;
-                const ctx = canvas.getContext('2d');
-                
-                // Black Background
-                ctx.fillStyle = '#050505'; 
-                ctx.fillRect(0, 0, 512, 512);
-                
-                // Red Ring
-                ctx.strokeStyle = '#dc2626';
-                ctx.lineWidth = 15;
-                ctx.beginPath();
-                ctx.arc(256, 256, 230, 0, Math.PI * 2);
-                ctx.stroke();
-
-                // The Big "S"
-                ctx.fillStyle = '#ffffff'; 
-                ctx.font = 'bold 280px "Space Grotesk", Arial'; 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('S', 256, 220);
-
-                // "SAMSCO" Text
-                ctx.fillStyle = '#dc2626'; 
-                ctx.font = 'bold 50px "Space Grotesk", Arial';
-                ctx.fillText('SAMSCO', 256, 380);
-                
-                const tex = new THREE.CanvasTexture(canvas);
-                return tex;
-            }
-
-            const logoTexture = createLogoTexture();
-
-            // Materials
-            const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3, metalness: 0.8 });
-            const redMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
-            const logoMat = new THREE.MeshStandardMaterial({ map: logoTexture, roughness: 0.4, metalness: 0.2 });
-
-            // 2. BUILD HEADSET GEOMETRY
-            const cupGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.4, 32);
-            const rightCup = new THREE.Mesh(cupGeo, blackMat);
-            rightCup.rotation.z = Math.PI / 2;
-            rightCup.position.set(1.1, 0, 0);
-
-            const leftCup = new THREE.Mesh(cupGeo, blackMat);
-            leftCup.rotation.z = Math.PI / 2;
-            leftCup.position.set(-1.1, 0, 0);
-
-            const plateGeo = new THREE.CircleGeometry(0.7, 32);
-            const rightPlate = new THREE.Mesh(plateGeo, logoMat);
-            rightPlate.rotation.y = Math.PI / 2;
-            rightPlate.position.set(1.31, 0, 0); 
-            
-            const leftPlate = new THREE.Mesh(plateGeo, logoMat);
-            leftPlate.rotation.y = -Math.PI / 2;
-            leftPlate.position.set(-1.31, 0, 0); 
-
-            const bandGeo = new THREE.TorusGeometry(1.1, 0.15, 16, 50, Math.PI);
-            const headBand = new THREE.Mesh(bandGeo, blackMat);
-            headBand.position.set(0, 0, 0);
-            
-            const wireGeo = new THREE.TorusGeometry(1.1, 0.05, 8, 50, Math.PI);
-            const redWire = new THREE.Mesh(wireGeo, redMat);
-            redWire.position.set(0, 0.08, 0);
-
-            mobileHeadsetGroup.add(rightCup);
-            mobileHeadsetGroup.add(leftCup);
-            mobileHeadsetGroup.add(rightPlate);
-            mobileHeadsetGroup.add(leftPlate);
-            mobileHeadsetGroup.add(headBand);
-            mobileHeadsetGroup.add(redWire);
-
-            scene.add(mobileHeadsetGroup);
-            mobileHeadsetGroup.scale.set(0.8, 0.8, 0.8);
-            mobileHeadsetGroup.position.y = 0.5; 
-        }
-
-        // ==========================================
-        //      PC SPECIFIC: IMAGE SEQUENCE SETUP
-        // ==========================================
-        const canvas = document.getElementById('headset-canvas');
-        const context = canvas ? canvas.getContext('2d') : null;
-        let headset = { frame: 0 };
-        let images = [];
-        const frameCount = 96; // Reduced from 192 for performance
-        
-        if (!isMobile && canvas) {
-            canvas.width = 480; 
-            canvas.height = 320; 
-        }
-
-        // --- SHARED ANIMATION LOOP ---
-        let lastTime = 0;
-        const fpsInterval = 1000 / 30; // 30 FPS cap
-        let isLoaded = false;
-        let frameSkip = 0;
-
-        function animate(currentTime) {
-            requestAnimationFrame(animate);
-
-            if(!isTabActive) return;
-
-            const elapsed = currentTime - lastTime;
-            if (elapsed > fpsInterval) {
-                lastTime = currentTime - (elapsed % fpsInterval);
-                
-                // Skip every other frame for better performance
-                frameSkip++;
-                if (frameSkip % 2 === 0) {
-                    if(particlesMesh) particlesMesh.rotation.y += 0.001;
-
-                    // ANIMATE MOBILE HEADSET
-                    if (isMobile && mobileHeadsetGroup) {
-                        // Kept the floating effect for "aliveness"
-                        mobileHeadsetGroup.position.y = 0.5 + Math.sin(currentTime * 0.002) * 0.1; 
-                    }
-
-                    renderer.render(scene, camera);
-                }
-            }
-        }
-        animate(0);
-
-        // --- LOADING LOGIC ---
-        const loaderEl = document.getElementById('loader');
-        const loaderVideo = document.getElementById('loader-video');
-
-        // Force loader to disappear after max 4 seconds
-        const emergencyTimeout = setTimeout(() => {
-            console.warn('Emergency timeout - forcing load');
-            if (loaderEl && loaderEl.parentNode) {
-                loaderEl.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                isLoaded = true;
-                startTextAnimation();
-                initHeadsetAnimation();
-            }
-        }, 4000);
-
-        function finishLoading() {
-            clearTimeout(emergencyTimeout);
-            if (!loaderEl) return;
-            gsap.to(loaderEl, { 
-                opacity: 0, duration: 0.8, ease: "power2.inOut", 
-                onComplete: () => {
-                    if (loaderEl && loaderEl.parentNode) {
-                        loaderEl.remove();
-                    }
-                    isLoaded = true;
-                    startTextAnimation();
-                    initHeadsetAnimation();
-                } 
-            });
-        }
-
-        function startTextAnimation() {
-            setInterval(rotateText, 4000);
-        }
-
-        // LOAD ASSETS
-        console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
-        
-        if (isMobile) {
-            // FAST LOAD FOR MOBILE
-            console.log('Mobile: using fast load timeout');
-            setTimeout(finishLoading, 800); 
-        } else {
-            // PC LOADING LOGIC (Optimized with fallback)
-            console.log('Desktop: loading image sequence');
-            const currentFrame = index => `https://6937feda504a835c4ce351d7.imgix.net/_MConverter.eu_scroll%20reactive%20headset-${index}.jpg?w=600&q=20&auto=format`;
-            const criticalFrameCount = 15; // Further reduced
-            let loadedCount = 0;
-            
-            // Add timeout fallback in case images fail to load
-            const loadTimeout = setTimeout(() => {
-                if (!isLoaded) {
-                    console.warn('Image loading timeout, loaded:', loadedCount, '/', criticalFrameCount);
-                    finishLoading();
-                }
-            }, 2500);
-            
-            for (let i = 1; i <= criticalFrameCount; i++) {
-                const img = new Image();
-                img.onload = () => {
-                    loadedCount++;
-                    console.log('Loaded frame', i, '- Total:', loadedCount);
-                    if (loadedCount >= criticalFrameCount) {
-                        clearTimeout(loadTimeout);
-                        console.log('All frames loaded, finishing...');
-                        finishLoading();
-                    }
-                };
-                img.onerror = () => {
-                    loadedCount++; // Count errors too to prevent freeze
-                    console.warn('Failed to load frame', i);
-                    if (loadedCount >= criticalFrameCount) {
-                        clearTimeout(loadTimeout);
-                        console.log('Finished with errors, proceeding...');
-                        finishLoading();
-                    }
-                };
-                img.src = currentFrame(i);
-                images[i-1] = img; 
-            }
-            // Load rest lazily with lower priority
-            setTimeout(() => {
-                console.log('Lazy loading remaining frames...');
-                for(let i = criticalFrameCount + 1; i <= Math.min(frameCount, 50); i++) {
-                    const img = new Image();
-                    img.src = currentFrame(i);
-                    images[i-1] = img;
-                }
-            }, 4000);
-        }
-
-        function initHeadsetAnimation() {
-            // 1. MOBILE 3D SCROLL LOGIC
-            if(isMobile && mobileHeadsetGroup) {
-                 gsap.to(mobileHeadsetGroup.rotation, {
-                    y: Math.PI * 4, // Rotate 2 full circles (720 degrees) over the page length
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: "body", 
-                        start: "top top", 
-                        end: "bottom bottom", 
-                        scrub: 1 // Smooth scrubbing
-                    }
-                });
-                return; // Exit function, no need for PC logic
-            }
-
-            // 2. PC IMAGE SEQUENCE LOGIC
-            // Render first frame immediately
-            if(images[0]) {
-                 headset.frame = 0;
-                 renderPCFrame();
-            }
-
-            gsap.to(headset, {
-                frame: frameCount - 1,
-                snap: "frame",
-                ease: "none",
-                scrollTrigger: {
-                    trigger: "body", start: "top top", end: "bottom bottom", scrub: 1
-                },
-                onUpdate: renderPCFrame
-            });
-        }
-
-        let lastRenderedIndex = -1;
-        function renderPCFrame() {
-            if(isMobile || !context) return;
-            const imgIndex = Math.round(headset.frame);
-            
-            if (imgIndex === lastRenderedIndex) return;
-
-            let img = images[imgIndex];
-            // Fallback for lazy loading
-            if (!img || !img.complete) {
-                for(let i = imgIndex; i >= 0; i--) {
-                    if(images[i] && images[i].complete) {
-                        img = images[i]; break;
-                    }
-                }
-            }
-
-            if (img && img.complete) {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                
-                const hRatio = canvas.width / img.width;
-                const vRatio = canvas.height / img.height;
-                const ratio = Math.max(hRatio, vRatio);
-                
-                const centerShift_x = (canvas.width - img.width * ratio) / 2;
-                const centerShift_y = (canvas.height - img.height * ratio) / 2;  
-                
-                context.drawImage(img, 0, 0, img.width, img.height, 
-                                  centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
-                lastRenderedIndex = imgIndex;
-            }
-        }
-
-        window.addEventListener('resize', () => { 
-            camera.aspect = window.innerWidth/window.innerHeight; 
-            camera.updateProjectionMatrix(); 
-            renderer.setSize(window.innerWidth, window.innerHeight); 
-        });
-        
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
