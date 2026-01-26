@@ -69,6 +69,36 @@
 }
 
 /* ==============================================
+   CUSTOM SCROLLBAR - Dark/Black Theme
+   ============================================== */
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border-radius: 4px;
+    border: 2px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2a2a2a;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #1a1a1a #000000;
+}
+
+/* ==============================================
    COMPLEXITY UPGRADES - Textures & Depth
    ============================================== */
 
@@ -126,6 +156,72 @@ body.god-mode {
     --accent-primary: #ff453a;
     --accent-secondary: #ff6961;
     --accent-tertiary: #ff9f0a;
+}
+
+/* ==============================================
+   3D HEADSET SCROLL ANIMATION (GPU-Optimized)
+   ============================================== */
+
+#headset-bg-container {
+    overflow: hidden;
+}
+
+#headset-wrapper {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.headset-3d {
+    /* CSS will be sized by JS, but provide defaults */
+    max-width: min(75vw, 500px);
+    max-height: 90vh;
+
+    /* GPU-Optimized Rendering */
+    will-change: opacity, filter;
+    transform: translateZ(0);
+
+    /* High-quality canvas rendering */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+
+    /* Start slightly visible so users can see it's there */
+    opacity: 0.4;
+
+    /* Visual polish - subtle glow */
+    filter: drop-shadow(0 0 80px rgba(0, 113, 227, 0.25));
+
+    /* Smooth opacity transition on load - JS will enhance visibility */
+    transition: opacity 0.8s ease-out, filter 0.3s ease;
+}
+
+/* Enhance headset visibility on scroll */
+.headset-3d.active {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 100px rgba(0, 113, 227, 0.4));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .headset-3d {
+        max-width: 80vw;
+    }
+}
+
+@media (min-width: 1200px) {
+    .headset-3d {
+        max-width: min(60vw, 800px);
+    }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .headset-3d {
+        transition: none !important;
+    }
+
+    #headset-wrapper {
+        transform: none !important;
+    }
 }
 
 /* ==============================================
@@ -194,30 +290,21 @@ body.god-mode {
    ULTRA-PREMIUM INTERACTIONS (Awwwards Style)
    ============================================== */
 
-/* 1. Scroll Skew Container */
-.scroll-content {
-    will-change: transform;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-}
+/* 1. Scroll Skew Container - Simplified */
+/* .scroll-content removed - was causing issues */
 
-/* 2. Liquid Distortion on Images */
+/* 2. Liquid Distortion on Images - Simplified */
 .liquid-img-container {
     overflow: hidden;
     position: relative;
 }
 
 .liquid-img-container img {
-    /* transition: filter 0.4s ease, transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); */
-    /* Hardware acceleration hints */
-    will-change: transform, filter;
-    transform: translateZ(0);
+    transition: transform 0.6s ease;
 }
 
 .liquid-img-container:hover img {
-    /* filter: url('#liquidTurbulence'); */
     transform: scale(1.05);
-    /* Slight zoom companion */
 }
 
 /* 3. Glitch Reveal on Scroll */
@@ -416,6 +503,227 @@ h6 {
 }
 
 /* ==============================================
+   SPECTACULAR ENTRANCE - Movie Premiere Quality
+   ============================================== */
+
+/* Initial hidden state for main content */
+body.loading main#main-content {
+    opacity: 0;
+    filter: blur(30px) brightness(1.5);
+    transform: scale(1.15);
+}
+
+/* Flash overlay for dramatic effect */
+body.reveal-active::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, 0.8) 0%,
+            rgba(0, 113, 227, 0.3) 30%,
+            transparent 70%);
+    z-index: 99998;
+    animation: flashReveal 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes flashReveal {
+    0% {
+        opacity: 1;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(3);
+    }
+}
+
+/* Animate in state - dramatic blur to focus */
+body.reveal-active main#main-content {
+    animation: spectacularReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes spectacularReveal {
+    0% {
+        opacity: 0;
+        filter: blur(30px) brightness(1.5);
+        transform: scale(1.15);
+    }
+
+    30% {
+        opacity: 1;
+        filter: blur(15px) brightness(1.2);
+        transform: scale(1.08);
+    }
+
+    60% {
+        filter: blur(5px) brightness(1.05);
+        transform: scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+        transform: scale(1);
+    }
+}
+
+/* Preloader dramatic exit with scale and glow */
+#preloader.exit {
+    animation: preloaderSpectacularExit 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes preloaderSpectacularExit {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+        filter: brightness(1.5);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+        filter: brightness(2);
+    }
+}
+
+/* Staggered hero element entrances with spring effect */
+body.reveal-active .hero-content>* {
+    opacity: 0;
+    transform: translateY(60px) scale(0.9);
+    animation: elementSpringUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+body.reveal-active .hero-content>*:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+body.reveal-active .hero-content>*:nth-child(2) {
+    animation-delay: 0.55s;
+}
+
+body.reveal-active .hero-content>*:nth-child(3) {
+    animation-delay: 0.7s;
+}
+
+body.reveal-active .hero-content>*:nth-child(4) {
+    animation-delay: 0.85s;
+}
+
+body.reveal-active .hero-content>*:nth-child(5) {
+    animation-delay: 1s;
+}
+
+@keyframes elementSpringUp {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+        filter: blur(10px);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.02);
+        filter: blur(0);
+    }
+
+    80% {
+        transform: translateY(3px) scale(0.99);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Hero title special glow animation */
+body.reveal-active .hero-content h1 {
+    animation: titleGlowIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes titleGlowIn {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+        filter: blur(10px);
+        text-shadow: 0 0 0 transparent;
+    }
+
+    50% {
+        text-shadow: 0 0 60px rgba(0, 113, 227, 0.8), 0 0 120px rgba(0, 113, 227, 0.4);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+        text-shadow: 0 0 0 transparent;
+    }
+}
+
+/* Navbar dramatic entrance from above */
+body.reveal-active #navbar {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.95);
+    animation: navbarDramaticIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 1.2s;
+}
+
+@keyframes navbarDramaticIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.95);
+        filter: blur(5px);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translateY(5px) scale(1.01);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Scroll indicator special entrance */
+body.reveal-active .hero-content~div {
+    opacity: 0;
+    animation: scrollIndicatorIn 0.6s ease-out forwards;
+    animation-delay: 1.5s;
+}
+
+@keyframes scrollIndicatorIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==============================================
    CUSTOM CURSOR - Sleek & Minimal
    ============================================== */
 
@@ -598,71 +906,40 @@ h6 {
 }
 
 /* ==============================================
-   GLASS CARD - Apple Frosted Glass
-   ============================================== */
-
-/* ==============================================
-   GLASS CARD - Apple Frosted Glass & Spotlight
+   GLASS CARD - Simple & Clean (Rebuilt from scratch)
    ============================================== */
 
 .glass-card {
-    background: var(--surface-glass);
-    backdrop-filter: blur(var(--blur-md));
-    -webkit-backdrop-filter: blur(var(--blur-md));
-    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-xl);
-    transition: transform var(--duration-normal) var(--ease-apple), box-shadow var(--duration-normal) var(--ease-apple);
-    will-change: transform;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+}
+
+/* Simple hover - just border glow, no transforms */
+.glass-card:hover {
+    border-color: rgba(0, 113, 227, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* NO pseudo-elements - they were causing the disappearing issue */
+
+/* ==============================================
+   ABOUT IMAGE - Special 3D Hover Effect
+   ============================================== */
+
+#about-img-container .glass-card {
+    transform-style: preserve-3d;
     overflow: hidden;
 }
 
-/* Spotlight Effect */
-.glass-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: inherit;
-    padding: 1px;
-    /* Border width */
-    background: radial-gradient(var(--card-shine-size) circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-            rgba(255, 255, 255, 0.4),
-            transparent 40%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.glass-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(var(--card-shine-size) circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-            rgba(255, 255, 255, 0.06),
-            transparent 40%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.glass-card:hover::before,
-.glass-card:hover::after {
-    opacity: 1;
-}
-
-.glass-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+/* Image swap transition */
+#about-img-container .glass-card img {
+    transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+    backface-visibility: hidden;
 }
 
 /* ==============================================
@@ -1183,6 +1460,7 @@ button:focus-visible,
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--duration-normal) var(--ease-apple);
+    position: relative;
 }
 
 .gallery-item:hover {
@@ -1190,17 +1468,67 @@ button:focus-visible,
     box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
 }
 
+/* Ensure media stays visible on hover - Only in gallery modals */
+#full-gallery-modal .gallery-item img,
+#full-gallery-modal .gallery-item video {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+#full-gallery-modal .gallery-item:hover img,
+#full-gallery-modal .gallery-item:hover video {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+/* Fix hover overlay to not interfere with media visibility */
+.gallery-item .group-hover\:opacity-100 {
+    pointer-events: none;
+}
+
+/* Category badge visibility fix */
+.category-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.gallery-item:hover .category-badge {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* ==============================================
    SERVICE CARDS - Apple Feature Cards
    ============================================== */
 
 .service-card {
-    transition: all var(--duration-normal) var(--ease-apple);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .service-card:hover {
-    background: var(--surface-glass-hover);
-    transform: translateY(-8px);
+    border-color: rgba(0, 113, 227, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* ==============================================
@@ -1767,17 +2095,9 @@ button:focus-visible,
     background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #050510 100%);
 }
 
-/* Masonry-style varying heights */
-.gallery-masonry .gallery-item:nth-child(3n+1) {
+/* Uniform gallery tile sizing */
+.gallery-masonry .gallery-item {
     aspect-ratio: 1/1;
-}
-
-.gallery-masonry .gallery-item:nth-child(3n+2) {
-    aspect-ratio: 4/5;
-}
-
-.gallery-masonry .gallery-item:nth-child(3n) {
-    aspect-ratio: 16/9;
 }
 
 /* Enhanced Gallery Items */
@@ -1819,12 +2139,16 @@ button:focus-visible,
 .gallery-masonry .gallery-item img,
 .gallery-masonry .gallery-item video {
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+    opacity: 1;
+    visibility: visible;
 }
 
 .gallery-masonry .gallery-item:hover img,
 .gallery-masonry .gallery-item:hover video {
     transform: scale(1.1);
     filter: brightness(1.1) saturate(1.1);
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Category Badges */
@@ -1882,32 +2206,7 @@ button:focus-visible,
     transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Filter Buttons Enhanced */
-.vault-filter-btn {
-    padding: 8px 16px;
-    border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.vault-filter-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.vault-filter-btn.active {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)) !important;
-    color: white !important;
-    border-color: transparent !important;
-    box-shadow: 0 4px 20px var(--accent-blue-glow);
-}
+/* Filter buttons are now styled via inline JS - no CSS needed */
 
 /* Lightbox Enhanced */
 #lightbox-modal {
@@ -1925,4 +2224,83 @@ button:focus-visible,
     box-shadow:
         0 30px 100px -20px rgba(0, 0, 0, 0.8),
         0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* ==============================================
+   VAULT FILTER BUTTONS - Premium Styling
+   ============================================== */
+
+#vault-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Base filter button styles */
+.vault-filter-btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Hover state for filter buttons */
+.vault-filter-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Active state for filter buttons */
+.vault-filter-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 113, 227, 0.4);
+}
+
+/* Focus state for accessibility */
+.vault-filter-btn:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+/* Mobile responsive for filter buttons */
+@media (max-width: 768px) {
+    #vault-filters {
+        justify-content: center;
+        padding: 10px 0;
+    }
+
+    .vault-filter-btn {
+        padding: 8px 14px;
+        font-size: 10px;
+    }
+}
+
+/* Gallery modal header sticky styles */
+#full-gallery-modal .sticky {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* Ensure gallery items are visible */
+#full-gallery-modal .gallery-item {
+    opacity: 1;
+    transform: scale(1);
+    display: block;
 }
