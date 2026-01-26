@@ -79,11 +79,6 @@ const galleryConfig = [
     { title: "Graphic Art 20", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (20).avif" },
     { title: "Graphic Art 21", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (21).jpg" },
     { title: "Graphic Art 22", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (22).jpg" },
-    { title: "Graphic Art 23", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (23).jpg" },
-    { title: "Graphic Art 24", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (24).jpg" },
-    { title: "Graphic Art 25", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (25).jpg" },
-    { title: "Graphic Art 26", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (26).jpg" },
-    { title: "Graphic Art 27", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (27).jpg" },
     { title: "Graphic Art 28", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (28).jpg" },
     { title: "Graphic Art 29", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (29).jpg" },
     { title: "Graphic Art 30", cat: "Graphics Design", url: "./assets/Graphics Design/Graphics (30).jpg" },
@@ -2176,3 +2171,4 @@ if (telegramClose) telegramClose.addEventListener('click', closeTelegramModal);
 if (telegramModal) telegramModal.addEventListener('click', (e) => {
     if (e.target === telegramModal) closeTelegramModal();
 });
+
