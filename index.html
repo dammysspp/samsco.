@@ -14,7 +14,7 @@
     <meta property="og:image" content="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=1200">
     <meta property="og:type" content="website">
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,9 +74,28 @@
     <div id="cursor" aria-hidden="true"></div>
 
     <!-- PREMIUM ANIMATED BACKGROUND -->
-    <!-- PREMIUM ANIMATED BACKGROUND - STATIC FALLBACK -->
-    <div class="fixed inset-0 bg-black -z-10">
+    <!-- 3D HEADSET SCROLL-CONTROLLED BACKGROUND -->
+    <div class="fixed inset-0 bg-black -z-10" id="headset-bg-container">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-transparent opacity-50"></div>
+
+        <!-- Scroll-Controlled 3D Headset Frame Sequence -->
+        <div id="headset-wrapper" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <canvas id="headset-canvas" class="headset-3d" aria-label="3D Headset Animation"></canvas>
+
+            <!-- Loading Progress Indicator -->
+            <div id="headset-loader"
+                class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-500">
+                <div class="w-32 h-1 bg-white/10 rounded-full overflow-hidden mb-3">
+                    <div id="headset-loader-bar"
+                        class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-100"
+                        style="width: 0%"></div>
+                </div>
+                <span id="headset-loader-text" class="text-white/50 text-xs tracking-widest font-mono">LOADING 0%</span>
+            </div>
+        </div>
+
+        <!-- Subtle overlay to blend headset with content -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none"></div>
     </div>
 
 
@@ -273,7 +292,7 @@
 
         <!-- HERO SECTION - Clean & Performant -->
         <section id="home"
-            class="min-h-screen flex flex-col justify-center items-center text-center px-6 relative pt-24">
+            class="min-h-screen flex flex-col justify-center items-center text-center px-6 relative pt-24 pb-32">
 
             <!-- Simple gradient background (no blur, performant) -->
             <!-- Simple gradient background removed for Premium Mesh -->
@@ -351,8 +370,7 @@
             </div>
 
             <!-- Scroll Indicator -->
-            <div
-                class="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30">
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30">
                 <div class="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center pt-2">
                     <div class="w-1 h-2 bg-white/60 rounded-full animate-bounce"></div>
                 </div>
@@ -382,12 +400,11 @@
                 <div class="relative group" id="about-img-container">
                     <div
                         class="aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden relative glass-card cursor-hover border border-white/5 liquid-img-container">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/IMG-20250916-WA0026.jpg?w=300&q=30&auto=format"
-                            onerror="this.src='https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=300&q=35'"
+                        <img src="./SAMSCO.png"
+                            onerror="this.src= 'https://images.unsplash.com/photo-1531297461734-296825d18e57?auto=format&fit=crop&w=300&q=35'"
                             alt="Samsco Portrait" loading="lazy"
                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
-                        <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=600&q=60&auto=format"
-                            alt="Samsco Portrait Alternate" loading="lazy"
+                        <img src="./me 3.png" alt="Samsco Portrait Alternate" loading="lazy"
                             class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-20">
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-30 pointer-events-none">
@@ -558,7 +575,8 @@
                     <div>
                         <span
                             class="text-[#bf5af2] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">JOURNEY</span>
-                        <h2 class="text-3xl md:text-5xl font-semibold mb-8 font-display anim-heading">Experience</h2>
+                        <h2 class="text-3xl md:text-5xl font-semibold mb-8 font-display anim-heading">Experience
+                        </h2>
 
                         <div class="timeline-container">
                             <div class="timeline-item">
@@ -577,7 +595,8 @@
                             <div class="timeline-item">
                                 <div class="timeline-date">2020 - Present</div>
                                 <div class="timeline-title">Freelance 3D Artist</div>
-                                <div class="timeline-subtitle">Product visualization & brand assets for clients</div>
+                                <div class="timeline-subtitle">Product visualization & brand assets for clients
+                                </div>
                             </div>
 
                             <div class="timeline-item">
@@ -596,7 +615,8 @@
             <div class="absolute inset-0 bg-gradient-to-r from-[#0071e3]/5 via-transparent to-[#bf5af2]/5"></div>
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-16">
-                    <span class="text-[#30d158] text-xs font-medium tracking-[0.2em] mb-4 block">BY THE NUMBERS</span>
+                    <span class="text-[#30d158] text-xs font-medium tracking-[0.2em] mb-4 block">BY THE
+                        NUMBERS</span>
                     <h2 class="text-3xl md:text-4xl font-semibold font-display">Fun Facts</h2>
                 </div>
 
@@ -651,7 +671,8 @@
                     <!-- Testimonial 2 -->
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the whole
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the
+                            whole
                             of Mass Communication at Covenant University."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -667,7 +688,8 @@
                     <!-- Testimonial 3 -->
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency and a
+                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency
+                            and a
                             deep understanding of modern digital tools."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -683,7 +705,8 @@
                     <!-- Testimonial 4 -->
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every single
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every
+                            single
                             time."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -714,7 +737,8 @@
 
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the whole
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samuel is the best graphics designer in the
+                            whole
                             of Mass Communication at Covenant University."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -729,7 +753,8 @@
 
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency and a
+                        <p class="text-white/70 mb-6 leading-relaxed">"Possesses exceptional technical proficiency
+                            and a
                             deep understanding of modern digital tools."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -744,7 +769,8 @@
 
                     <div class="testimonial-card">
                         <div class="testimonial-stars mb-4">★★★★★</div>
-                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every single
+                        <p class="text-white/70 mb-6 leading-relaxed">"Samsco too good! He delivers quality every
+                            single
                             time."</p>
                         <div class="flex items-center gap-4">
                             <div
@@ -763,7 +789,8 @@
         <section id="vault-trigger" class="py-32 px-6 bg-black relative border-t border-white/10 overflow-hidden">
             <div class="absolute inset-0 bg-blue-900/10 blur-[100px]"></div>
             <div class="max-w-7xl mx-auto text-center relative z-10">
-                <span class="text-blue-500 font-bold tracking-widest text-sm mb-4 block anim-text">THE ARCHIVE</span>
+                <span class="text-blue-500 font-bold tracking-widest text-sm mb-4 block anim-text">THE
+                    ARCHIVE</span>
                 <div class="hero-text-mask mb-8">
                     <h2 class="text-5xl md:text-8xl font-black anim-heading uppercase">Visual <span
                             class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Vault</span>
@@ -794,7 +821,8 @@
                     <h2 class="text-4xl md:text-6xl lg:text-7xl font-semibold anim-heading font-display leading-tight">
                         Let's Create<br>the Future.</h2>
                 </div>
-                <p class="text-white/50 mb-12 text-lg md:text-xl font-light anim-text max-w-md mx-auto">Available for
+                <p class="text-white/50 mb-12 text-lg md:text-xl font-light anim-text max-w-md mx-auto">Available
+                    for
                     freelance projects in 3D, Design, and Creative Coding.</p>
 
                 <!-- Primary CTAs -->
@@ -856,7 +884,8 @@
         <footer class="bg-black pt-16 md:pt-20 pb-8 border-t border-white/5 text-sm">
             <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-10 md:gap-12 mb-12">
                 <div class="col-span-1 md:col-span-2">
-                    <h2 class="text-xl font-semibold mb-4 font-display">SAMSCO<span class="text-[#0071e3]">.</span></h2>
+                    <h2 class="text-xl font-semibold mb-4 font-display">SAMSCO<span class="text-[#0071e3]">.</span>
+                    </h2>
                     <p class="text-white/40 max-w-sm leading-relaxed text-sm">
                         Visual Engineering for the Modern Web.<br>
                         Enhancing creativity through technology.
@@ -1012,6 +1041,13 @@
                 class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
                 <source src="" type="video/mp4">
             </video>
+
+            <div id="lightbox-error"
+                class="hidden flex flex-col items-center justify-center p-10 bg-white/5 rounded-xl border border-white/10 mb-6">
+                <span class="text-4xl mb-4">⚠️</span>
+                <p class="text-white font-bold mb-2">Media Unavailable</p>
+                <p class="text-white/50 text-sm">The requested content could not be loaded.</p>
+            </div>
 
             <div class="text-center">
                 <h3 id="lightbox-title" class="text-2xl font-bold text-white mb-1">Project Name</h3>
