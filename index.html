@@ -1092,24 +1092,29 @@
         <button id="lightbox-next" class="nav-btn nav-next cursor-hover z-50" style="right: 20px;">❯</button>
 
         <div class="relative max-w-5xl w-full h-full flex flex-col justify-center items-center">
+            <!-- Iframe Container for Presentations -->
+            <iframe id="lightbox-iframe" src="" allowfullscreen="allowfullscreen" allow="fullscreen"
+                class="w-full h-[85vh] hidden z-40 pointer-events-auto"
+                style="border:none; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></iframe>
+
             <!-- Image Container -->
             <img id="lightbox-img" src=""
-                class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6">
+                class="max-h-[80vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10 mb-6 z-40">
 
             <!-- Video Container (Hidden by default) -->
             <video id="lightbox-video" controls
-                class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6">
+                class="hidden max-h-[80vh] max-w-full rounded-lg shadow-2xl border border-white/10 mb-6 z-40">
                 <source src="" type="video/mp4">
             </video>
 
             <div id="lightbox-error"
-                class="hidden flex flex-col items-center justify-center p-10 bg-white/5 rounded-xl border border-white/10 mb-6">
+                class="hidden flex flex-col items-center justify-center p-10 bg-white/5 rounded-xl border border-white/10 mb-6 z-40">
                 <span class="text-4xl mb-4">⚠️</span>
                 <p class="text-white font-bold mb-2">Media Unavailable</p>
                 <p class="text-white/50 text-sm">The requested content could not be loaded.</p>
             </div>
 
-            <div class="text-center">
+            <div class="text-center mt-4">
                 <h3 id="lightbox-title" class="text-2xl font-bold text-white mb-1">Project Name</h3>
                 <span id="lightbox-cat"
                     class="text-blue-500 text-xs font-bold tracking-widest uppercase">Category</span>
