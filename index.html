@@ -997,7 +997,7 @@
     </main>
 
     <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
-    <div id="full-gallery-modal" class="fixed inset-0 z-[90] overflow-y-auto gallery-modal-bg">
+    <div id="full-gallery-modal" class="fixed inset-0 z-[90] overflow-y-auto gallery-modal-bg" data-lenis-prevent>
         <!-- Animated Background -->
         <div class="fixed inset-0 pointer-events-none">
             <div
@@ -1193,15 +1193,16 @@
     <script>
         const lenis = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-            direction: 'vertical', 
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,
             mouseMultiplier: 1,
             smoothTouch: false,
             touchMultiplier: 2,
             infinite: false,
-        })
+        });
+        window.lenis = lenis;
 
         function raf(time) {
             lenis.raf(time)
@@ -1209,12 +1210,12 @@
         }
 
         requestAnimationFrame(raf)
-        
+
         // Connect Lenis to GSAP ScrollTrigger
         if (typeof ScrollTrigger !== "undefined") {
             lenis.on('scroll', ScrollTrigger.update)
-            gsap.ticker.add((time)=>{
-              lenis.raf(time * 1000)
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000)
             })
             gsap.ticker.lagSmoothing(0)
         }
