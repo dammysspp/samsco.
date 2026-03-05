@@ -1,0 +1,336 @@
+:root {
+    --card-width: 3.5in;
+    --card-height: 2in;
+    --bg-dark: #030305;
+    --accent-primary: #3b82f6;
+    /* Modern Blue */
+    --accent-secondary: #8b5cf6;
+    /* Violet */
+    --accent-glow: #00ff9d;
+    /* Cyber Green */
+    --text-white: #ffffff;
+    --text-dim: rgba(255, 255, 255, 0.6);
+    --grid-color: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+body {
+    background-color: #e5e5e5;
+    font-family: 'Space Grotesk', sans-serif;
+    /* More tech-focused font */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.print-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background-color: var(--bg-dark);
+    position: relative;
+    overflow: hidden;
+    color: var(--text-white);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    /* High detail border for cut guides implicitly */
+}
+
+/* Background Effects */
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(139, 92, 246, 0.3) 0%, transparent 50%);
+    z-index: 1;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    z-index: 2;
+    mix-blend-mode: overlay;
+}
+
+.card-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    padding: 0.25in;
+}
+
+/* --- FRONT DESIGN --- */
+.front .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-huge {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-size: 58pt;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.03);
+    letter-spacing: 0px;
+    font-family: 'Outfit', sans-serif;
+    transform-origin: center;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.visual-element-1 {
+    position: absolute;
+    top: 20%;
+    right: 25%;
+    width: 100px;
+    height: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+.visual-element-2 {
+    position: absolute;
+    bottom: -20px;
+    left: -20px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+}
+
+.tech-lines {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-primary);
+    font-size: 8px;
+    margin-bottom: 8px;
+}
+
+.tech-lines .line {
+    height: 1px;
+    width: 40px;
+    background: var(--accent-primary);
+}
+
+.name {
+    font-size: 20pt;
+    font-weight: 300;
+    line-height: 0.9;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 8px;
+}
+
+.name .surname {
+    font-weight: 800;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.role {
+    font-size: 8pt;
+    letter-spacing: 4px;
+    color: var(--accent-glow);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.corner-data {
+    position: absolute;
+    font-size: 6pt;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.top-right {
+    top: 0.25in;
+    right: 0.25in;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+.bottom-left {
+    bottom: 0.25in;
+    left: 0.25in;
+}
+
+/* --- BACK DESIGN --- */
+.back .card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Pseudo Grid */
+.back::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 2;
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+
+.header-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.small-logo {
+    font-weight: 800;
+    font-size: 10pt;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 1px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 5pt;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    background-color: var(--accent-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--accent-glow);
+}
+
+.data-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.data-row {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 10px;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-row:hover {
+    border-left-color: var(--accent-primary);
+}
+
+.label {
+    font-size: 5pt;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-size: 8pt;
+    font-weight: 500;
+}
+
+.footer-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.socials {
+    display: flex;
+    gap: 12px;
+    font-size: 7pt;
+    color: var(--text-dim);
+}
+
+.socials i {
+    color: var(--text-white);
+    margin-right: 2px;
+}
+
+.tag {
+    font-size: 5pt;
+    text-align: right;
+    opacity: 0.5;
+}
+
+.qr-placeholder {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    font-size: 24px;
+    opacity: 0.2;
+}
+
+
+.instructions {
+    margin-top: 2rem;
+    text-align: center;
+    color: #444;
+}
+
+@media print {
+    body {
+        margin: 0;
+        background: none;
+    }
+
+    .print-container {
+        gap: 0;
+    }
+
+    .card {
+        margin-bottom: 0.5in;
+        page-break-inside: avoid;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        /* Slight border for cutting guide on white paper */
+    }
+
+    .instructions {
+        display: none;
+    }
+}

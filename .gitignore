@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.vscode/
+assets/
+scroller/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.avif
+*.docx
+*.code-workspace
+favicon.png
+me 3.png
+SAMSCO.png
+3D Headset.avif

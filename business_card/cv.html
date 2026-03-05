@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV — Aiyedun Samuel Oluwadamilola</title>
+    <meta name="description"
+        content="Curriculum Vitae of Aiyedun Samuel Oluwadamilola (Samsco) — Creative Technologist, 3D Artist & Mass Communication Student.">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent: #0071e3;
+            --accent-light: #64d2ff;
+            --bg: #0a0a0a;
+            --card: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.35);
+            --purple: #bf5af2;
+            --pink: #ff375f;
+            --green: #30d158;
+            --orange: #ff9f0a;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== SCREEN LAYOUT ===== */
+        .cv-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* ===== TOOLBAR (Screen Only) ===== */
+        .toolbar {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+
+        .toolbar-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .toolbar-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(0, 113, 227, 0.3);
+        }
+
+        .toolbar-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .toolbar-btn.accent {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toolbar-btn.accent:hover {
+            background: #0077ed;
+            box-shadow: 0 12px 40px rgba(0, 113, 227, 0.5);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        /* ===== HEADER ===== */
+        .cv-header {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .cv-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1.25rem;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            flex-shrink: 0;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .cv-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        .cv-name .accent {
+            color: var(--accent);
+        }
+
+        .cv-title {
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: 0.02em;
+        }
+
+        .contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .contact-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-item a:hover {
+            color: var(--text-primary);
+        }
+
+        .contact-icon {
+            width: 14px;
+            height: 14px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* ===== TWO COLUMN LAYOUT ===== */
+        .cv-body {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        /* ===== SECTION STYLING ===== */
+        .cv-section {
+            margin-bottom: 2.25rem;
+        }
+
+        .cv-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-heading .icon {
+            font-size: 0.9rem;
+        }
+
+        /* ===== PROFILE / SUMMARY ===== */
+        .summary-text {
+            font-size: 0.9rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+        }
+
+        .summary-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ===== EXPERIENCE ITEMS ===== */
+        .exp-entry {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: 1.75rem;
+            border-left: 2px solid var(--border);
+        }
+
+        .exp-entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .exp-entry::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .exp-entry.past::before {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.25rem;
+        }
+
+        .exp-role {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .exp-date {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(0, 113, 227, 0.1);
+            padding: 0.15rem 0.6rem;
+            border-radius: 99px;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .exp-date.past-date {
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .exp-company {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .exp-bullets {
+            list-style: none;
+            padding: 0;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .exp-bullets li {
+            position: relative;
+            padding-left: 1rem;
+            margin-bottom: 0.35rem;
+            line-height: 1.6;
+        }
+
+        .exp-bullets li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 0.7rem;
+            top: 0.15rem;
+        }
+
+        /* ===== EDUCATION ===== */
+        .edu-entry {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .edu-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 113, 227, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .edu-degree {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .edu-school {
+            font-size: 0.82rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .edu-year {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .edu-note {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 0.35rem;
+            line-height: 1.5;
+        }
+
+        /* ===== SKILLS BARS ===== */
+        .skill-row {
+            margin-bottom: 0.85rem;
+        }
+
+        .skill-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .skill-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .skill-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .skill-pct {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-light);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .skill-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transition: width 1s ease;
+        }
+
+        .skill-fill.purple {
+            background: linear-gradient(90deg, var(--purple), var(--pink));
+        }
+
+        .skill-fill.green {
+            background: linear-gradient(90deg, var(--green), var(--accent-light));
+        }
+
+        .skill-fill.orange {
+            background: linear-gradient(90deg, var(--orange), var(--pink));
+        }
+
+        /* ===== COMPETENCY TAGS ===== */
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .tag {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        /* ===== CERTIFICATIONS ===== */
+        .cert-item {
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cert-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .cert-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cert-issuer {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== LANGUAGES ===== */
+        .lang-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+        }
+
+        .lang-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .lang-level {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ===== REFERENCES ===== */
+        .ref-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ref-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .ref-quote {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+            line-height: 1.6;
+        }
+
+        .ref-name {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .ref-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== FOOTER ===== */
+        .cv-footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .cv-body {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .contact-row {
+                justify-content: center;
+            }
+
+            .cv-name {
+                font-size: 1.85rem;
+            }
+        }
+
+        /* ============================================================
+           PRINT STYLES — Clean, professional, ATS-friendly PDF
+           ============================================================ */
+        @media print {
+
+            @page {
+                size: A4;
+                margin: 15mm 18mm;
+            }
+
+            *,
+            *::before,
+            *::after {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            html {
+                font-size: 11pt;
+            }
+
+            body {
+                background: white !important;
+                color: #333 !important;
+            }
+
+            .toolbar,
+            .back-link {
+                display: none !important;
+            }
+
+            .cv-wrapper {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .cv-header::after {
+                background: linear-gradient(90deg, #0071e3, transparent) !important;
+            }
+
+            .cv-name {
+                color: #111 !important;
+            }
+
+            .cv-name .accent {
+                color: #0071e3 !important;
+            }
+
+            .cv-title {
+                color: #0071e3 !important;
+            }
+
+            .contact-row {
+                color: #555 !important;
+            }
+
+            .contact-item a {
+                color: #555 !important;
+                text-decoration: none;
+            }
+
+            .contact-icon {
+                color: #0071e3 !important;
+            }
+
+            .section-heading {
+                color: #0071e3 !important;
+                border-bottom-color: #ddd !important;
+            }
+
+            .summary-text {
+                color: #444 !important;
+            }
+
+            .summary-text strong {
+                color: #111 !important;
+            }
+
+            .exp-entry {
+                border-left-color: #ddd !important;
+            }
+
+            .exp-entry::before {
+                background: #0071e3 !important;
+            }
+
+            .exp-entry.past::before {
+                background: #ccc !important;
+                border-color: #aaa !important;
+            }
+
+            .exp-role {
+                color: #111 !important;
+            }
+
+            .exp-date {
+                color: #0071e3 !important;
+                background: rgba(0, 113, 227, 0.08) !important;
+            }
+
+            .exp-date.past-date {
+                color: #888 !important;
+                background: #f0f0f0 !important;
+            }
+
+            .exp-company {
+                color: #777 !important;
+            }
+
+            .exp-bullets {
+                color: #444 !important;
+            }
+
+            .exp-bullets li::before {
+                color: #0071e3 !important;
+            }
+
+            .edu-degree {
+                color: #111 !important;
+            }
+
+            .edu-school {
+                color: #0071e3 !important;
+            }
+
+            .edu-year {
+                color: #888 !important;
+            }
+
+            .edu-note {
+                color: #555 !important;
+            }
+
+            .edu-icon {
+                background: rgba(0, 113, 227, 0.08) !important;
+            }
+
+            .skill-name {
+                color: #111 !important;
+            }
+
+            .skill-pct {
+                color: #0071e3 !important;
+            }
+
+            .skill-bar {
+                background: #eee !important;
+            }
+
+            .skill-fill {
+                background: #0071e3 !important;
+            }
+
+            .skill-fill.purple {
+                background: #7c3aed !important;
+            }
+
+            .skill-fill.green {
+                background: #16a34a !important;
+            }
+
+            .skill-fill.orange {
+                background: #ea580c !important;
+            }
+
+            .tag {
+                color: #111 !important;
+                background: #f5f5f5 !important;
+                border-color: #ddd !important;
+            }
+
+            .cert-name {
+                color: #111 !important;
+            }
+
+            .cert-issuer {
+                color: #888 !important;
+            }
+
+            .cert-item {
+                border-bottom-color: #eee !important;
+            }
+
+            .lang-name {
+                color: #111 !important;
+            }
+
+            .lang-level {
+                color: #888 !important;
+            }
+
+            .ref-quote {
+                color: #444 !important;
+            }
+
+            .ref-name {
+                color: #111 !important;
+            }
+
+            .ref-title {
+                color: #888 !important;
+            }
+
+            .ref-item {
+                border-bottom-color: #eee !important;
+            }
+
+            .cv-footer {
+                color: #aaa !important;
+                border-top-color: #ddd !important;
+            }
+
+            .header-photo {
+                border-color: #0071e3 !important;
+            }
+
+            /* Avoid page breaks inside entries */
+            .exp-entry,
+            .cert-item,
+            .ref-item,
+            .edu-entry {
+                page-break-inside: avoid;
+            }
+
+            .cv-section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fixed Toolbar (Screen Only) -->
+    <div class="toolbar">
+        <a href="index.html" class="toolbar-btn" title="Back to Portfolio">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                </path>
+            </svg>
+        </a>
+        <button onclick="window.print()" class="toolbar-btn accent" title="Download as PDF">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                </path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="cv-wrapper">
+
+        <a href="index.html" class="back-link">← BACK TO PORTFOLIO</a>
+
+        <!-- ===== HEADER ===== -->
+        <header class="cv-header">
+            <div class="header-top">
+                <img src="https://6937feda504a835c4ce351d7.imgix.net/me%203.jpg?w=200&q=80" alt="Aiyedun Samuel"
+                    class="header-photo">
+
+                <div class="header-info">
+                    <h1 class="cv-name">AIYEDUN SAMUEL <span class="accent">OLUWADAMILOLA</span></h1>
+                    <p class="cv-title">Creative Technologist · 3D Designer · Media Strategist</p>
+
+                    <div class="contact-row">
+                        <span class="contact-item">
+                            <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <a href="mailto:samscocommunications@gmail.com">samscocommunications@gmail.com</a>
+                        </span>
+                        <span class="contact-item">
+                            <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                </path>
+                            </svg>
+                            <a href="tel:+2349072483594">+234 907 248 3594</a>
+                        </span>
+                        <span class="contact-item">
+                            <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Lagos, Nigeria
+                        </span>
+                        <span class="contact-item">
+                            <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                            </svg>
+                            <a href="https://linkedin.com/in/samsco" target="_blank">linkedin.com/in/samsco</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== BODY: TWO COLUMNS ===== -->
+        <div class="cv-body">
+
+            <!-- LEFT COLUMN (Main Content) -->
+            <div class="cv-main">
+
+                <!-- Profile Summary -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">👤</span> Profile</h2>
+                    <p class="summary-text">
+                        A multifaceted <strong>Creative Professional</strong> and final-year
+                        <strong>Mass Communication</strong> student at <strong>Covenant University</strong>,
+                        passionate about bridging <strong>SDG 4 (Quality Education)</strong> and entrepreneurship.
+                        Specializing in <strong>3D Design, Visual Effects, Video Production, and Content
+                            Strategy</strong>.
+                        Proven track record delivering <strong>50+ projects</strong> across freelance, academic, and
+                        professional settings.
+                        Known for a unique blend of creative skills and strategic thinking — equally comfortable in
+                        the creative trenches and leading cross-functional teams.
+                    </p>
+                </section>
+
+                <!-- Work Experience -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">💼</span> Work Experience</h2>
+
+                    <div class="exp-entry">
+                        <div class="exp-header">
+                            <span class="exp-role">Media Specialist</span>
+                            <span class="exp-date">2024 — Present</span>
+                        </div>
+                        <div class="exp-company">Olive Media</div>
+                        <ul class="exp-bullets">
+                            <li>Driving media strategy and content production for diverse client campaigns.</li>
+                            <li>Collaborating with cross-functional teams to deliver high-impact digital campaigns.</li>
+                            <li>Creating 3D product visualizations and motion graphics for brand storytelling.</li>
+                        </ul>
+                    </div>
+
+                    <div class="exp-entry">
+                        <div class="exp-header">
+                            <span class="exp-role">Creative Head</span>
+                            <span class="exp-date">2025 — Present</span>
+                        </div>
+                        <div class="exp-company">CUCSA — Covenant University Comm Students Association</div>
+                        <ul class="exp-bullets">
+                            <li>Lead creative direction for student association branding and events.</li>
+                            <li>Oversee design output, visual communication strategies, and multimedia content.</li>
+                        </ul>
+                    </div>
+
+                    <div class="exp-entry past">
+                        <div class="exp-header">
+                            <span class="exp-role">Media Strategist</span>
+                            <span class="exp-date past-date">2024</span>
+                        </div>
+                        <div class="exp-company">Ark Media</div>
+                        <ul class="exp-bullets">
+                            <li>Contributed to media planning and creative execution for brand clients.</li>
+                            <li>Executed brand positioning strategies and visual identity systems.</li>
+                        </ul>
+                    </div>
+
+                    <div class="exp-entry past">
+                        <div class="exp-header">
+                            <span class="exp-role">Media Specialist Intern</span>
+                            <span class="exp-date past-date">Summer 2024</span>
+                        </div>
+                        <div class="exp-company">Modion Communications</div>
+                        <ul class="exp-bullets">
+                            <li>Delivered over 50+ high-quality designs for client campaigns.</li>
+                            <li>Assisted in media planning, content creation strategies, and visual asset production.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="exp-entry past">
+                        <div class="exp-header">
+                            <span class="exp-role">Freelance 3D Artist & Designer</span>
+                            <span class="exp-date past-date">2020 — Present</span>
+                        </div>
+                        <div class="exp-company">Self-employed</div>
+                        <ul class="exp-bullets">
+                            <li>Product visualization, brand asset creation, and motion graphics for various clients.
+                            </li>
+                            <li>Created futuristic, interactive experiences using Blender, After Effects, and code.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Education -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">🎓</span> Education</h2>
+                    <div class="edu-entry">
+                        <div class="edu-icon">🏛️</div>
+                        <div>
+                            <div class="edu-degree">B.Sc. Mass Communication</div>
+                            <div class="edu-school">Covenant University, Nigeria</div>
+                            <div class="edu-year">2022 — 2026 (Expected)</div>
+                            <p class="edu-note">
+                                Combining theoretical knowledge of communication with practical application in digital
+                                media and technology. Active in Hult Prize and departmental leadership.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- References -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">💬</span> References</h2>
+
+                    <div class="ref-item">
+                        <p class="ref-quote">"Samuel is the best graphics designer in the whole of Mass Communication
+                            at Covenant University."</p>
+                        <div class="ref-name">Dr. Tunji Oyedepo</div>
+                        <div class="ref-title">Faculty, Covenant University</div>
+                    </div>
+
+                    <div class="ref-item">
+                        <p class="ref-quote">"Possesses exceptional technical proficiency and a deep understanding of
+                            modern digital tools."</p>
+                        <div class="ref-name">Dr. Tolu</div>
+                        <div class="ref-title">Faculty, High Impact</div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN (Sidebar) -->
+            <div class="cv-sidebar">
+
+                <!-- Technical Skills -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">🛠️</span> Technical Skills</h2>
+
+                    <div class="skill-row">
+                        <div class="skill-label">
+                            <span class="skill-name">Blender / 3D Modeling</span>
+                            <span class="skill-pct">95%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-fill" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-row">
+                        <div class="skill-label">
+                            <span class="skill-name">Adobe Suite (Ps, Ai, Pr)</span>
+                            <span class="skill-pct">90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-fill purple" style="width: 90%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-row">
+                        <div class="skill-label">
+                            <span class="skill-name">Motion Graphics / VFX</span>
+                            <span class="skill-pct">88%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-fill purple" style="width: 88%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-row">
+                        <div class="skill-label">
+                            <span class="skill-name">Python / Data Analytics</span>
+                            <span class="skill-pct">80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-fill orange" style="width: 80%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-row">
+                        <div class="skill-label">
+                            <span class="skill-name">JavaScript / Web Dev</span>
+                            <span class="skill-pct">60%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-fill green" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Competencies -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">⭐</span> Core Competencies</h2>
+                    <div class="tag-grid">
+                        <span class="tag">3D Design & VFX</span>
+                        <span class="tag">Video Production</span>
+                        <span class="tag">Prompt Engineering</span>
+                        <span class="tag">Content Strategy</span>
+                        <span class="tag">Public Speaking</span>
+                        <span class="tag">Graphic Design</span>
+                        <span class="tag">Data Analytics</span>
+                        <span class="tag">AI Automation</span>
+                        <span class="tag">LinkedIn Marketing</span>
+                        <span class="tag">Creative Coding</span>
+                    </div>
+                </section>
+
+                <!-- Certifications -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">📜</span> Certifications</h2>
+
+                    <div class="cert-item">
+                        <div class="cert-name">LinkedIn Marketing Solutions</div>
+                        <div class="cert-issuer">LinkedIn · Oct 2024</div>
+                    </div>
+
+                    <div class="cert-item">
+                        <div class="cert-name">Online Marketing Certified Associate (OMCA)</div>
+                        <div class="cert-issuer">Great Learning · Oct 2024</div>
+                    </div>
+
+                    <div class="cert-item">
+                        <div class="cert-name">Prompt Engineering</div>
+                        <div class="cert-issuer">OBTranslate · Feb 2024</div>
+                    </div>
+
+                    <div class="cert-item">
+                        <div class="cert-name">Certified Speaking Professional</div>
+                        <div class="cert-issuer">Strictly Speaking · Jun 2023</div>
+                    </div>
+                </section>
+
+                <!-- Languages -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">🌍</span> Languages</h2>
+                    <div class="lang-row">
+                        <span class="lang-name">English</span>
+                        <span class="lang-level">Native / Bilingual</span>
+                    </div>
+                </section>
+
+                <!-- Interests -->
+                <section class="cv-section">
+                    <h2 class="section-heading"><span class="icon">🎯</span> Interests</h2>
+                    <div class="tag-grid">
+                        <span class="tag">3D Art</span>
+                        <span class="tag">AI & Automation</span>
+                        <span class="tag">Gaming</span>
+                        <span class="tag">Creative Coding</span>
+                        <span class="tag">Entrepreneurship</span>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="cv-footer">
+            <p>© 2026 Aiyedun Samuel Oluwadamilola (Samsco) · samscocommunications@gmail.com · +234 907 248 3594</p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
