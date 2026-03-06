@@ -1080,14 +1080,8 @@
         });
         window.lenis = lenis;
 
-        function raf(time) {
-            lenis.raf(time)
-            requestAnimationFrame(raf)
-        }
-
-        requestAnimationFrame(raf)
-
         // Connect Lenis to GSAP ScrollTrigger
+        // Do NOT use a separate requestAnimationFrame loop when using gsap.ticker
         if (typeof ScrollTrigger !== "undefined") {
             lenis.on('scroll', ScrollTrigger.update)
             gsap.ticker.add((time) => {

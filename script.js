@@ -404,20 +404,45 @@ function handleFilterClick(e, t) {
 }
 function filterGalleryItems(e) {
     const t = document.querySelectorAll(".gallery-item");
-    0 !== t.length && (visibleGalleryItems = [], t.forEach(t => {
-        const a = t.getAttribute("data-cat");
-        "ALL" === e || a === e ? (visibleGalleryItems.push(t), t.style.display = "block", gsap.to(t, {
-            scale: 1, opacity: 1, duration: .3, ease: "power2.out"
-        }
-        )) : gsap.to(t, {
-            scale: .85, opacity: 0, duration: .25, ease: "power2.in", onComplete: () => {
-                t.style.display = "none"
-            }
+    let hasItems = false;
 
+    // Remove existing empty message if any
+    const existingMsg = document.getElementById('empty-category-msg');
+    if (existingMsg) existingMsg.remove();
+
+    if (0 !== t.length) {
+        visibleGalleryItems = [];
+        t.forEach(t => {
+            const a = t.getAttribute("data-cat");
+            if ("ALL" === e || a === e) {
+                visibleGalleryItems.push(t);
+                t.style.display = "block";
+                gsap.to(t, { scale: 1, opacity: 1, duration: .3, ease: "power2.out" });
+                hasItems = true;
+            } else {
+                gsap.to(t, {
+                    scale: .85, opacity: 0, duration: .25, ease: "power2.in", onComplete: () => {
+                        t.style.display = "none";
+                    }
+                });
+            }
+        });
+
+        if (e === "Coding & Data Analytics" && !hasItems) {
+            const msg = document.createElement('div');
+            msg.id = 'empty-category-msg';
+            msg.className = 'col-span-full py-20 text-center flex flex-col items-center justify-center';
+            msg.innerHTML = `
+                <div class="text-6xl mb-6">🧑‍💻</div>
+                <h3 class="text-3xl font-bold text-white mb-3">Compiling Awesomeness</h3>
+                <p class="text-white/60 max-w-md mx-auto text-lg">My Coding & Data Analytics projects are currently being updated and will be available here soon.</p>
+            `;
+            galleryGrid.appendChild(msg);
+            gsap.fromTo(msg, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.2 });
         }
-        )
+
+        "undefined" != typeof ScrollTrigger && setTimeout(() => ScrollTrigger.refresh(), 350);
     }
-    ), "undefined" != typeof ScrollTrigger && setTimeout(() => ScrollTrigger.refresh(), 350))
 }
 filterContainer && initVaultFilters(), window.handleGridImageError = function (e) {
     e && (e.onerror = null, e.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80")

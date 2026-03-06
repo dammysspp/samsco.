@@ -112,15 +112,14 @@
     background-size: 50px 50px;
     z-index: -1;
     pointer-events: none;
-    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    /* Removed mask-image for scrolling performance */
 }
 
 /* Vignette for Cinematic Focus */
 .vignette {
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.9) 100%);
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.7) 100%);
     pointer-events: none;
     z-index: 100;
 }
@@ -129,22 +128,23 @@
 
 @keyframes scanline {
     0% {
-        transform: translateY(-100%);
+        transform: translateY(-100vh);
     }
 
     100% {
-        transform: translateY(100%);
+        transform: translateY(100vh);
     }
 }
 
 .scanline {
     position: fixed;
     inset: 0;
-    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.02), transparent);
-    height: 100px;
-    animation: scanline 8s linear infinite;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.01), transparent);
+    height: 10px;
+    animation: scanline 12s linear infinite;
     pointer-events: none;
     z-index: 50;
+    will-change: transform;
 }
 
 /* Orphaned declarations removed - variables now in :root */
@@ -187,8 +187,8 @@ body.god-mode {
     /* Start slightly visible so users can see it's there */
     opacity: 0.4;
 
-    /* Visual polish - subtle glow */
-    filter: drop-shadow(0 0 80px rgba(0, 113, 227, 0.25));
+    /* Removed drop-shadow for scroll performance, using brightness instead */
+    filter: brightness(1.2);
 
     /* Smooth opacity transition on load - JS will enhance visibility */
     transition: opacity 0.8s ease-out, filter 0.3s ease;
@@ -197,7 +197,7 @@ body.god-mode {
 /* Enhance headset visibility on scroll */
 .headset-3d.active {
     opacity: 0.9;
-    filter: drop-shadow(0 0 100px rgba(0, 113, 227, 0.4));
+    filter: brightness(1.4);
 }
 
 /* Responsive adjustments */
