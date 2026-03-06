@@ -569,8 +569,8 @@ allGalleryItems.forEach(e => {
     }
     )
 }
-), document.getElementById("lightbox-close").addEventListener("click", closeLightbox), document.getElementById("lightbox-next").addEventListener("click", nextLightboxItem), document.getElementById("lightbox-prev").addEventListener("click", prevLightboxItem), document.addEventListener("keydown", e => {
-    lightbox.classList.contains("active") && ("ArrowRight" !== e.key && "ArrowUp" !== e.key || (e.preventDefault(), nextLightboxItem()), "ArrowLeft" !== e.key && "ArrowDown" !== e.key || (e.preventDefault(), prevLightboxItem()), "Escape" === e.key && (e.preventDefault(), closeLightbox()))
+), document.getElementById("lightbox-close")?.addEventListener("click", closeLightbox), document.getElementById("lightbox-next")?.addEventListener("click", nextLightboxItem), document.getElementById("lightbox-prev")?.addEventListener("click", prevLightboxItem), document.addEventListener("keydown", e => {
+    lightbox?.classList.contains("active") && ("ArrowRight" !== e.key && "ArrowUp" !== e.key || (e.preventDefault(), nextLightboxItem()), "ArrowLeft" !== e.key && "ArrowDown" !== e.key || (e.preventDefault(), prevLightboxItem()), "Escape" === e.key && (e.preventDefault(), closeLightbox()))
 }
 ), gsap.utils.toArray(".anim-heading").forEach(e => {
     gsap.to(e, {
@@ -732,7 +732,7 @@ function prevProjectFunc() {
     )e = (e - 1 + projectArray.length) % projectArray.length;
     openProjectModal(e)
 }
-projectArray.forEach((e, t) => e.addEventListener("click", () => openProjectModal(t))), closeModalBtn.addEventListener("click", closeProjectModal), nextBtn.addEventListener("click", nextProjectFunc), prevBtn.addEventListener("click", prevProjectFunc), projectModal.addEventListener("click", e => {
+projectArray.forEach((e, t) => e.addEventListener("click", () => openProjectModal(t))), closeModalBtn?.addEventListener("click", closeProjectModal), nextBtn?.addEventListener("click", nextProjectFunc), prevBtn?.addEventListener("click", prevProjectFunc), projectModal?.addEventListener("click", e => {
     e.target === projectModal && closeProjectModal()
 }
 );
