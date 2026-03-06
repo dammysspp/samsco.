@@ -836,10 +836,7 @@ window.addEventListener("scroll", () => {
 ), function () {
     "use strict";
     const e = document.getElementById("headset-canvas"), t = document.getElementById("headset-wrapper"), a = document.getElementById("headset-loader"), r = document.getElementById("headset-loader-bar"), i = document.getElementById("headset-loader-text");
-    if (!e || !t || window.innerWidth < 768) {
-        if (document.getElementById("headset-bg-container")) document.getElementById("headset-bg-container").style.display = "none";
-        return void console.warn("⚠️ Headset disabled or elements not found");
-    }
+    if (!e || !t) return void console.warn("⚠️ Headset canvas elements not found");
     const o = 192, n = "./scroller/", s = ".webp", l = 4, c = "top top", d = "+=250%", g = .8, p = 900, u = 900, m = 2, h = .5, y = .65, f = 1.8, b = [];
     let v, w = 0, G = 0, x = 0, E = -1, A = !1, I = null, L = 1, D = 0, T = 0;
     function C(e, t) {

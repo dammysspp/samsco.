@@ -202,8 +202,8 @@ body.god-mode {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    #headset-bg-container {
-        display: none !important;
+    .headset-3d {
+        max-width: 80vw;
     }
 }
 
