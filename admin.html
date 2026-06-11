@@ -911,11 +911,48 @@
                     const xhr = new XMLHttpRequest();
                     
                     const uploadPromise = new Promise((resolve, reject) => {
+                        const startTime = Date.now();
                         xhr.upload.addEventListener("progress", (e) => {
                             if (e.lengthComputable) {
                                 const percent = Math.round((e.loaded / e.total) * 100);
-                                uploadPercent.textContent = `${percent}%`;
                                 uploadBar.style.width = `${percent}%`;
+                                uploadPercent.textContent = `${percent}%`;
+                                
+                                // Calculate speed and ETA
+                                const elapsedSeconds = (Date.now() - startTime) / 1000;
+                                const speedBytesPerSec = elapsedSeconds > 0 ? e.loaded / elapsedSeconds : 0;
+                                
+                                // Format speed
+                                let speedText = "";
+                                if (speedBytesPerSec > 1024 * 1024) {
+                                    speedText = `${(speedBytesPerSec / (1024 * 1024)).toFixed(1)} MB/s`;
+                                } else if (speedBytesPerSec > 1024) {
+                                    speedText = `${(speedBytesPerSec / 1024).toFixed(1)} KB/s`;
+                                } else {
+                                    speedText = `${speedBytesPerSec.toFixed(0)} B/s`;
+                                }
+                                
+                                // Format sizes
+                                const loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+                                const totalMB = (e.total / (1024 * 1024)).toFixed(1);
+                                
+                                // Calculate ETA
+                                let etaText = "";
+                                if (speedBytesPerSec > 0) {
+                                    const remainingBytes = e.total - e.loaded;
+                                    const remainingSeconds = Math.round(remainingBytes / speedBytesPerSec);
+                                    if (remainingSeconds < 60) {
+                                        etaText = `${remainingSeconds}s remaining`;
+                                    } else {
+                                        const mins = Math.floor(remainingSeconds / 60);
+                                        const secs = remainingSeconds % 60;
+                                        etaText = `${mins}m ${secs}s remaining`;
+                                    }
+                                } else {
+                                    etaText = "calculating...";
+                                }
+                                
+                                uploadStatus.textContent = `Uploading: ${loadedMB}MB of ${totalMB}MB (${speedText} • ${etaText})`;
                             }
                         });
                         
