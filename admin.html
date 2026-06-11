@@ -402,7 +402,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
                                 <span class="text-[10px] font-semibold text-white/60">DRAG & DROP FILE</span>
-                                <span class="text-[9px] text-white/30 mt-0.5">Supports images & video (max 20MB)</span>
+                                <span id="upload-limit-label" class="text-[9px] text-white/30 mt-0.5">Supports images & video (max 20MB)</span>
                                 <input type="file" id="file-input" class="hidden">
                             </div>
                             <!-- Upload Progress -->
@@ -499,6 +499,18 @@
                 const disconnectContainer = document.getElementById("disconnect-container");
                 if (cancelBtn) cancelBtn.classList.add("hidden");
                 if (disconnectContainer) disconnectContainer.classList.add("hidden");
+
+                // Update the media upload limit label dynamically based on R2 config
+                const limitLabel = document.getElementById("upload-limit-label");
+                if (limitLabel) {
+                    const r2Worker = localStorage.getItem("samsco_r2_worker");
+                    const r2Key = localStorage.getItem("samsco_r2_key");
+                    if (r2Worker && r2Key) {
+                        limitLabel.textContent = "Supports images & video (max 250MB via R2)";
+                    } else {
+                        limitLabel.textContent = "Supports images & video (max 20MB)";
+                    }
+                }
 
                 const config = getSupabaseConfig();
                 
