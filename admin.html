@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsco Portfolio | CMS Portal</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS frameworks & configurations -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        display: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#0071e3',
+                            cyan: '#64d2ff',
+                            gray: { 100: '#f5f5f7', 200: '#d2d2d7', 500: '#86868b', 800: '#1d1d1f' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            user-select: auto; /* Let admin select text */
+        }
+        /* Override global cursor:none from styles.css */
+        body, a, button, select, input, textarea, label, [role="button"] {
+            cursor: auto !important;
+        }
+        .admin-glass {
+            background: rgba(20, 20, 22, 0.75);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .admin-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .admin-input:focus {
+            border-color: #0071e3;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+            outline: none;
+        }
+        /* Fix for invisible select dropdown options (white text on white background in Windows browsers) */
+        select.admin-input option {
+            background-color: #1c1c1e !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen relative flex flex-col">
+    <!-- Tech Grid Background -->
+    <div class="tech-grid fixed inset-0 pointer-events-none -z-10 opacity-30"></div>
+    <div class="vignette fixed inset-0 pointer-events-none -z-10"></div>
+    
+    <!-- Notification Banner -->
+    <div id="toast" class="fixed top-6 right-6 z-[100] transform translate-y-[-20px] opacity-0 pointer-events-none transition-all duration-300 max-w-sm w-full p-4 rounded-xl flex items-center gap-3 backdrop-blur-md border shadow-2xl">
+        <div id="toast-icon" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"></div>
+        <div id="toast-text" class="text-sm font-medium"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-7xl mx-auto">
+        
+        <!-- ========================================== -->
+        <!-- 1. SETUP CONFIGURATION SCREEN -->
+        <!-- ========================================== -->
+        <div id="setup-card" class="hidden w-full max-w-md admin-glass p-8 md:p-10 rounded-3xl animate-fade-in">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0071e3] to-[#64d2ff] flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold font-display">Supabase Setup</h2>
+                <p class="text-white/40 text-sm mt-2">Connect your Supabase project to activate the CMS</p>
+            </div>
+            
+            <form id="setup-form" class="space-y-6">
+                <div>
+                    <label for="setup-url" class="block text-xs font-semibold text-white/50 tracking-wider mb-2">SUPABASE PROJECT URL</label>
+                    <input type="url" id="setup-url" required placeholder="https://xxxx.supabase.co" class="w-full px-4 py-3 rounded-xl admin-input text-sm">
+                </div>
+                <div>
+                    <label for="setup-key" class="block text-xs font-semibold text-white/50 tracking-wider mb-2">SUPABASE ANON KEY</label>
+                    <input type="password" id="setup-key" required placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full px-4 py-3 rounded-xl admin-input text-sm">
+                </div>
+                <button type="submit" class="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.01] active:scale-95 text-sm">
+                    Connect Project
+                </button>
+            </form>
+            <p class="text-white/20 text-xs text-center mt-6 leading-relaxed">
+                Your keys will be saved in your browser's local storage.<br>
+                Refer to the setup instructions to create your database tables.
+            </p>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 2. LOGIN SCREEN -->
+        <!-- ========================================== -->
+        <div id="login-card" class="hidden w-full max-w-md admin-glass p-8 md:p-10 rounded-3xl animate-fade-in">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#bf5af2] to-[#ff375f] flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold font-display">Admin Login</h2>
+                <p class="text-white/40 text-sm mt-2">Sign in to manage your portfolio</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="login-email" class="block text-xs font-semibold text-white/50 tracking-wider mb-2">EMAIL ADDRESS</label>
+                    <input type="email" id="login-email" required placeholder="admin@example.com" class="w-full px-4 py-3 rounded-xl admin-input text-sm">
+                </div>
+                <div>
+                    <label for="login-password" class="block text-xs font-semibold text-white/50 tracking-wider mb-2">PASSWORD</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl admin-input text-sm">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(191,90,242,0.3)] hover:scale-[1.01] active:scale-95 text-sm flex justify-center items-center gap-2">
+                    <span>Sign In</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </form>
+            <div class="mt-6 flex justify-between items-center text-xs">
+                <button id="reset-setup-btn" class="text-white/30 hover:text-white transition-colors">Change database credentials</button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. MAIN CMS DASHBOARD -->
+        <!-- ========================================== -->
+        <div id="dashboard" class="hidden w-full flex flex-col gap-6 md:gap-8 animate-fade-in">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-md">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold font-display">SAMSCO PORTFOLIO CMS</h1>
+                    <p class="text-white/40 text-xs mt-1" id="user-badge">Logged in as: --</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button id="new-work-btn" class="bg-[#0071e3] hover:bg-[#0077ed] text-white px-5 py-2.5 rounded-full font-bold text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        NEW WORK
+                    </button>
+                    <button id="import-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-semibold text-xs tracking-wider transition-all duration-300 flex items-center gap-2" title="Import works from script.js">
+                        <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        IMPORT LOCAL
+                    </button>
+                    <button id="logout-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300">
+                        LOGOUT
+                    </button>
+                    <button id="change-db-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300" title="Config Database Settings">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="admin-glass p-5 rounded-2xl flex flex-col">
+                    <span class="text-[10px] text-white/40 tracking-widest font-semibold uppercase">Total Works</span>
+                    <span class="text-2xl font-bold font-display mt-2" id="stat-total">0</span>
+                </div>
+                <div class="admin-glass p-5 rounded-2xl flex flex-col">
+                    <span class="text-[10px] text-[#bf5af2] tracking-widest font-semibold uppercase">3D & VFX</span>
+                    <span class="text-2xl font-bold font-display mt-2" id="stat-vfx">0</span>
+                </div>
+                <div class="admin-glass p-5 rounded-2xl flex flex-col">
+                    <span class="text-[10px] text-[#0071e3] tracking-widest font-semibold uppercase">Graphics Design</span>
+                    <span class="text-2xl font-bold font-display mt-2" id="stat-graphics">0</span>
+                </div>
+                <div class="admin-glass p-5 rounded-2xl flex flex-col">
+                    <span class="text-[10px] text-[#30d158] tracking-widest font-semibold uppercase">Coding & AI</span>
+                    <span class="text-2xl font-bold font-display mt-2" id="stat-code">0</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Content: Table of Works -->
+            <div class="admin-glass rounded-3xl overflow-hidden flex flex-col">
+                <!-- Search & Filters -->
+                <div class="p-5 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.01]">
+                    <div class="relative w-full md:max-w-md">
+                        <input type="text" id="search-input" placeholder="Search works by title or tag..." class="w-full pl-10 pr-4 py-2.5 rounded-xl admin-input text-xs">
+                        <svg class="w-4 h-4 text-white/30 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                        <select id="filter-category" class="px-4 py-2.5 rounded-xl admin-input text-xs max-w-xs">
+                            <option value="ALL">All Categories</option>
+                            <option value="3D & VFX">3D & VFX</option>
+                            <option value="Graphics Design">Graphics Design</option>
+                            <option value="Video Editing">Video Editing</option>
+                            <option value="Coding & Data Analytics">Coding & Data Analytics</option>
+                            <option value="AI">AI</option>
+                            <option value="Website">Website</option>
+                            <option value="Social Management">Social Management</option>
+                            <option value="Presentations">Presentations</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table Wrapper -->
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/5 text-[10px] text-white/40 tracking-wider uppercase font-semibold bg-white/[0.01]">
+                                <th class="py-4 px-6">Media Preview</th>
+                                <th class="py-4 px-6">Title</th>
+                                <th class="py-4 px-6">Category</th>
+                                <th class="py-4 px-6">Type</th>
+                                <th class="py-4 px-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="works-table-body" class="divide-y divide-white/[0.04] text-sm text-white/80">
+                            <!-- Injected dynamically -->
+                            <tr>
+                                <td colspan="5" class="py-12 text-center text-white/30 font-light">Loading works data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- 4. ADD / EDIT WORK DIALOG (MODAL) -->
+    <!-- ========================================== -->
+    <div id="work-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="admin-glass max-w-3xl w-full p-6 md:p-8 rounded-3xl relative transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-white/40 hover:text-white text-2xl transition-colors">&times;</button>
+            
+            <h2 id="modal-heading" class="text-2xl font-bold font-display mb-6">Create New Portfolio Work</h2>
+            
+            <form id="work-form" class="space-y-6">
+                <input type="hidden" id="work-id">
+                
+                <div class="grid md:grid-cols-2 gap-5">
+                    <!-- Title -->
+                    <div>
+                        <label for="work-title" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Work Title</label>
+                        <input type="text" id="work-title" required placeholder="e.g. iPad Air 2025 3D Render" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                    
+                    <!-- Category (Multi-Select Checkboxes) -->
+                    <div>
+                        <label class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Category (Select all that apply)</label>
+                        <div id="category-checkboxes" class="grid grid-cols-2 gap-x-4 gap-y-2 bg-white/[0.02] border border-white/5 p-3 rounded-xl max-h-40 overflow-y-auto">
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="3D & VFX" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>3D & VFX</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Graphics Design" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Graphics Design</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Video Editing" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Video Editing</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Coding & Data Analytics" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Coding & Data Analytics</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="AI" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>AI</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Website" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Website</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Social Management" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Social Management</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs text-white/70 hover:text-white cursor-pointer select-none">
+                                <input type="checkbox" name="work-cat-cb" value="Presentations" class="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
+                                <span>Presentations</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-5">
+                    <!-- Media Type -->
+                    <div>
+                        <label for="work-type" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Media Type</label>
+                        <select id="work-type" required class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                            <option value="image">Image (jpg, png, webp, gif)</option>
+                            <option value="video">Video (mp4, webm)</option>
+                            <option value="iframe">External Embed (Canva, YouTube, Figma)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Client -->
+                    <div>
+                        <label for="work-client" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Client / Org (Optional)</option>
+                        <input type="text" id="work-client" placeholder="e.g. Modion Communications" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+
+                    <!-- Year -->
+                    <div>
+                        <label for="work-year" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Project Year (Optional)</option>
+                        <input type="text" id="work-year" placeholder="e.g. 2025" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <!-- Role -->
+                    <div>
+                        <label for="work-role" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Your Role (Optional)</label>
+                        <input type="text" id="work-role" placeholder="e.g. Lead 3D Animator" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+
+                    <!-- Project Link -->
+                    <div>
+                        <label for="work-projectUrl" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">External Project Link (Optional)</label>
+                        <input type="url" id="work-projectUrl" placeholder="https://linkedin.com/..." class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                </div>
+
+                <!-- Media Link & Drag/Drop Uploader -->
+                <div class="border-t border-white/5 pt-6">
+                    <label class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Project Media Asset</label>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <!-- Direct Link -->
+                        <div>
+                            <span class="block text-[10px] text-white/30 font-medium mb-1.5">Direct URL Option:</span>
+                            <input type="text" id="work-url" required placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                            <span class="block text-[9px] text-white/30 mt-1 leading-relaxed">Paste an external image/video link or Canva embed viewer URL. If you upload a file on the right, this field is filled automatically.</span>
+                        </div>
+                        
+                        <!-- File Upload Area -->
+                        <div>
+                            <span class="block text-[10px] text-white/30 font-medium mb-1.5">Or Upload File:</span>
+                            <div id="drop-zone" class="border-2 border-dashed border-white/10 hover:border-[#0071e3] bg-white/[0.01] hover:bg-white/[0.02] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                <svg class="w-8 h-8 text-white/30 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span class="text-[10px] font-semibold text-white/60">DRAG & DROP FILE</span>
+                                <span class="text-[9px] text-white/30 mt-0.5">Supports images & video (max 20MB)</span>
+                                <input type="file" id="file-input" class="hidden">
+                            </div>
+                            <!-- Upload Progress -->
+                            <div id="upload-progress-container" class="hidden mt-3">
+                                <div class="flex justify-between items-center mb-1 text-[9px] font-medium text-white/50">
+                                    <span id="upload-status-text">Uploading to Supabase Storage...</span>
+                                    <span id="upload-percent">0%</span>
+                                </div>
+                                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div id="upload-bar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Media Preview -->
+                <div id="media-preview-container" class="hidden border border-white/5 bg-white/[0.01] p-4 rounded-xl flex flex-col gap-2 mt-4">
+                    <span class="block text-[10px] font-semibold text-white/40 tracking-wider uppercase">Live Media Preview</span>
+                    <div id="media-preview-element" class="w-full max-h-64 flex justify-center items-center overflow-hidden rounded-lg bg-black/40 border border-white/5 relative">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Tags & Description -->
+                <div class="grid md:grid-cols-2 gap-5 border-t border-white/5 pt-6">
+                    <div>
+                        <label for="work-tags" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Tags (comma-separated)</label>
+                        <input type="text" id="work-tags" placeholder="Blender, After Effects, 3D Rendering" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                    <div>
+                        <label for="work-desc" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Description</label>
+                        <textarea id="work-desc" rows="2" placeholder="Brief description of the work and creative process..." class="w-full px-4 py-2 rounded-xl admin-input text-xs resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t border-white/5 pt-6 mt-6">
+                    <button type="button" id="cancel-modal-btn" class="px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-full font-semibold text-xs tracking-wider transition-all duration-300">
+                        CANCEL
+                    </button>
+                    <button type="submit" id="save-modal-btn" class="px-5 py-2.5 bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-full font-bold text-xs tracking-wider transition-all duration-300 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
+                        SAVE CHANGES
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS LOGIC -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const setupCard = document.getElementById("setup-card");
+            const loginCard = document.getElementById("login-card");
+            const dashboard = document.getElementById("dashboard");
+            const toast = document.getElementById("toast");
+            const toastIcon = document.getElementById("toast-icon");
+            const toastText = document.getElementById("toast-text");
+            
+            let worksData = [];
+            let activeUser = null;
+            
+            // Helper to show toasts (Status updates)
+            function showToast(message, type = "success") {
+                toastText.innerText = message;
+                toast.classList.remove("border-green-500/20", "bg-green-950/80", "text-green-300", "border-red-500/20", "bg-red-950/80", "text-red-300", "border-blue-500/20", "bg-blue-950/80", "text-blue-300");
+                toastIcon.innerHTML = "";
+                
+                if (type === "success") {
+                    toast.classList.add("border-green-500/20", "bg-green-950/80", "text-green-300");
+                    toastIcon.classList.add("bg-green-500/20");
+                    toastIcon.innerHTML = `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>`;
+                } else if (type === "error") {
+                    toast.classList.add("border-red-500/20", "bg-red-950/80", "text-red-300");
+                    toastIcon.classList.add("bg-red-500/20");
+                    toastIcon.innerHTML = `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                } else {
+                    toast.classList.add("border-blue-500/20", "bg-blue-950/80", "text-blue-300");
+                    toastIcon.classList.add("bg-blue-500/20");
+                    toastIcon.innerHTML = `<svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                }
+                
+                toast.classList.remove("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+                toast.classList.add("opacity-100", "translate-y-0");
+                
+                setTimeout(() => {
+                    toast.classList.add("opacity-0", "translate-y-[-20px]", "pointer-events-none");
+                    toast.classList.remove("opacity-100", "translate-y-0");
+                }, 4000);
+            }
+            
+            // Screen router
+            function checkAppState() {
+                const config = getSupabaseConfig();
+                
+                if (!config.url || !config.key) {
+                    setupCard.classList.remove("hidden");
+                    loginCard.classList.add("hidden");
+                    dashboard.classList.add("hidden");
+                    return;
+                }
+                
+                // Re-initialize client if config changed or not active
+                if (!window.supabaseClient) {
+                    window.supabaseClient = initSupabase();
+                }
+                
+                if (!window.supabaseClient) {
+                    setupCard.classList.remove("hidden");
+                    loginCard.classList.add("hidden");
+                    dashboard.classList.add("hidden");
+                    showToast("Database configuration error. Please re-enter keys.", "error");
+                    return;
+                }
+                
+                // Check active session
+                checkUserSession();
+            }
+            
+            async function checkUserSession() {
+                try {
+                    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                    
+                    if (error) throw error;
+                    
+                    if (session && session.user) {
+                        activeUser = session.user;
+                        document.getElementById("user-badge").textContent = `Logged in as: ${activeUser.email}`;
+                        
+                        setupCard.classList.add("hidden");
+                        loginCard.classList.add("hidden");
+                        dashboard.classList.remove("hidden");
+                        
+                        loadDashboardData();
+                    } else {
+                        activeUser = null;
+                        setupCard.classList.add("hidden");
+                        loginCard.classList.remove("hidden");
+                        dashboard.classList.add("hidden");
+                    }
+                } catch (e) {
+                    console.error("Session check failed:", e);
+                    setupCard.classList.add("hidden");
+                    loginCard.classList.remove("hidden");
+                    dashboard.classList.add("hidden");
+                }
+            }
+
+            // Setup DB credentials
+            document.getElementById("setup-form").addEventListener("submit", (evt) => {
+                evt.preventDefault();
+                const url = document.getElementById("setup-url").value.trim();
+                const key = document.getElementById("setup-key").value.trim();
+                
+                localStorage.setItem("samsco_supabase_url", url);
+                localStorage.setItem("samsco_supabase_key", key);
+                
+                showToast("Supabase credentials saved successfully!", "success");
+                
+                // Refresh client reference
+                window.supabaseClient = initSupabase();
+                
+                // Reset setup fields and route
+                document.getElementById("setup-url").value = "";
+                document.getElementById("setup-key").value = "";
+                checkAppState();
+            });
+
+            // Login Admin
+            document.getElementById("login-form").addEventListener("submit", async (evt) => {
+                evt.preventDefault();
+                const email = document.getElementById("login-email").value.trim();
+                const password = document.getElementById("login-password").value;
+                
+                showToast("Signing in...", "info");
+                
+                try {
+                    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    showToast("Login successful!", "success");
+                    checkAppState();
+                } catch (e) {
+                    showToast(e.message || "Invalid credentials", "error");
+                }
+            });
+
+            // Logout Admin
+            document.getElementById("logout-btn").addEventListener("click", async () => {
+                if (window.supabaseClient) {
+                    await window.supabaseClient.auth.signOut();
+                    showToast("Logged out successfully.", "info");
+                    checkAppState();
+                }
+            });
+
+            // Reset credentials
+            const resetBtnHandler = () => {
+                if (confirm("Are you sure you want to disconnect this Supabase project? This deletes the keys stored in localStorage.")) {
+                    localStorage.removeItem("samsco_supabase_url");
+                    localStorage.removeItem("samsco_supabase_key");
+                    window.supabaseClient = null;
+                    checkAppState();
+                    showToast("Project credentials deleted.", "info");
+                }
+            };
+            document.getElementById("reset-setup-btn").addEventListener("click", resetBtnHandler);
+            document.getElementById("change-db-btn").addEventListener("click", resetBtnHandler);
+
+            // ==========================================
+            // CRUD DATA MANAGEMENT
+            // ==========================================
+            async function loadDashboardData() {
+                const tbody = document.getElementById("works-table-body");
+                tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-white/30 font-light">Loading database works...</td></tr>`;
+                
+                try {
+                    const { data, error } = await window.supabaseClient
+                        .from("works")
+                        .select("*")
+                        .order("created_at", { ascending: false });
+                        
+                    if (error) throw error;
+                    
+                    worksData = data || [];
+                    renderWorksTable(worksData);
+                    updateDashboardStats(worksData);
+                } catch (e) {
+                    console.error("Fetch works failed:", e);
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Make sure table 'works' exists and RLS allows reading."}</td></tr>`;
+                    showToast("Failed to fetch works. Check your database setup.", "error");
+                }
+            }
+
+            function updateDashboardStats(data) {
+                document.getElementById("stat-total").innerText = data.length;
+                document.getElementById("stat-vfx").innerText = data.filter(w => w.cat === "3D & VFX").length;
+                document.getElementById("stat-graphics").innerText = data.filter(w => w.cat === "Graphics Design").length;
+                
+                const codingCount = data.filter(w => w.cat === "Coding & Data Analytics" || w.cat === "AI").length;
+                document.getElementById("stat-code").innerText = codingCount;
+            }
+
+            function renderWorksTable(data) {
+                const tbody = document.getElementById("works-table-body");
+                tbody.innerHTML = "";
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="py-16 text-center text-white/40 font-light">
+                                <p class="mb-4">No works found in this database.</p>
+                                <button id="empty-import-btn" class="bg-gradient-to-r from-[#0071e3] to-[#64d2ff] hover:from-[#0077ed] hover:to-[#7fe0ff] text-white px-6 py-3 rounded-full font-bold text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,113,227,0.3)] inline-flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                    </svg>
+                                    IMPORT ALL EXISTING WORKS
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    const emptyImportBtn = document.getElementById("empty-import-btn");
+                    if (emptyImportBtn) {
+                        emptyImportBtn.addEventListener("click", importLocalWorksToSupabase);
+                    }
+                    return;
+                }
+                
+                data.forEach(work => {
+                    const tr = document.createElement("tr");
+                    tr.className = "hover:bg-white/[0.02] transition-colors";
+                    
+                    // Thumbnail/media column
+                    let preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-white/20">SVG</div>`;
+                    if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
+                        preview = `<img src="${work.url}" onerror="this.style.display='none'" class="w-12 h-12 object-cover rounded-lg border border-white/5">`;
+                    } else if (work.type === "video" || work.url.endsWith(".mp4")) {
+                        preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-purple-400 font-bold">VIDEO</div>`;
+                    } else if (work.type === "iframe") {
+                        preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-blue-400 font-bold">EMBED</div>`;
+                    }
+                    
+                    const cats = (work.cat || '').split(',').map(c => c.trim()).filter(Boolean);
+                    const badges = cats.map(c => `<span class="px-2.5 py-1 bg-white/5 rounded-full text-xs font-semibold mr-1.5 mb-1 inline-block" style="color: ${getCategoryColor(c)}">${c}</span>`).join('');
+
+                    tr.innerHTML = `
+                        <td class="py-4 px-6">${preview}</td>
+                        <td class="py-4 px-6 font-medium text-white">${work.title}</td>
+                        <td class="py-4 px-6"><div class="flex flex-wrap gap-1">${badges}</div></td>
+                        <td class="py-4 px-6 text-xs text-white/50 uppercase font-mono">${work.type || 'image'}</td>
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button class="edit-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-xs transition-colors" data-id="${work.id}">Edit</button>
+                                <button class="delete-btn bg-red-950/30 border border-red-500/10 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-full text-xs text-red-400 transition-colors" data-id="${work.id}">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                // Add event listeners to edit/delete buttons
+                document.querySelectorAll(".edit-btn").forEach(btn => {
+                    btn.addEventListener("click", () => openEditModal(btn.dataset.id));
+                });
+                document.querySelectorAll(".delete-btn").forEach(btn => {
+                    btn.addEventListener("click", () => deleteWorkItem(btn.dataset.id));
+                });
+            }
+
+            function getCategoryColor(cat) {
+                const colors = {
+                    "3D & VFX": "#bf5af2",
+                    "Graphics Design": "#0071e3",
+                    "Video Editing": "#ff375f",
+                    "Coding & Data Analytics": "#30d158",
+                    "AI": "#ff9f0a",
+                    "Website": "#06b6d4",
+                    "Social Management": "#ec4899",
+                    "Presentations": "#10b981"
+                };
+                return colors[cat] || "#86868b";
+            }
+
+            // Filtering & Search
+            const searchInput = document.getElementById("search-input");
+            const filterCategory = document.getElementById("filter-category");
+            
+            function performFilter() {
+                const query = searchInput.value.toLowerCase().trim();
+                const cat = filterCategory.value;
+                
+                const filtered = worksData.filter(work => {
+                    const matchesQuery = !query || 
+                                         work.title.toLowerCase().includes(query) || 
+                                         (work.tags && work.tags.toLowerCase().includes(query)) ||
+                                         (work.desc && work.desc.toLowerCase().includes(query));
+                    const matchesCat = (cat === "ALL") || (work.cat && work.cat.split(',').map(c => c.trim()).includes(cat));
+                    
+                    return matchesQuery && matchesCat;
+                });
+                
+                renderWorksTable(filtered);
+            }
+            searchInput.addEventListener("input", performFilter);
+            filterCategory.addEventListener("change", performFilter);
+
+
+            // ==========================================
+            // MODAL MANAGER & MEDIA UPLOADS
+            // ==========================================
+            const modal = document.getElementById("work-modal");
+            const modalContent = modal.querySelector(".modal-content") || modal.querySelector(".admin-glass");
+            const modalHeading = document.getElementById("modal-heading");
+            const workForm = document.getElementById("work-form");
+            
+            const fileInput = document.getElementById("file-input");
+            const dropZone = document.getElementById("drop-zone");
+            const uploadProgress = document.getElementById("upload-progress-container");
+            const uploadBar = document.getElementById("upload-bar");
+            const uploadPercent = document.getElementById("upload-percent");
+            const uploadStatus = document.getElementById("upload-status-text");
+
+            function showModal(title) {
+                modalHeading.innerText = title;
+                modal.classList.remove("pointer-events-none", "opacity-0");
+                modalContent.classList.remove("scale-95");
+                modalContent.classList.add("scale-100");
+                
+                // Reset progress bar
+                uploadProgress.classList.add("hidden");
+                uploadBar.style.width = "0%";
+                uploadPercent.textContent = "0%";
+            }
+
+            function closeModal() {
+                modal.classList.add("pointer-events-none", "opacity-0");
+                modalContent.classList.remove("scale-100");
+                modalContent.classList.add("scale-95");
+                workForm.reset();
+                document.getElementById("work-id").value = "";
+                if (typeof updateMediaPreview === 'function') updateMediaPreview();
+            }
+
+            document.getElementById("new-work-btn").addEventListener("click", () => {
+                workForm.reset();
+                document.getElementById("work-id").value = "";
+                document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
+                showModal("Create New Portfolio Work");
+                if (typeof updateMediaPreview === 'function') updateMediaPreview();
+            });
+            document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+            document.getElementById("cancel-modal-btn").addEventListener("click", closeModal);
+            
+            // Drag and drop events
+            dropZone.addEventListener("click", () => fileInput.click());
+            dropZone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropZone.classList.add("border-[#0071e3]", "bg-white/[0.03]");
+            });
+            dropZone.addEventListener("dragleave", () => {
+                dropZone.classList.remove("border-[#0071e3]", "bg-white/[0.03]");
+            });
+            dropZone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropZone.classList.remove("border-[#0071e3]", "bg-white/[0.03]");
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+            fileInput.addEventListener("change", () => {
+                if (fileInput.files.length > 0) {
+                    handleFileUpload(fileInput.files[0]);
+                }
+            });
+
+            async function handleFileUpload(file) {
+                if (!window.supabaseClient) return;
+                
+                // Validate size (max 20MB)
+                const maxSize = 20 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    showToast("File is too large. Max size is 20MB.", "error");
+                    return;
+                }
+                
+                uploadProgress.classList.remove("hidden");
+                uploadStatus.textContent = "Uploading to Storage bucket...";
+                uploadPercent.textContent = "0%";
+                uploadBar.style.width = "0%";
+                
+                const cleanName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                
+                try {
+                    // Upload to 'portfolio' bucket in Supabase storage
+                    const { data, error } = await window.supabaseClient.storage
+                        .from('portfolio')
+                        .upload(cleanName, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                        
+                    if (error) {
+                        // Check if bucket exists error
+                        if (error.message.includes("Bucket not found")) {
+                            throw new Error("Storage bucket 'portfolio' does not exist. Create it on your Supabase Storage dashboard and set it to public!");
+                        }
+                        throw error;
+                    }
+                    
+                    // Get public URL
+                    const { data: { publicUrl } } = window.supabaseClient.storage
+                        .from('portfolio')
+                        .getPublicUrl(cleanName);
+                        
+                    // Update form URL field
+                    document.getElementById("work-url").value = publicUrl;
+                    
+                    // Update uploader success state
+                    uploadStatus.textContent = "Upload successful!";
+                    uploadPercent.textContent = "100%";
+                    uploadBar.style.width = "100%";
+                    showToast("Media uploaded successfully!", "success");
+                    
+                    // Auto select media type based on mime type
+                    const workTypeSelect = document.getElementById("work-type");
+                    if (file.type.startsWith("video/")) {
+                        workTypeSelect.value = "video";
+                    } else if (file.type.startsWith("image/")) {
+                        workTypeSelect.value = "image";
+                    }
+                    if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                } catch (e) {
+                    console.error("Storage upload failed:", e);
+                    uploadProgress.classList.add("hidden");
+                    showToast(e.message || "File upload failed. Ensure bucket 'portfolio' exists.", "error");
+                }
+            }
+
+            // Edit Item
+            function openEditModal(id) {
+                const work = worksData.find(w => String(w.id) === String(id));
+                if (!work) return;
+                
+                document.getElementById("work-id").value = work.id;
+                document.getElementById("work-title").value = work.title;
+                // Reset all category checkboxes
+                document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
+                // Check categories that this work belongs to
+                if (work.cat) {
+                    const workCats = work.cat.split(',').map(c => c.trim());
+                    workCats.forEach(catVal => {
+                        const cb = document.querySelector(`input[name="work-cat-cb"][value="${catVal}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+                document.getElementById("work-type").value = work.type || "image";
+                document.getElementById("work-url").value = work.url;
+                document.getElementById("work-projectUrl").value = work.projectUrl || "";
+                document.getElementById("work-client").value = work.client || "";
+                document.getElementById("work-year").value = work.year || "";
+                document.getElementById("work-role").value = work.role || "";
+                document.getElementById("work-tags").value = work.tags || "";
+                document.getElementById("work-desc").value = work.desc || "";
+                
+                showModal("Edit Portfolio Work");
+                if (typeof updateMediaPreview === 'function') updateMediaPreview();
+            }
+
+            // Delete Item
+            async function deleteWorkItem(id) {
+                const work = worksData.find(w => String(w.id) === String(id));
+                if (!work) return;
+                
+                if (confirm(`Are you sure you want to delete "${work.title}"? This cannot be undone.`)) {
+                    showToast("Deleting item...", "info");
+                    
+                    try {
+                        const { error } = await window.supabaseClient
+                            .from("works")
+                            .delete()
+                            .eq("id", id);
+                            
+                        if (error) throw error;
+                        
+                        showToast(`Successfully deleted "${work.title}"!`, "success");
+                        loadDashboardData();
+                    } catch (e) {
+                        showToast(e.message || "Delete operation failed", "error");
+                    }
+                }
+            }
+
+            // Form Submit (Create & Update)
+            workForm.addEventListener("submit", async (evt) => {
+                evt.preventDefault();
+                
+                const id = document.getElementById("work-id").value;
+                const title = document.getElementById("work-title").value.trim();
+                const selectedCats = Array.from(document.querySelectorAll('input[name="work-cat-cb"]:checked')).map(cb => cb.value);
+                if (selectedCats.length === 0) {
+                    showToast("Please select at least one category", "error");
+                    return;
+                }
+                const cat = selectedCats.join(', ');
+                const type = document.getElementById("work-type").value;
+                const url = document.getElementById("work-url").value.trim();
+                const projectUrl = document.getElementById("work-projectUrl").value.trim();
+                const client = document.getElementById("work-client").value.trim();
+                const year = document.getElementById("work-year").value.trim();
+                const role = document.getElementById("work-role").value.trim();
+                const tags = document.getElementById("work-tags").value.trim();
+                const desc = document.getElementById("work-desc").value.trim();
+                
+                const itemData = {
+                    title,
+                    cat,
+                    type,
+                    url,
+                    ...(projectUrl && { projectUrl }),
+                    ...(client && { client }),
+                    ...(year && { year }),
+                    ...(role && { role }),
+                    ...(tags && { tags }),
+                    ...(desc && { desc })
+                };
+                
+                showToast("Saving work details...", "info");
+                
+                try {
+                    if (id) {
+                        // Update
+                        const { error } = await window.supabaseClient
+                            .from("works")
+                            .update(itemData)
+                            .eq("id", id);
+                            
+                        if (error) throw error;
+                        showToast(`Successfully updated "${title}"!`, "success");
+                    } else {
+                        // Create
+                        const { error } = await window.supabaseClient
+                            .from("works")
+                            .insert([itemData]);
+                            
+                        if (error) throw error;
+                        showToast(`Successfully created "${title}"!`, "success");
+                    }
+                    
+                    closeModal();
+                    loadDashboardData();
+                } catch (e) {
+                    showToast(e.message || "Database operation failed", "error");
+                }
+            });
+
+            // Helper to get local works synchronously from shared config
+            function getLocalWorks() {
+                return window.localGalleryConfig || [];
+            }
+
+            // Function to run bulk import
+            async function importLocalWorksToSupabase() {
+                try {
+                    const localWorks = getLocalWorks();
+                    if (!localWorks || localWorks.length === 0) {
+                        throw new Error("No default works found to import.");
+                    }
+                    
+                    if (!confirm(`Found ${localWorks.length} works in local backup. Are you sure you want to import them all to Supabase?`)) {
+                        return;
+                    }
+                    
+                    showToast(`Importing ${localWorks.length} works...`, "info");
+                    
+                    const cleanWorks = localWorks.map(w => ({
+                        title: w.title,
+                        cat: w.cat,
+                        url: w.url,
+                        type: w.type || (w.url.endsWith(".mp4") ? "video" : "image")
+                    }));
+                    
+                    const { error } = await window.supabaseClient
+                        .from("works")
+                        .insert(cleanWorks);
+                        
+                    if (error) throw error;
+                    
+                    showToast(`Successfully imported ${cleanWorks.length} works!`, "success");
+                    loadDashboardData();
+                } catch (e) {
+                    console.error("Bulk import failed:", e);
+                    showToast(e.message || "Failed to import works", "error");
+                }
+            }
+
+            // Event listener for Import Local button in header
+            const importBtn = document.getElementById("import-btn");
+            if (importBtn) {
+                importBtn.addEventListener("click", importLocalWorksToSupabase);
+            }
+
+            // Live Media Preview logic
+            const mediaPreviewContainer = document.getElementById("media-preview-container");
+            const mediaPreviewElement = document.getElementById("media-preview-element");
+            const workUrlInput = document.getElementById("work-url");
+            const workTypeSelect = document.getElementById("work-type");
+
+            function updateMediaPreview() {
+                const url = workUrlInput.value.trim();
+                const type = workTypeSelect.value;
+
+                if (!url) {
+                    mediaPreviewContainer.classList.add("hidden");
+                    mediaPreviewElement.innerHTML = "";
+                    return;
+                }
+
+                mediaPreviewContainer.classList.remove("hidden");
+
+                if (type === "image") {
+                    mediaPreviewElement.innerHTML = `
+                        <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. Ensure URL is correct.')">
+                    `;
+                } else if (type === "video") {
+                    mediaPreviewElement.innerHTML = `
+                        <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure URL is correct.')"></video>
+                    `;
+                } else if (type === "iframe") {
+                    let embedUrl = url;
+                    if (url.includes("canva.com") && url.includes("/view")) {
+                        embedUrl = url.split("?")[0] + "?embed";
+                    }
+                    mediaPreviewElement.innerHTML = `
+                        <iframe src="${embedUrl}" class="w-full h-64 rounded-lg border-0 bg-white" allowfullscreen></iframe>
+                    `;
+                }
+            }
+
+            function showPreviewError(msg) {
+                mediaPreviewElement.innerHTML = `
+                    <div class="p-8 text-center text-xs text-white/30 flex flex-col items-center justify-center gap-2">
+                        <svg class="w-8 h-8 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <span>${msg}</span>
+                    </div>
+                `;
+            }
+
+            workUrlInput.addEventListener("input", updateMediaPreview);
+            workTypeSelect.addEventListener("change", updateMediaPreview);
+
+            // Initialize app state
+            checkAppState();
+        });
+    </script>
+</body>
+</html>

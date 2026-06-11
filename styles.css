@@ -1217,7 +1217,10 @@ button:focus-visible,
     border-radius: var(--radius-xl);
     box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5),
         0 0 0 1px var(--border-subtle);
-    transition: all var(--duration-normal) var(--ease-apple);
+    transition: box-shadow var(--duration-normal) var(--ease-apple), border-color var(--duration-normal) var(--ease-apple);
+    /* hardware acceleration hint */
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
 }
 
 .wheel-card:hover {

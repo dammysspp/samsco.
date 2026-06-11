@@ -40,319 +40,77 @@ document.addEventListener("visibilitychange", () => {
     isTabActive = !document.hidden
 }
 );
-const galleryConfig = [{
-    "title": "Graphic Art 01", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(1).jpg"
-}
-    , {
-    "title": "Graphic Art 02", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(2).jpg"
-}
-    , {
-    "title": "Graphic Art 03", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(3).jpg"
-}
-    , {
-    "title": "Graphic Art 04", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(4).jpg"
-}
-    , {
-    "title": "Graphic Art 05", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(5).jpg"
-}
-    , {
-    "title": "Graphic Art 06", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(6).jpg"
-}
-    , {
-    "title": "Graphic Art 07", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(7).jpg"
-}
-    , {
-    "title": "Graphic Art 08", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(8).jpg"
-}
-    , {
-    "title": "Graphic Art 09", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(9).jpg"
-}
-    , {
-    "title": "Graphic Art 10", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(10).jpg"
-}
-    , {
-    "title": "Graphic Art 11", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(11).jpg"
-}
-    , {
-    "title": "Graphic Art 12", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(12).jpg"
-}
-    , {
-    "title": "Graphic Art 13", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(13).jpg"
-}
-    , {
-    "title": "Graphic Art 14", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(14).jpg"
-}
-    , {
-    "title": "Graphic Art 15", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(15).jpg"
-}
-    , {
-    "title": "Graphic Art 16", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(16).jpg"
-}
-    , {
-    "title": "Graphic Art 17", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(17).jpg"
-}
-    , {
-    "title": "Graphic Art 18", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(18).jpg"
-}
-    , {
-    "title": "Satisfied", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(45).jpg"
-}
-    , {
-    "title": "CCH 2024", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(46).jpg"
-}
-    , {
-    "title": "Graphic Art 19", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(19).avif"
-}
-    , {
-    "title": "Graphic Art 20", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(20).avif"
-}
-    , {
-    "title": "Graphic Art 21", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(21).jpg"
-}
-    , {
-    "title": "Graphic Art 22", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(22).jpg"
-}
-    , {
-    "title": "Graphic Art 28", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(28).jpg"
-}
-    , {
-    "title": "Graphic Art 29", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(29).jpg"
-}
-    , {
-    "title": "Graphic Art 30", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(30).jpg"
-}
-    , {
-    "title": "Graphic Art 31", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(31).jpg"
-}
-    , {
-    "title": "Graphic Art 32", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(32).jpg"
-}
-    , {
-    "title": "Graphic Art 33", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(33).jpg"
-}
-    , {
-    "title": "Graphic Art 34", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(34).jpg"
-}
-    , {
-    "title": "Graphic Art 35", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(35).jpg"
-}
-    , {
-    "title": "Graphic Art 36", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(36).jpg"
-}
-    , {
-    "title": "Graphic Art 37", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(37).jpg"
-}
-    , {
-    "title": "Graphic Art 38", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(38).jpg"
-}
-    , {
-    "title": "Graphic Art 39", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(39).jpg"
-}
-    , {
-    "title": "Graphic Art 40", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(40).jpg"
-}
-    , {
-    "title": "Graphic Art 41", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(41).jpg"
-}
-    , {
-    "title": "Graphic Art 42", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(42).jpg"
-}
-    , {
-    "title": "Graphic Art 43", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(43).jpg"
-}
-    , {
-    "title": "Graphic Art 44", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(44).jpg"
-}
-    , {
-    "title": "Graphic Art 45", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(45).jpg"
-}
-    , {
-    "title": "Graphic Art 46", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(46).jpg"
-}
-    , {
-    "title": "Graphic Art 47", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(47).jpg"
-}
-    , {
-    "title": "Graphic Art 48", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(48).jpg"
-}
-    , {
-    "title": "Graphic Art 49", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(49).jpg"
-}
-    , {
-    "title": "Graphic Art 50", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(50).jpg"
-}
-    , {
-    "title": "Graphic Art 51", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(51).jpg"
-}
-    , {
-    "title": "Graphic Art 52", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(52).jpg"
-}
-    , {
-    "title": "Graphic Art 53", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(53).jpg"
-}
-    , {
-    "title": "Graphic Art 54", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(54).jpg"
-}
-    , {
-    "title": "Graphic Art 55", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(55).jpg"
-}
-    , {
-    "title": "Graphic Art 56", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(56).jpg"
-}
-    , {
-    "title": "Graphic Art 57", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(57).png"
-}
-    , {
-    "title": "Graphic Art 58", "cat": "Graphics Design", "type": "iframe", "url": "https://www.canva.com/design/DAG9kCov0b8/vPyilNilJww34NmSz8wmTw/view"
-}
-    , {
-    "title": "VFX Intro Reel", "cat": "3D & VFX", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769428630/VFX_Intro_Reel_l0fmqw.mp4"
-}
-    , {
-    "title": "iPad Air 2023", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/iPad%20Air%202023.mp4"
-}
-    , {
-    "title": "3D Headset", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/3D%20Headset.mp4"
-}
-    , {
-    "title": "Random Render A", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/Random%20Render%20A.mp4"
-}
-    , {
-    "title": "Minimie Ad Concept", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/Minimie%20Ad%20Concept.mp4"
-}
-    , {
-    "title": "Character FX Simulation", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/Character%20FX%20Simulation.mp4"
-}
-    , {
-    "title": "VFX Car Shot", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/VFX%20Car%20Shot.mp4"
-}
-    , {
-    "title": "Instagram VFX", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/Instagram%20VFX.mp4"
-}
-    , {
-    "title": "Random Render B", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/Random%20Render%20B.mp4"
-}
-    , {
-    "title": "Product Commercial Exam", "cat": "3D & VFX", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769433928/Product_Commercial_Exam_gmlyp0.mp4"
-}
-    , {
-    "title": "3D Animation Sequence", "cat": "3D & VFX", "type": "video", "url": "./assets/3D%20&%20VFX/0001-0148.mp4"
-}
-    , {
-    "title": "Car VFX Still", "cat": "3D & VFX", "url": "./assets/3D%20&%20VFX/Car%20VFX%20Still.jpg"
-}
-    , {
-    "title": "Hypo Ad Campaign", "cat": "Video Editing", "type": "video", "url": "./assets/Video%20Editing/Hypo%20Ad%20Campaign.mp4"
-}
-    , {
-    "title": "Situation of Nigeria 2024", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769427459/Situation_of_Nigeria_2024_evmjxy.mp4"
-}
-    , {
-    "title": "Na Hunger Cause Am", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769395474/Na_Hunger_Cause_Am_yhhgje.mp4"
-}
-    , {
-    "title": "The Pen Skit", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769396398/The_Pen_Skit_ierx9y.mp4"
-}
-    , {
-    "title": "POV: Maths Teacher", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769427423/POV_Maths_Teacher_r5p696.mp4"
-}
-    , {
-    "title": "La La Land Skit", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769420831/La_La_Land_Skit_w14v8x.mp4"
-}
-    , {
-    "title": "Enter Me", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769426290/Enter_Me_r3lqgk.mp4"
-}
-    , {
-    "title": "100 Level News Project😂👌", "cat": "Video Editing", "type": "video", "url": "https://res.cloudinary.com/deacdvqxk/video/upload/v1769373338/100_Level_News_Project_oybl61.mp4"
-}
-    , {
-    "title": "PRE327 Video Project", "cat": "Video Editing", "type": "video", "url": "./assets/Video%20Editing/PRE327%20PROJECT.mp4"
-}
-    , {
-    "title": "AI Animation 1", "cat": "AI", "type": "video", "url": "./assets/AI/AI%20Animation%201.mp4"
-}
-    , {
-    "title": "AI Animation 2", "cat": "AI", "type": "video", "url": "./assets/AI/AI%20Animation%202.mp4"
-}
-    , {
-    "title": "A Guy Trying", "cat": "AI", "type": "video", "url": "./assets/AI/A%20Guy%20Trying.mp4"
-}
-    , {
-    "title": "PRE327 AI Project", "cat": "AI", "type": "video", "url": "./assets/AI/PRE327%20PROJECT.mp4"
-}
-    , {
-    "title": "Sweet Touch Ventures", "cat": "Website", "url": "https://image.thum.io/get/width/800/crop/800/https://sweettouchventures.vercel.app/", "projectUrl": "https://sweettouchventures.vercel.app/"
-}
-    , {
-    "title": "Samsco Portfolio v1", "cat": "Website", "url": "https://image.thum.io/get/width/800/crop/800/https://samsco.vercel.app/", "projectUrl": "https://samsco.vercel.app/"
-}
-    , {
-    "title": "RCCG Faith Tabernacle", "cat": "Website", "url": "https://image.thum.io/get/width/800/crop/800/https://rccgparish.wixsite.com/rccgfaithtabernacle", "projectUrl": "https://rccgparish.wixsite.com/rccgfaithtabernacle"
-}
-    , {
-    "title": "TforTrendz YouTube", "cat": "Social Management", "url": "./assets/Social%20Management/tfortrendz-thumbnail.png", "projectUrl": "https://www.youtube.com/@TforTrendz", "stats": {
-        "subscribers": "100+", "views": "95K", "videos": "85+"
-    }
+const localGalleryConfig = window.localGalleryConfig || [];
+let galleryConfig = [...localGalleryConfig];
 
+// Load cached works from localStorage on startup
+try {
+    const cachedWorks = localStorage.getItem("samsco_works_cache");
+    if (cachedWorks) {
+        galleryConfig = JSON.parse(cachedWorks);
+    }
+} catch (e) {
+    console.error("Failed to parse cached works:", e);
 }
-    , {
-    "title": "Presentation 1", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAG5MPzCT9s/WUjeA7tSJM_X_knOCgXLXg/view"
+
+// Fetch works from Supabase dynamically
+async function fetchWorksFromSupabase() {
+    if (!window.supabaseClient) {
+        console.log("Supabase client not initialized - using local gallery config");
+        return;
+    }
+    console.log("Fetching works from Supabase...");
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("works")
+            .select("*")
+            .order("created_at", { ascending: false });
+            
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            console.log(`Loaded ${data.length} works from Supabase`);
+            // Format works to match galleryConfig structure
+            const formattedWorks = data.map(item => ({
+                title: item.title,
+                cat: item.cat,
+                url: item.url,
+                type: item.type || (item.url.endsWith(".mp4") ? "video" : "image"),
+                projectUrl: item.projectUrl || "",
+                client: item.client || "Private Client",
+                year: item.year || "2024",
+                role: item.role || "Creative Lead",
+                desc: item.desc || "",
+                tags: item.tags ? item.tags.split(",").map(t => t.trim()) : []
+            }));
+            
+            // Compare and update if changed
+            const isChanged = JSON.stringify(formattedWorks) !== JSON.stringify(galleryConfig);
+            if (isChanged) {
+                galleryConfig = formattedWorks;
+                localStorage.setItem("samsco_works_cache", JSON.stringify(galleryConfig));
+                
+                // If vault page or main page has already rendered, force re-render
+                if (galleryInitialized) {
+                    galleryInitialized = false;
+                    if (typeof initGallery === 'function') {
+                        initGallery(true);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching works from Supabase:", e);
+    }
 }
-    , {
-    "title": "Presentation 2", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGlmu7xNCg/pJpf9XlkTukhwqJoU44wIQ/view"
-}
-    , {
-    "title": "Presentation 3", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGZ1n4efb4/aIb1mhPK1Ih1lcgcy2-3qw/view"
-}
-    , {
-    "title": "Presentation 4", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGbvggkPeY/fWLe5spSL401NWmuAy5ALQ/view"
-}
-    , {
-    "title": "Presentation 5", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGbvjyze3o/JJxneA8SvZkxMewqx-qhdw/view"
-}
-    , {
-    "title": "Presentation 6", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGlUkXPUOo/eha8IUZ9xv98gsKSessxoQ/view"
-}
-    , {
-    "title": "Presentation 7", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGfdbkES60/cEpha2EZP5BG_aNbCm2m1g/view"
-}
-    , {
-    "title": "Presentation 8", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGlqyIm6cM/f8wIbADUuBhEA8Otz3Tr1A/view"
-}
-    , {
-    "title": "Presentation 9", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGl2WxIlYI/aUty1AkpBjaObMhBo9q_pw/view"
-}
-    , {
-    "title": "Presentation 10", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGolgtVa3M/oIVck2MQETy18v8mTO-Dhg/view"
-}
-    , {
-    "title": "Presentation 11", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGtSnAFHiI/MplySYYQKQMLq62dKOe_qQ/view"
-}
-    , {
-    "title": "Presentation 12", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGURwQGzsI/RD8CfiopXAs5AYXlooC_yA/view"
-}
-    , {
-    "title": "Presentation 13", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGeROxTabM/TGj5fW--_Am0AP4V6tilBQ/view"
-}
-    , {
-    "title": "Graphics Design 59", "cat": "Graphics Design", "type": "iframe", "url": "https://www.canva.com/design/DAGQp7ZorVI/3PWh7TEDLJzxRedZ_pXtXQ/view"
-}
-    , {
-    "title": "Presentation 14", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGcFpCQ1ZQ/E559wRx7_JMPLeT8nZPGxg/view"
-}
-    , {
-    "title": "Presentation 15", "cat": "Presentations", "type": "iframe", "url": "https://www.canva.com/design/DAGlUeOB954/W76lcwkeUdRCPGwwoRmaYA/view"
-}
-    , {
-    "title": "Graphics Design 60", "cat": "Graphics Design", "type": "iframe", "url": "https://www.canva.com/design/DAGcGAsUpvU/1K4sNLIU12LjX06hCTsG9Q/view"
-}
-    , {
-    "title": "Graphics Design 61", "cat": "Graphics Design", "type": "iframe", "url": "https://www.canva.com/design/DAGZ0bfoWXk/-mCx81UG09fQXf9sA4hfRg/view"
-}
-    , {
-    "title": "Graphics Design 62", "cat": "Graphics Design", "type": "iframe", "url": "https://www.canva.com/design/DAGNQIL6Opo/_xvlN-tPHcUjFdG8d1kp9w/view"
-}
-], galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"], galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
+
+// Start fetch in background
+document.addEventListener("DOMContentLoaded", () => {
+    // Small delay to let initial paint complete smoothly
+    setTimeout(fetchWorksFromSupabase, 200);
+});
+
+const galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"], galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
 let currentFilter = "ALL", galleryItems = [], visibleGalleryItems = [], galleryInitialized = !1, filtersInitialized = !1;
 const categoryColors = {
     ALL: "#0071e3", "Graphics Design": "#0071e3", "3D & VFX": "#bf5af2", "Video Editing": "#ff375f", "Coding & Data Analytics": "#30d158", AI: "#ff9f0a", Website: "#06b6d4", "Social Management": "#ec4899", "Presentations": "#10b981", "Presentations": "#10b981"
@@ -414,7 +172,7 @@ function filterGalleryItems(e) {
         visibleGalleryItems = [];
         t.forEach(t => {
             const a = t.getAttribute("data-cat");
-            if ("ALL" === e || a === e) {
+            if ("ALL" === e || (a && a.split(',').map(c => c.trim()).includes(e))) {
                 visibleGalleryItems.push(t);
                 t.style.display = "block";
                 gsap.to(t, { scale: 1, opacity: 1, duration: .3, ease: "power2.out" });
@@ -433,7 +191,7 @@ function filterGalleryItems(e) {
             msg.id = 'empty-category-msg';
             msg.className = 'col-span-full py-20 text-center flex flex-col items-center justify-center';
             msg.innerHTML = `
-                <div class="text-6xl mb-6">🧑‍💻</div>
+                <svg class="w-16 h-16 text-blue-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                 <h3 class="text-3xl font-bold text-white mb-3">Compiling Awesomeness</h3>
                 <p class="text-white/60 max-w-md mx-auto text-lg">My Coding & Data Analytics projects are currently being updated and will be available here soon.</p>
             `;
@@ -474,8 +232,8 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         root: document.getElementById("full-gallery-modal"), rootMargin: "200px"
     }
 );
-function initGallery() {
-    if (galleryInitialized) return;
+function initGallery(force = false) {
+    if (galleryInitialized && !force) return;
     galleryGrid.innerHTML = "";
     const e = galleryConfig.length;
     for (let t = 0;
@@ -487,10 +245,11 @@ function initGallery() {
 `), i.setAttribute("data-cat", a), i.setAttribute("data-type", e.type === "iframe" ? "iframe" : r ? "video" : "image"), i.setAttribute("data-url", e.url);
         let o = "", n = e.url.split("?")[0], s = n;
         e.url.includes("imgix.net") && (s = n + "?w=400&q=40&auto=format");
+        const firstCat = a ? a.split(",")[0].trim() : "";
         const l = {
             "Graphics Design": "#0071e3", "3D & VFX": "#bf5af2", "Video Editing": "#ff375f", "Coding & Data Analytics": "#30d158", AI: "#ff9f0a", Website: "#06b6d4", "Social Management": "#ff375f", "Presentations": "#10b981"
         }
-        [a] || "#0071e3";
+        [firstCat] || "#0071e3";
         e.projectUrl && i.setAttribute("data-project-url", e.projectUrl);
         const thumbUrl = e.type === "iframe" ? `https://image.thum.io/get/width/400/crop/800/noanimate/${e.url}` : s;
         o = e.type === "iframe" ? `<div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">\n            <img data-src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">\n            <div class="absolute inset-0 flex items-center justify-center">\n                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">\n                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>\n                </div>\n            </div>\n        </div>` : r ? `
@@ -764,15 +523,16 @@ projectArray.forEach((e, t) => e.addEventListener("click", () => openProjectModa
 const cursor = document.getElementById("cursor");
 if (window.matchMedia("(pointer: fine)").matches) {
     cursor.style.display = "block";
-    let o = 0, n = 0;
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
     function updateCursor() {
-        gsap.to(cursor, {
-            x: o, y: n, duration: .18, ease: "power3.out", overwrite: "auto"
-        }
-        ), requestAnimationFrame(updateCursor)
+        currentX += (targetX - currentX) * 0.15;
+        currentY += (targetY - currentY) * 0.15;
+        cursor.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
+        requestAnimationFrame(updateCursor);
     }
     document.addEventListener("mousemove", e => {
-        o = e.clientX, n = e.clientY
+        targetX = e.clientX, targetY = e.clientY
     }
     ), updateCursor(), document.querySelectorAll("a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item").forEach(e => {
         e.addEventListener("mouseenter", () => cursor.classList.add("hovered")), e.addEventListener("mouseleave", () => cursor.classList.remove("hovered"))
@@ -835,164 +595,352 @@ window.addEventListener("scroll", () => {
     }
 ), function () {
     "use strict";
-    const e = document.getElementById("headset-canvas"), t = document.getElementById("headset-wrapper"), a = document.getElementById("headset-loader"), r = document.getElementById("headset-loader-bar"), i = document.getElementById("headset-loader-text");
-    if (!e || !t) return void console.warn("⚠️ Headset canvas elements not found");
-    const o = 192, n = "./scroller/", s = ".webp", l = 4, c = "top top", d = "+=250%", g = .8, p = 900, u = 900, m = 2, h = .5, y = .65, f = 1.8, b = [];
-    let v, w = 0, G = 0, x = 0, E = -1, A = !1, I = null, L = 1, D = 0, T = 0;
-    function C(e, t) {
-        const a = Math.round(e / t * 100);
-        r && (r.style.width = `${a
-            }
-%`), i && (i.textContent = `LOADING ${a
-                }
-%`)
+    const canvas = document.getElementById("headset-canvas"),
+          wrapper = document.getElementById("headset-wrapper"),
+          loader = document.getElementById("headset-loader"),
+          loaderBar = document.getElementById("headset-loader-bar"),
+          loaderText = document.getElementById("headset-loader-text");
+          
+    if (!canvas || !wrapper) return void console.warn("⚠️ Headset canvas elements not found");
+    
+    const totalFrames = 192,
+          framePath = "./scroller/",
+          frameExt = ".webp",
+          padLength = 4,
+          scrollStart = "top top",
+          scrollEnd = "+=250%",
+          scrubVal = 0.8,
+          origWidth = 900,
+          origHeight = 900,
+          maxPixelRatio = 2,
+          initialOpacity = 0.5,
+          maxOpacity = 0.65,
+          aspectScale = 1.8,
+          images = [];
+          
+    let resizeTimeout,
+        loadedCount = 0,
+        failedCount = 0,
+        currentFrameIndex = 0,
+        lastDrawnIndex = -1,
+        isFullyInitialized = false,
+        ctx = null,
+        pixelRatio = 1,
+        canvasWidth = 0,
+        canvasHeight = 0;
+        
+    const isMobileDevice = window.innerWidth < 768;
+
+    function updateLoaderProgress(loaded, total) {
+        const percent = Math.round(loaded / total * 100);
+        if (loaderBar) loaderBar.style.width = `${percent}%`;
+        if (loaderText) loaderText.textContent = `LOADING ${percent}%`;
     }
-    function B() {
-        a && (a.style.opacity = "0", setTimeout(() => {
-            a.style.display = "none"
+    
+    function hideLoader() {
+        if (loader) {
+            loader.style.opacity = "0";
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 500);
         }
-            , 500))
     }
-    function M() {
-        I = e.getContext("2d", {
-            alpha: !0, desynchronized: !0, willReadFrequently: !1
+    
+    function initContext() {
+        ctx = canvas.getContext("2d", {
+            alpha: true,
+            desynchronized: true,
+            willReadFrequently: false
+        });
+        resizeCanvas();
+    }
+    
+    function resizeCanvas() {
+        pixelRatio = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
+        const winWidth = window.innerWidth,
+              winHeight = window.innerHeight,
+              aspectRatio = origWidth / origHeight;
+              
+        if (winWidth / winHeight > aspectRatio) {
+            canvasWidth = Math.min(0.9 * winWidth, origWidth);
+            canvasHeight = canvasWidth / aspectRatio;
+        } else {
+            canvasHeight = Math.min(0.9 * winHeight, origHeight);
+            canvasWidth = canvasHeight * aspectRatio;
         }
-        ), k()
-    }
-    function k() {
-        L = Math.min(window.devicePixelRatio || 1, m);
-        const t = window.innerWidth, a = window.innerHeight, r = p / u;
-        t / a > r ? (D = Math.min(.9 * t, p), T = D / r) : (T = Math.min(.9 * a, u), D = T / r), e.style.width = `${D
-            }
-px`, e.style.height = `${T
-            }
-px`, e.width = Math.floor(D * L), e.height = Math.floor(T * L), A && b[x] && S(x)
-    }
-    function j(t, a) {
-        b[t] || (b[t] = new Image, b[t].decoding = "async");
-        const r = b[t], i = function (e) {
-            const t = String(e + 1).padStart(l, "0");
-            return `${n
-                }
-${t
-                }
-${s
-                }
-`
+        
+        canvas.style.width = `${canvasWidth}px`;
+        canvas.style.height = `${canvasHeight}px`;
+        canvas.width = Math.floor(canvasWidth * pixelRatio);
+        canvas.height = Math.floor(canvasHeight * pixelRatio);
+        
+        if (isFullyInitialized && images[currentFrameIndex]) {
+            drawFrame(currentFrameIndex);
         }
-            (t);
-        r.onload = () => {
-            w++, C(w + G, o), 0 !== t || A || (console.log("✅ First frame loaded - showing preview"), S(0), e.style.opacity = h), !A && w >= .3 * o && (A = !0, console.log(`✅ ${w
+    }
+    
+    function loadFrameImage(index) {
+        if (images[index]) return;
+        images[index] = new Image();
+        images[index].decoding = "async";
+        
+        const img = images[index];
+        const padStr = String(index + 1).padStart(padLength, "0");
+        const srcPath = `${framePath}${padStr}${frameExt}`;
+        
+        img.onload = () => {
+            loadedCount++;
+            if (!isMobileDevice) {
+                updateLoaderProgress(loadedCount + failedCount, totalFrames);
+                
+                if (index === 0 && !isFullyInitialized) {
+                    console.log("✅ First frame loaded - showing preview");
+                    drawFrame(0);
+                    canvas.style.opacity = initialOpacity;
                 }
- frames loaded - starting animation`), V(), B()), w + G === o && console.log(`🎉 All frames processed: ${w
-                    }
- loaded, ${G
-                    }
- failed`)
-        }
-            , r.onerror = () => {
-                G++, console.warn(`❌ Failed to load: ${i
-                    }
-`), C(w + G, o), 0 === t && (console.error("⚠️ First frame failed! Trying fallback image..."), function () {
-                        const t = new Image;
-                        t.onload = () => {
-                            console.log("✅ Fallback image loaded"), I.setTransform(1, 0, 0, 1, 0, 0), I.clearRect(0, 0, e.width, e.height), I.setTransform(L, 0, 0, L, 0, 0), P(I, t, D, T), e.style.opacity = h, B()
-                        }
-                            , t.onerror = () => {
-                                console.warn("❌ Fallback image also failed"), B()
-                            }
-                            , t.src = "./3D Headset.avif"
-                    }
-                        ()), w + G === o && (console.log(`🎉 All frames processed: ${w
-                            }
- loaded, ${G
-                            }
- failed`), w > 0 && !A && (A = !0, V(), B()))
+                
+                if (!isFullyInitialized && loadedCount >= Math.floor(0.3 * totalFrames)) {
+                    isFullyInitialized = true;
+                    console.log(`✅ ${loadedCount} frames loaded - starting animation`);
+                    initScrollTrigger();
+                    hideLoader();
+                }
+                
+                if (loadedCount + failedCount === totalFrames) {
+                    console.log(`🎉 All frames processed: ${loadedCount} loaded, ${failedCount} failed`);
+                }
             }
-            , r.src = i
+        };
+        
+        img.onerror = () => {
+            failedCount++;
+            console.warn(`❌ Failed to load: ${srcPath}`);
+            if (!isMobileDevice) {
+                updateLoaderProgress(loadedCount + failedCount, totalFrames);
+                
+                if (index === 0) {
+                    console.error("⚠️ First frame failed! Trying fallback image...");
+                    loadFallbackImage();
+                }
+                
+                if (loadedCount + failedCount === totalFrames) {
+                    console.log(`🎉 All frames processed: ${loadedCount} loaded, ${failedCount} failed`);
+                    if (loadedCount > 0 && !isFullyInitialized) {
+                        isFullyInitialized = true;
+                        initScrollTrigger();
+                        hideLoader();
+                    }
+                }
+            }
+        };
+        
+        img.src = srcPath;
     }
-    function S(t) {
-        if (t < 0 || t >= o) return;
-        const a = b[t];
-        a && a.complete && 0 !== a.naturalWidth && t !== E && (I.setTransform(1, 0, 0, 1, 0, 0), I.clearRect(0, 0, e.width, e.height), I.setTransform(L, 0, 0, L, 0, 0), P(I, a, D, T), E = t)
+    
+    function loadFallbackImage() {
+        const fallback = new Image();
+        fallback.onload = () => {
+            console.log("✅ Fallback image loaded");
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            drawCoverImage(ctx, fallback, canvasWidth, canvasHeight);
+            canvas.style.opacity = initialOpacity;
+            hideLoader();
+        };
+        fallback.onerror = () => {
+            console.warn("❌ Fallback image also failed");
+            hideLoader();
+        };
+        fallback.src = "./3D Headset.avif";
     }
-    function P(e, t, a, r) {
-        const i = f || 1, o = t.naturalWidth / t.naturalHeight / i;
-        let n, s, l, c;
-        o > a / r ? (s = r, n = r * o, l = (a - n) / 2, c = 0) : (n = a, s = a / o, l = 0, c = (r - s) / 2), e.drawImage(t, l, c, n, s)
+    
+    function drawFrame(index) {
+        if (index < 0 || index >= totalFrames) return;
+        
+        let targetFrame = index;
+        if (!images[targetFrame] || !images[targetFrame].complete || 0 === images[targetFrame].naturalWidth) {
+            let found = false;
+            for (let offset = 1; offset < totalFrames; offset++) {
+                const prev = index - offset;
+                const next = index + offset;
+                if (prev >= 0 && images[prev] && images[prev].complete && 0 !== images[prev].naturalWidth) {
+                    targetFrame = prev;
+                    found = true;
+                    break;
+                }
+                if (next < totalFrames && images[next] && images[next].complete && 0 !== images[next].naturalWidth) {
+                    targetFrame = next;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return;
+        }
+
+        const img = images[targetFrame];
+        if (img && targetFrame !== lastDrawnIndex) {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            drawCoverImage(ctx, img, canvasWidth, canvasHeight);
+            lastDrawnIndex = targetFrame;
+        }
     }
-    function V() {
-        if ("undefined" == typeof gsap || "undefined" == typeof ScrollTrigger) return void console.error("❌ GSAP or ScrollTrigger not loaded");
+    
+    function drawCoverImage(ctx, img, w, h) {
+        const scale = aspectScale || 1,
+              aspectRatio = (img.naturalWidth / img.naturalHeight) / scale;
+        let nw, nh, dx, dy;
+        
+        if (aspectRatio > w / h) {
+            nh = h;
+            nw = h * aspectRatio;
+            dx = (w - nw) / 2;
+            dy = 0;
+        } else {
+            nw = w;
+            nh = w / aspectRatio;
+            dx = 0;
+            dy = (h - nh) / 2;
+        }
+        ctx.drawImage(img, dx, dy, nw, nh);
+    }
+    
+    function initScrollTrigger() {
+        if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+            return void console.error("❌ GSAP or ScrollTrigger not loaded");
+        }
         gsap.registerPlugin(ScrollTrigger);
         gsap.timeline({
             scrollTrigger: {
-                trigger: "#home", start: c, end: d, scrub: g, onUpdate: t => {
-                    const a = t.progress, r = Math.round(a * (o - 1));
-                    r !== x && (x = r, requestAnimationFrame(() => {
-                        S(x)
+                trigger: "#home",
+                start: scrollStart,
+                end: scrollEnd,
+                scrub: scrubVal,
+                onUpdate: self => {
+                    const progress = self.progress;
+                    const frame = Math.round(progress * (totalFrames - 1));
+                    if (frame !== currentFrameIndex) {
+                        currentFrameIndex = frame;
+                        requestAnimationFrame(() => drawFrame(currentFrameIndex));
                     }
-                    ));
-                    const i = h + .15 * a;
-                    e.style.opacity = Math.min(i, y)
-                }
-                , onEnter: () => {
-                    e.classList.add("active")
-                }
-                , onLeave: () => {
-                    e.classList.remove("active")
-                }
-                , onEnterBack: () => {
-                    e.classList.add("active")
-                }
-                , onLeaveBack: () => {
-                    e.classList.remove("active")
-                }
+                    const opacity = initialOpacity + 0.15 * progress;
+                    canvas.style.opacity = Math.min(opacity, maxOpacity);
+                },
+                onEnter: () => canvas.classList.add("active"),
+                onLeave: () => canvas.classList.remove("active"),
+                onEnterBack: () => canvas.classList.add("active"),
+                onLeaveBack: () => canvas.classList.remove("active")
+            }
+        });
+        console.log("✅ ScrollTrigger initialized for frame sequence");
+    }
+    
+    function onResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            resizeCanvas();
+            lastDrawnIndex = -1;
+            drawFrame(currentFrameIndex);
+        }, 150);
+    }
+    
+    function onVisibilityChange() {
+        if (!document.hidden && isFullyInitialized) {
+            lastDrawnIndex = -1;
+            drawFrame(currentFrameIndex);
+        }
+    }
+    
+    console.log("🎬 Initializing Scroll-Reactive Image Sequence");
+    initContext();
+    window.addEventListener("resize", onResize, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    
+    if (isMobileDevice) {
+        console.log("📱 Mobile device detected - loading static fallback background");
+        const fallback = new Image();
+        fallback.onload = () => {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+            drawCoverImage(ctx, fallback, canvasWidth, canvasHeight);
+            canvas.style.opacity = initialOpacity;
+            hideLoader();
+        };
+        fallback.onerror = () => {
+            hideLoader();
+        };
+        fallback.src = "./3D Headset.avif";
+        return;
+    }
 
-            }
+    loadFrameImage(0);
 
+    window.addEventListener("load", () => {
+        setTimeout(startProgressiveLoading, 500);
+    });
+
+    function startProgressiveLoading() {
+        console.log("🎬 Starting progressive load of 3D Headset sequence");
+        const coarseFrames = [];
+        for (let i = 0; i < totalFrames; i += 4) {
+            coarseFrames.push(i);
         }
-        );
-        console.log("✅ ScrollTrigger initialized for frame sequence")
-    }
-    function F() {
-        clearTimeout(v), v = setTimeout(() => {
-            k(), E = -1, S(x)
+        if (!coarseFrames.includes(totalFrames - 1)) coarseFrames.push(totalFrames - 1);
+        if (!coarseFrames.includes(0)) coarseFrames.unshift(0);
+
+        let index = 0;
+        function loadCoarseBatch() {
+            const batchSize = 4;
+            const end = Math.min(index + batchSize, coarseFrames.length);
+            for (let i = index; i < end; i++) {
+                loadFrameImage(coarseFrames[i]);
+            }
+            index = end;
+            if (index < coarseFrames.length) {
+                setTimeout(loadCoarseBatch, 50);
+            } else {
+                loadRemainingFrames();
+            }
         }
-            , 150)
+        loadCoarseBatch();
     }
-    function q() {
-        document.hidden || A && (E = -1, S(x))
-    }
-    console.log("🎬 Initializing Scroll-Reactive Image Sequence"), console.log(`📁 Frame path: ${n
+
+    function loadRemainingFrames() {
+        const remainingFrames = [];
+        for (let i = 0; i < totalFrames; i++) {
+            if (i % 4 !== 0 && i !== totalFrames - 1) {
+                remainingFrames.push(i);
+            }
         }
-`), console.log(`📊 Frame count: ${o
+
+        let index = 0;
+        function loadRemainingBatch() {
+            const batchSize = 6;
+            const end = Math.min(index + batchSize, remainingFrames.length);
+            for (let i = index; i < end; i++) {
+                loadFrameImage(remainingFrames[i]);
             }
-`), M(), window.addEventListener("resize", F, {
-                passive: !0
+            index = end;
+            if (index < remainingFrames.length) {
+                if (window.requestIdleCallback) {
+                    window.requestIdleCallback(() => loadRemainingBatch(), { timeout: 200 });
+                } else {
+                    setTimeout(loadRemainingBatch, 50);
+                }
             }
-            ), document.addEventListener("visibilitychange", q), function () {
-                console.log(`🎬 Loading ${o
-                    }
- frames from ${n
-                    }
-`);
-                for (let e = 0;
-                    e < o;
-                    e++)b[e] = new Image, b[e].decoding = "async";
-                const e = [0, Math.floor(o / 4), Math.floor(o / 2), Math.floor(3 * o / 4), o - 1];
-                e.forEach(e => j(e));
-                for (let t = 0;
-                    t < o;
-                    t++)e.includes(t) || j(t)
-            }
-            ()
+        }
+        loadRemainingBatch();
+    }
 }
         ();
 const isMobile = window.innerWidth < 768;
 function startTextAnimation() {
     setInterval(rotateText, 4e3)
 }
-const preloader = document.getElementById("preloader"), loaderPercent = document.getElementById("loader-percent"), loaderBar = document.getElementById("loader-bar"), allImages = Array.from(document.querySelectorAll("img[src]")).map(e => e.src), criticalResources = ["./SAMSCO.png", "./me 3.png", "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"];
+const preloader = document.getElementById("preloader"), loaderPercent = document.getElementById("loader-percent"), loaderBar = document.getElementById("loader-bar"), allImages = Array.from(document.querySelectorAll("img[src]")).map(e => e.src), criticalResources = ["./SAMSCO.jpg", "./me_3.jpg", "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"];
 let loadedCount = 0;
 const totalResources = criticalResources.length + 2;
 function updateProgress(e = 1) {
@@ -1108,8 +1056,9 @@ deg) scale(1.02)`
 const canvas = document.getElementById("particle-canvas");
 if (canvas) {
     const l = canvas.getContext("2d");
+    const mouse = { x: null, y: null };
     let c, d, g = [];
-    const p = isMobile ? 30 : 80, u = 150;
+    const p = isMobile ? 15 : 45, u = 100;
     function resize() {
         c = window.innerWidth, d = window.innerHeight, canvas.width = c, canvas.height = d
     }
@@ -1140,7 +1089,15 @@ if (canvas) {
     for (let h = 0;
         h < p;
         h++)g.push(new m);
+        
+    let animationFrameId = null;
+    let isCanvasVisible = false;
+    
     function animate() {
+        if (!isCanvasVisible) {
+            animationFrameId = null;
+            return;
+        }
         l.clearRect(0, 0, c, d);
         for (let e = 0;
             e < g.length;
@@ -1153,17 +1110,34 @@ if (canvas) {
                 if (i < u) {
                     l.beginPath();
                     let a = 1 - i / u;
-                    l.strokeStyle = `rgba(255, 255, 255, ${.15 * a
-                        }
-)`, l.lineWidth = 1, l.moveTo(g[e].x, g[e].y), l.lineTo(g[t].x, g[t].y), l.stroke()
+                    l.strokeStyle = `rgba(255, 255, 255, ${.15 * a})`;
+                    l.lineWidth = 1;
+                    l.moveTo(g[e].x, g[e].y);
+                    l.lineTo(g[t].x, g[t].y);
+                    l.stroke();
                 }
-
             }
-
         }
-        requestAnimationFrame(animate)
+        animationFrameId = requestAnimationFrame(animate);
     }
 
+    const canvasObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            isCanvasVisible = entry.isIntersecting;
+            if (isCanvasVisible) {
+                if (!animationFrameId) {
+                    animate();
+                }
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            }
+        });
+    }, { threshold: 0.01 });
+    
+    canvasObserver.observe(canvas);
 }
 const counterElements = document.querySelectorAll(".counter-value");
 let countersAnimated = !1;
@@ -1293,14 +1267,25 @@ if (document.addEventListener("keydown", e => {
     if (e.key === konamiCode[konamiIndex]) {
         if (konamiIndex++, konamiIndex === konamiCode.length) {
             document.body.style.animation = "rainbow-bg 2s ease infinite";
-            for (let e = 0;
-                e < 50;
-                e++) {
-                const e = document.createElement("div");
-                e.className = "fixed pointer-events-none text-3xl z-[9999]", e.textContent = ["🎉", "🎊", "✨", "🚀", "💫"][Math.floor(5 * Math.random())], e.style.left = 100 * Math.random() + "vw", e.style.top = "-50px", document.body.appendChild(e), gsap.to(e, {
-                    y: window.innerHeight + 100, x: 200 * (Math.random() - .5), rotation: 720 * Math.random(), duration: 3 + 2 * Math.random(), ease: "power1.out", onComplete: () => e.remove()
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement("div");
+                const size = 10 + Math.random() * 20;
+                const colors = ["#0071e3", "#64d2ff", "#bf5af2", "#ff375f", "#30d158", "#ff9f0a"];
+                const shape = Math.floor(3 * Math.random());
+                particle.style.position = "fixed", particle.style.pointerEvents = "none", particle.style.zIndex = "9999", particle.style.width = size + "px", particle.style.height = size + "px", particle.style.left = 100 * Math.random() + "vw", particle.style.top = "-50px";
+                if (shape === 0) {
+                    particle.style.borderRadius = "50%";
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                } else if (shape === 1) {
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                } else {
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.clipPath = "polygon(50% 0%, 0% 100%, 100% 100%)";
                 }
-                )
+                document.body.appendChild(particle);
+                gsap.to(particle, {
+                    y: window.innerHeight + 100, x: 300 * (Math.random() - .5), rotation: 720 * Math.random(), duration: 2 + 3 * Math.random(), ease: "power1.out", onComplete: () => particle.remove()
+                })
             }
             setTimeout(() => {
                 document.body.style.animation = ""
