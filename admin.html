@@ -130,10 +130,20 @@
                     </div>
                 </details>
 
-                <button type="submit" class="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.01] active:scale-95 text-sm">
-                    Connect Project
-                </button>
+                <div class="flex gap-3">
+                    <button type="button" id="setup-cancel-btn" class="hidden w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 text-sm">
+                        Cancel
+                    </button>
+                    <button type="submit" id="setup-submit-btn" class="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.01] active:scale-95 text-sm">
+                        Connect Project
+                    </button>
+                </div>
             </form>
+            <div id="disconnect-container" class="hidden mt-6 pt-6 border-t border-white/5 text-center">
+                <button type="button" id="setup-disconnect-btn" class="text-red-400 hover:text-red-300 text-xs font-semibold tracking-wider transition-colors uppercase">
+                    Disconnect Project & Clear Keys
+                </button>
+            </div>
             <p class="text-white/20 text-xs text-center mt-6 leading-relaxed">
                 Your keys will be saved in your browser's local storage.<br>
                 Refer to the setup instructions to create your database tables.
@@ -485,6 +495,11 @@
             
             // Screen router
             function checkAppState() {
+                const cancelBtn = document.getElementById("setup-cancel-btn");
+                const disconnectContainer = document.getElementById("disconnect-container");
+                if (cancelBtn) cancelBtn.classList.add("hidden");
+                if (disconnectContainer) disconnectContainer.classList.add("hidden");
+
                 const config = getSupabaseConfig();
                 
                 if (!config.url || !config.key) {
@@ -608,20 +623,56 @@
                 }
             });
 
-            // Reset credentials
-            const resetBtnHandler = () => {
+            // Edit credentials or disconnect
+            function openSetupScreenForEdit() {
+                const config = getSupabaseConfig();
+                document.getElementById("setup-url").value = config.url || "";
+                document.getElementById("setup-key").value = config.key || "";
+                document.getElementById("setup-r2-worker").value = localStorage.getItem("samsco_r2_worker") || "";
+                document.getElementById("setup-r2-key").value = localStorage.getItem("samsco_r2_key") || "";
+
+                setupCard.classList.remove("hidden");
+                loginCard.classList.add("hidden");
+                dashboard.classList.add("hidden");
+
+                const cancelBtn = document.getElementById("setup-cancel-btn");
+                const disconnectContainer = document.getElementById("disconnect-container");
+                if (cancelBtn) cancelBtn.classList.remove("hidden");
+                if (disconnectContainer) disconnectContainer.classList.remove("hidden");
+            }
+
+            const openEditHandler = (evt) => {
+                evt.preventDefault();
+                openSetupScreenForEdit();
+            };
+            document.getElementById("reset-setup-btn").addEventListener("click", openEditHandler);
+            document.getElementById("change-db-btn").addEventListener("click", openEditHandler);
+
+            document.getElementById("setup-cancel-btn").addEventListener("click", () => {
+                document.getElementById("setup-url").value = "";
+                document.getElementById("setup-key").value = "";
+                document.getElementById("setup-r2-worker").value = "";
+                document.getElementById("setup-r2-key").value = "";
+                checkAppState();
+            });
+
+            document.getElementById("setup-disconnect-btn").addEventListener("click", () => {
                 if (confirm("Are you sure you want to disconnect this Supabase project? This deletes the keys stored in localStorage.")) {
                     localStorage.removeItem("samsco_supabase_url");
                     localStorage.removeItem("samsco_supabase_key");
                     localStorage.removeItem("samsco_r2_worker");
                     localStorage.removeItem("samsco_r2_key");
                     window.supabaseClient = null;
+                    
+                    document.getElementById("setup-url").value = "";
+                    document.getElementById("setup-key").value = "";
+                    document.getElementById("setup-r2-worker").value = "";
+                    document.getElementById("setup-r2-key").value = "";
+                    
                     checkAppState();
                     showToast("Project credentials deleted.", "info");
                 }
-            };
-            document.getElementById("reset-setup-btn").addEventListener("click", resetBtnHandler);
-            document.getElementById("change-db-btn").addEventListener("click", resetBtnHandler);
+            });
 
             // ==========================================
             // CRUD DATA MANAGEMENT
