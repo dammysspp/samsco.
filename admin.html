@@ -208,6 +208,10 @@
                         </svg>
                         IMPORT LOCAL
                     </button>
+                    <button id="show-status-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300 flex items-center gap-2" title="Check Connection Status">
+                        <span class="w-2 h-2 rounded-full bg-white/30" id="header-status-dot"></span>
+                        STATUS
+                    </button>
                     <button id="logout-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300">
                         LOGOUT
                     </button>
@@ -451,6 +455,74 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- 5. CONNECTION STATUS DIALOG (MODAL) -->
+    <!-- ========================================== -->
+    <div id="status-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="admin-glass max-w-md w-full p-6 md:p-8 rounded-3xl relative transform scale-95 transition-transform duration-300">
+            <button id="close-status-modal-btn" class="absolute top-4 right-4 text-white/40 hover:text-white text-2xl transition-colors">&times;</button>
+            
+            <h2 class="text-2xl font-bold font-display mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                System Status
+            </h2>
+            
+            <div class="space-y-4">
+                <!-- Internet / Network Status -->
+                <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-500/10 rounded-xl">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2a2.5 2.5 0 002.5-2.5V10a2 2 0 00-2-2h-1.071a2 2 0 01-1.414-.586l-.828-.828A2 2 0 009.172 6H6.828a2 2 0 01-1.414-.586l-.828-.828A2 2 0 003.935 4L3.055 11z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-white">Network Connection</p>
+                            <p id="net-status-msg" class="text-[10px] text-white/40 mt-0.5">Checking...</p>
+                        </div>
+                    </div>
+                    <span id="net-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-white/5 text-white/60">CHECKING</span>
+                </div>
+
+                <!-- Supabase Status -->
+                <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-[#30d158]/10 rounded-xl">
+                            <svg class="w-5 h-5 text-[#30d158]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-white">Supabase DB</p>
+                            <p id="supabase-status-msg" class="text-[10px] text-white/40 mt-0.5">Checking...</p>
+                        </div>
+                    </div>
+                    <span id="supabase-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-white/5 text-white/60">CHECKING</span>
+                </div>
+
+                <!-- Cloudflare R2 Status -->
+                <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-[#ff9f0a]/10 rounded-xl">
+                            <svg class="w-5 h-5 text-[#ff9f0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-white">Cloudflare R2 Media</p>
+                            <p id="r2-status-msg" class="text-[10px] text-white/40 mt-0.5">Checking...</p>
+                        </div>
+                    </div>
+                    <span id="r2-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-white/5 text-white/60">CHECKING</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button id="run-diagnostics-btn" class="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold py-2.5 rounded-full transition-all duration-300 text-xs tracking-wider uppercase flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.22"></path></svg>
+                    Run Diagnostics
+                </button>
+                <button id="close-status-btn" class="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-bold py-2.5 rounded-full transition-all duration-300 text-xs tracking-wider uppercase">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JS LOGIC -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -467,8 +539,14 @@
             // Helper to show toasts (Status updates)
             function showToast(message, type = "success") {
                 toastText.innerText = message;
-                toast.classList.remove("border-green-500/20", "bg-green-950/80", "text-green-300", "border-red-500/20", "bg-red-950/80", "text-red-300", "border-blue-500/20", "bg-blue-950/80", "text-blue-300");
+                toast.classList.remove(
+                    "border-green-500/20", "bg-green-950/80", "text-green-300", 
+                    "border-red-500/20", "bg-red-950/80", "text-red-300", 
+                    "border-blue-500/20", "bg-blue-950/80", "text-blue-300",
+                    "border-[#ff9f0a]/20", "bg-yellow-950/80", "text-[#ff9f0a]"
+                );
                 toastIcon.innerHTML = "";
+                toastIcon.className = "w-6 h-6 rounded-full flex items-center justify-center shrink-0 ";
                 
                 if (type === "success") {
                     toast.classList.add("border-green-500/20", "bg-green-950/80", "text-green-300");
@@ -478,6 +556,10 @@
                     toast.classList.add("border-red-500/20", "bg-red-950/80", "text-red-300");
                     toastIcon.classList.add("bg-red-500/20");
                     toastIcon.innerHTML = `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                } else if (type === "warning") {
+                    toast.classList.add("border-[#ff9f0a]/20", "bg-yellow-950/80", "text-[#ff9f0a]");
+                    toastIcon.classList.add("bg-[#ff9f0a]/20");
+                    toastIcon.innerHTML = `<svg class="w-4 h-4 text-[#ff9f0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
                 } else {
                     toast.classList.add("border-blue-500/20", "bg-blue-950/80", "text-blue-300");
                     toastIcon.classList.add("bg-blue-500/20");
@@ -573,34 +655,92 @@
                 }
             }
 
-            // Setup DB credentials
-            document.getElementById("setup-form").addEventListener("submit", (evt) => {
+            // Setup DB credentials with connection verification
+            document.getElementById("setup-form").addEventListener("submit", async (evt) => {
                 evt.preventDefault();
+                const submitBtn = document.getElementById("setup-submit-btn");
+                const originalText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Verifying connection...";
+
                 const url = document.getElementById("setup-url").value.trim();
                 const key = document.getElementById("setup-key").value.trim();
                 const r2Worker = document.getElementById("setup-r2-worker").value.trim();
                 const r2Key = document.getElementById("setup-r2-key").value.trim();
                 
-                localStorage.setItem("samsco_supabase_url", url);
-                localStorage.setItem("samsco_supabase_key", key);
+                showToast("Verifying connection to Supabase...", "info");
                 
-                if (r2Worker) localStorage.setItem("samsco_r2_worker", r2Worker);
-                else localStorage.removeItem("samsco_r2_worker");
-                
-                if (r2Key) localStorage.setItem("samsco_r2_key", r2Key);
-                else localStorage.removeItem("samsco_r2_key");
-                
-                showToast("Credentials saved successfully!", "success");
-                
-                // Refresh client reference
-                window.supabaseClient = initSupabase();
-                
-                // Reset setup fields and route
-                document.getElementById("setup-url").value = "";
-                document.getElementById("setup-key").value = "";
-                document.getElementById("setup-r2-worker").value = "";
-                document.getElementById("setup-r2-key").value = "";
-                checkAppState();
+                try {
+                    if (typeof supabase === 'undefined') {
+                        throw new Error("Supabase SDK not loaded. Check network connection.");
+                    }
+                    const testClient = supabase.createClient(url, key);
+                    const { data, error } = await testClient.from("works").select("id").limit(1);
+                    
+                    if (error) {
+                        if (error.code === 'PGRST301' || error.message.includes('API key') || error.message.includes('JWT')) {
+                            throw new Error("Invalid Supabase Anon Key.");
+                        }
+                        if (!error.message.includes("does not exist")) {
+                            throw error;
+                        }
+                    }
+                    
+                    // Verify R2 connection if provided
+                    let r2Ok = true;
+                    if (r2Worker) {
+                        showToast("Verifying Cloudflare R2 worker connection...", "info");
+                        try {
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 6000);
+                            await fetch(r2Worker, { 
+                                method: "OPTIONS",
+                                signal: controller.signal
+                            }).catch(err => {
+                                if (err.name === 'AbortError') throw new Error("Worker request timed out.");
+                                throw err;
+                            });
+                        } catch (r2Err) {
+                            r2Ok = false;
+                            showToast(`Supabase OK, but Cloudflare R2 check failed: ${r2Err.message}`, "warning");
+                        }
+                    }
+                    
+                    // Save to localStorage
+                    localStorage.setItem("samsco_supabase_url", url);
+                    localStorage.setItem("samsco_supabase_key", key);
+                    
+                    if (r2Worker) localStorage.setItem("samsco_r2_worker", r2Worker);
+                    else localStorage.removeItem("samsco_r2_worker");
+                    
+                    if (r2Key) localStorage.setItem("samsco_r2_key", r2Key);
+                    else localStorage.removeItem("samsco_r2_key");
+                    
+                    if (r2Worker && !r2Ok) {
+                        showToast("Credentials saved, but Cloudflare R2 is unreachable.", "warning");
+                    } else {
+                        showToast("Connection confirmed! Credentials are valid.", "success");
+                    }
+                    
+                    // Refresh client reference
+                    window.supabaseClient = initSupabase();
+                    
+                    // Clear setup inputs
+                    document.getElementById("setup-url").value = "";
+                    document.getElementById("setup-key").value = "";
+                    document.getElementById("setup-r2-worker").value = "";
+                    document.getElementById("setup-r2-key").value = "";
+                    
+                    checkAppState();
+                    // Update connection status dot
+                    runSystemDiagnostics(false);
+                } catch (err) {
+                    console.error("Verification failed:", err);
+                    showToast(`Connection failed: ${err.message || "Please check your network and credentials."}`, "error");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
+                }
             });
 
             // Login Admin
@@ -692,6 +832,9 @@
             async function loadDashboardData() {
                 const tbody = document.getElementById("works-table-body");
                 tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-white/30 font-light">Loading database works...</td></tr>`;
+                
+                // Run background connection diagnostics check
+                runSystemDiagnostics(false);
                 
                 try {
                     const { data, error } = await window.supabaseClient
@@ -1293,6 +1436,168 @@
 
             workUrlInput.addEventListener("input", updateMediaPreview);
             workTypeSelect.addEventListener("change", updateMediaPreview);
+
+            // Diagnostics & Status Modal Logic
+            async function runSystemDiagnostics(showModal = true) {
+                const netBadge = document.getElementById("net-status-badge");
+                const netMsg = document.getElementById("net-status-msg");
+                const sbBadge = document.getElementById("supabase-status-badge");
+                const sbMsg = document.getElementById("supabase-status-msg");
+                const r2Badge = document.getElementById("r2-status-badge");
+                const r2Msg = document.getElementById("r2-status-msg");
+                const headerDot = document.getElementById("header-status-dot");
+                
+                function setStatus(badge, msg, state, text, detail) {
+                    if (!badge || !msg) return;
+                    badge.textContent = text;
+                    msg.textContent = detail;
+                    badge.className = "px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ";
+                    if (state === 'ok') {
+                        badge.classList.add("bg-green-500/10", "text-green-400", "border", "border-green-500/20");
+                    } else if (state === 'warning') {
+                        badge.classList.add("bg-[#ff9f0a]/10", "text-[#ff9f0a]", "border", "border-[#ff9f0a]/20");
+                    } else if (state === 'error') {
+                        badge.classList.add("bg-red-500/10", "text-red-400", "border", "border-red-500/20");
+                    } else {
+                        badge.classList.add("bg-white/5", "text-white/40");
+                    }
+                }
+                
+                if (showModal) {
+                    setStatus(netBadge, netMsg, 'checking', 'CHECKING', 'Testing connection...');
+                    setStatus(sbBadge, sbMsg, 'checking', 'CHECKING', 'Testing connection...');
+                    setStatus(r2Badge, r2Msg, 'checking', 'CHECKING', 'Testing connection...');
+                }
+                
+                let netOk = false;
+                let sbOk = false;
+                let r2Ok = true; 
+                
+                // 1. Check Internet
+                if (navigator.onLine) {
+                    try {
+                        await fetch("https://www.cloudflare.com/cdn-cgi/trace", { mode: 'no-cors', cache: 'no-store' });
+                        netOk = true;
+                        setStatus(netBadge, netMsg, 'ok', 'ONLINE', 'Internet is active');
+                    } catch (e) {
+                        netOk = false;
+                        setStatus(netBadge, netMsg, 'error', 'OFFLINE', 'No internet (Fetch failed)');
+                    }
+                } else {
+                    netOk = false;
+                    setStatus(netBadge, netMsg, 'error', 'OFFLINE', 'Browser reports offline');
+                }
+                
+                // 2. Check Supabase
+                const config = getSupabaseConfig();
+                if (!config.url || !config.key) {
+                    sbOk = false;
+                    setStatus(sbBadge, sbMsg, 'warning', 'UNCONFIGURED', 'Credentials not set');
+                } else if (!netOk) {
+                    sbOk = false;
+                    setStatus(sbBadge, sbMsg, 'error', 'OFFLINE', 'Internet connection required');
+                } else {
+                    try {
+                        const testClient = window.supabaseClient || initSupabase();
+                        if (!testClient) throw new Error("Supabase client failed to initialize.");
+                        
+                        const startTime = Date.now();
+                        const { data, error } = await testClient.from("works").select("id").limit(1);
+                        const latency = Date.now() - startTime;
+                        
+                        if (error) {
+                            if (error.code === 'PGRST301' || error.message.includes('API key') || error.message.includes('JWT')) {
+                                throw new Error("Invalid API Key");
+                            }
+                            if (error.message.includes("does not exist")) {
+                                setStatus(sbBadge, sbMsg, 'warning', 'WARNING', `Table 'works' not found in database`);
+                            } else {
+                                throw error;
+                            }
+                        } else {
+                            sbOk = true;
+                            setStatus(sbBadge, sbMsg, 'ok', 'CONNECTED', `Active (${latency}ms latency)`);
+                        }
+                    } catch (e) {
+                        sbOk = false;
+                        setStatus(sbBadge, sbMsg, 'error', 'ERROR', e.message || "Connection failed");
+                    }
+                }
+                
+                // 3. Check Cloudflare R2
+                const r2Worker = localStorage.getItem("samsco_r2_worker");
+                if (!r2Worker) {
+                    r2Ok = true;
+                    setStatus(r2Badge, r2Msg, 'warning', 'NOT USED', 'Using Supabase storage instead');
+                } else if (!netOk) {
+                    r2Ok = false;
+                    setStatus(r2Badge, r2Msg, 'error', 'OFFLINE', 'Internet connection required');
+                } else {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
+                        
+                        const startTime = Date.now();
+                        await fetch(r2Worker, { 
+                            method: "OPTIONS", 
+                            signal: controller.signal 
+                        }).catch(err => {
+                            if (err.name === 'AbortError') throw new Error("Worker request timed out.");
+                            throw err;
+                        });
+                        clearTimeout(timeoutId);
+                        
+                        const latency = Date.now() - startTime;
+                        r2Ok = true;
+                        setStatus(r2Badge, r2Msg, 'ok', 'REACHABLE', `Worker online (${latency}ms latency)`);
+                    } catch (e) {
+                        r2Ok = false;
+                        setStatus(r2Badge, r2Msg, 'error', 'UNREACHABLE', e.message || "Worker not reachable");
+                    }
+                }
+                
+                // Update header status dot
+                if (headerDot) {
+                    headerDot.className = "w-2 h-2 rounded-full animate-pulse ";
+                    if (sbOk && r2Ok) {
+                        headerDot.classList.add("bg-green-500");
+                        headerDot.parentNode.title = "All systems connected";
+                    } else if (!netOk || (!sbOk && !r2Worker)) {
+                        headerDot.classList.add("bg-red-500");
+                        headerDot.parentNode.title = "Connection error";
+                    } else {
+                        headerDot.classList.add("bg-[#ff9f0a]");
+                        headerDot.parentNode.title = "Warning: Some services offline";
+                    }
+                }
+            }
+
+            // Status modal open/close
+            const statusModal = document.getElementById("status-modal");
+            const closeStatusModalBtn = document.getElementById("close-status-modal-btn");
+            const closeStatusBtn = document.getElementById("close-status-btn");
+            const showStatusBtn = document.getElementById("show-status-btn");
+            const runDiagnosticsBtn = document.getElementById("run-diagnostics-btn");
+
+            function openStatusModal() {
+                statusModal.classList.remove("pointer-events-none", "opacity-0");
+                const modalContent = statusModal.querySelector(".admin-glass");
+                modalContent.classList.remove("scale-95");
+                modalContent.classList.add("scale-100");
+                runSystemDiagnostics(true);
+            }
+
+            function closeStatusModal() {
+                statusModal.classList.add("pointer-events-none", "opacity-0");
+                const modalContent = statusModal.querySelector(".admin-glass");
+                modalContent.classList.remove("scale-100");
+                modalContent.classList.add("scale-95");
+            }
+
+            if (showStatusBtn) showStatusBtn.addEventListener("click", openStatusModal);
+            if (closeStatusModalBtn) closeStatusModalBtn.addEventListener("click", closeStatusModal);
+            if (closeStatusBtn) closeStatusBtn.addEventListener("click", closeStatusModal);
+            if (runDiagnosticsBtn) runDiagnosticsBtn.addEventListener("click", () => runSystemDiagnostics(true));
 
             // Initialize app state
             checkAppState();
