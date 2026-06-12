@@ -674,7 +674,13 @@
                     if (typeof supabase === 'undefined') {
                         throw new Error("Supabase SDK not loaded. Check network connection.");
                     }
-                    const testClient = supabase.createClient(url, key);
+                    // Disable session persistence for the temporary verification client to prevent GoTrueClient duplicate warnings
+                    const testClient = supabase.createClient(url, key, {
+                        auth: {
+                            persistSession: false,
+                            autoRefreshToken: false
+                        }
+                    });
                     const { data, error } = await testClient.from("works").select("id").limit(1);
                     
                     if (error) {
@@ -706,6 +712,9 @@
                         }
                     }
                     
+                    const currentConfig = getSupabaseConfig();
+                    const credentialsChanged = currentConfig.url !== url || currentConfig.key !== key;
+
                     // Save to localStorage
                     localStorage.setItem("samsco_supabase_url", url);
                     localStorage.setItem("samsco_supabase_key", key);
@@ -722,8 +731,10 @@
                         showToast("Connection confirmed! Credentials are valid.", "success");
                     }
                     
-                    // Refresh client reference
-                    window.supabaseClient = initSupabase();
+                    // Refresh client reference only if credentials changed to avoid warnings
+                    if (credentialsChanged || !window.supabaseClient) {
+                        window.supabaseClient = initSupabase();
+                    }
                     
                     // Clear setup inputs
                     document.getElementById("setup-url").value = "";
