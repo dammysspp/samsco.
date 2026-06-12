@@ -251,7 +251,27 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+                        <!-- View Toggle -->
+                        <div class="flex bg-white/5 p-1 rounded-xl border border-white/10 select-none">
+                            <button id="view-mode-list" class="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-200" title="List View">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                    </svg>
+                                    List
+                                </span>
+                            </button>
+                            <button id="view-mode-grid" class="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-200" title="Grid View">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                    </svg>
+                                    Grid
+                                </span>
+                            </button>
+                        </div>
+
                         <select id="filter-category" class="px-4 py-2.5 rounded-xl admin-input text-xs max-w-xs">
                             <option value="ALL">All Categories</option>
                             <option value="3D & VFX">3D & VFX</option>
@@ -266,8 +286,8 @@
                     </div>
                 </div>
 
-                <!-- Table Wrapper -->
-                <div class="overflow-x-auto w-full">
+                <!-- Table Wrapper (List View) -->
+                <div id="list-view-container" class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-white/5 text-[10px] text-white/40 tracking-wider uppercase font-semibold bg-white/[0.01]">
@@ -285,6 +305,13 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Grid Wrapper (Grid View) -->
+                <div id="grid-view-container" class="hidden p-6 w-full">
+                    <div id="works-grid-body" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Grid items injected dynamically -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -842,7 +869,12 @@
             // ==========================================
             async function loadDashboardData() {
                 const tbody = document.getElementById("works-table-body");
+                const gridBody = document.getElementById("works-grid-body");
+                
                 tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-white/30 font-light">Loading database works...</td></tr>`;
+                if (gridBody) {
+                    gridBody.innerHTML = `<div class="col-span-full py-12 text-center text-white/30 font-light">Loading database works...</div>`;
+                }
                 
                 // Run background connection diagnostics check
                 runSystemDiagnostics(false);
@@ -861,6 +893,9 @@
                 } catch (e) {
                     console.error("Fetch works failed:", e);
                     tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Make sure table 'works' exists and RLS allows reading."}</td></tr>`;
+                    if (gridBody) {
+                        gridBody.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Make sure table 'works' exists."}</div>`;
+                    }
                     showToast("Failed to fetch works. Check your database setup.", "error");
                 }
             }
@@ -876,7 +911,9 @@
 
             function renderWorksTable(data) {
                 const tbody = document.getElementById("works-table-body");
+                const gridBody = document.getElementById("works-grid-body");
                 tbody.innerHTML = "";
+                gridBody.innerHTML = "";
                 
                 if (data.length === 0) {
                     tbody.innerHTML = `
@@ -892,9 +929,24 @@
                             </td>
                         </tr>
                     `;
+                    gridBody.innerHTML = `
+                        <div class="col-span-full py-16 text-center text-white/40 font-light">
+                            <p class="mb-4">No works found in this database.</p>
+                            <button id="empty-import-grid-btn" class="bg-gradient-to-r from-[#0071e3] to-[#64d2ff] hover:from-[#0077ed] hover:to-[#7fe0ff] text-white px-6 py-3 rounded-full font-bold text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,113,227,0.3)] inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                                IMPORT ALL EXISTING WORKS
+                            </button>
+                        </div>
+                    `;
                     const emptyImportBtn = document.getElementById("empty-import-btn");
+                    const emptyImportGridBtn = document.getElementById("empty-import-grid-btn");
                     if (emptyImportBtn) {
                         emptyImportBtn.addEventListener("click", importLocalWorksToSupabase);
+                    }
+                    if (emptyImportGridBtn) {
+                        emptyImportGridBtn.addEventListener("click", importLocalWorksToSupabase);
                     }
                     return;
                 }
@@ -906,7 +958,7 @@
                     // Thumbnail/media column
                     let preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-white/20">SVG</div>`;
                     if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
-                        preview = `<img src="${work.url}" onerror="this.style.display='none'" class="w-12 h-12 object-cover rounded-lg border border-white/5">`;
+                        preview = `<img src="${work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-12 h-12 object-cover rounded-lg border border-white/5">`;
                     } else if (work.type === "video" || work.url.endsWith(".mp4")) {
                         preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-purple-400 font-bold">VIDEO</div>`;
                     } else if (work.type === "iframe") {
@@ -915,7 +967,7 @@
                     
                     const cats = (work.cat || '').split(',').map(c => c.trim()).filter(Boolean);
                     const badges = cats.map(c => `<span class="px-2.5 py-1 bg-white/5 rounded-full text-xs font-semibold mr-1.5 mb-1 inline-block" style="color: ${getCategoryColor(c)}">${c}</span>`).join('');
-
+ 
                     tr.innerHTML = `
                         <td class="py-4 px-6">${preview}</td>
                         <td class="py-4 px-6 font-medium text-white">${work.title}</td>
@@ -929,6 +981,59 @@
                         </td>
                     `;
                     tbody.appendChild(tr);
+
+                    // Grid card item
+                    const card = document.createElement("div");
+                    card.className = "admin-glass rounded-2xl overflow-hidden flex flex-col group relative border border-white/5 hover:border-white/10 hover:shadow-2xl transition-all duration-300";
+                    
+                    let cardPreview = `<div class="aspect-video w-full bg-gray-900 flex items-center justify-center text-xs text-white/20 border-b border-white/5">SVG</div>`;
+                    if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
+                        cardPreview = `
+                            <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
+                                <img src="${work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            </div>`;
+                    } else if (work.type === "video" || work.url.endsWith(".mp4")) {
+                        cardPreview = `
+                            <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
+                                <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                                        <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                                <video src="${work.url}" class="w-full h-full object-cover" preload="metadata" muted playsinline></video>
+                            </div>`;
+                    } else if (work.type === "iframe") {
+                        const iframeThumb = `https://image.thum.io/get/width/400/crop/800/noanimate/${work.url}`;
+                        cardPreview = `
+                            <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
+                                <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                                        <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Embed</span>
+                                    </div>
+                                </div>
+                                <img src="${iframeThumb}" onerror="this.style.display='none'" class="w-full h-full object-cover">
+                            </div>`;
+                    }
+                    
+                    const gridBadges = cats.map(c => `<span class="px-2 py-0.5 bg-white/5 rounded-md text-[10px] font-semibold mr-1 mb-1 inline-block" style="color: ${getCategoryColor(c)}">${c}</span>`).join('');
+                    
+                    card.innerHTML = `
+                        ${cardPreview}
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-white text-xs line-clamp-1 mb-1.5" title="${work.title}">${work.title}</h3>
+                                <div class="flex flex-wrap">${gridBadges}</div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+                                <span class="text-[9px] text-white/30 uppercase font-mono tracking-wider">${work.type || 'image'}</span>
+                                <div class="flex gap-2">
+                                    <button class="edit-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-semibold transition-colors" data-id="${work.id}">Edit</button>
+                                    <button class="delete-btn bg-red-950/30 border border-red-500/10 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-full text-[10px] font-semibold text-red-400 transition-colors" data-id="${work.id}">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    gridBody.appendChild(card);
                 });
                 
                 // Add event listeners to edit/delete buttons
@@ -976,6 +1081,51 @@
             }
             searchInput.addEventListener("input", performFilter);
             filterCategory.addEventListener("change", performFilter);
+
+            // View Mode Switcher
+            const viewListBtn = document.getElementById("view-mode-list");
+            const viewGridBtn = document.getElementById("view-mode-grid");
+            const listViewContainer = document.getElementById("list-view-container");
+            const gridViewContainer = document.getElementById("grid-view-container");
+            
+            let viewMode = localStorage.getItem("samsco_admin_view_mode") || "list";
+            
+            function updateViewModeUI() {
+                if (viewMode === "list") {
+                    listViewContainer.classList.remove("hidden");
+                    gridViewContainer.classList.add("hidden");
+                    
+                    viewListBtn.classList.add("bg-white/10", "text-white");
+                    viewListBtn.classList.remove("text-white/50");
+                    
+                    viewGridBtn.classList.remove("bg-white/10", "text-white");
+                    viewGridBtn.classList.add("text-white/50");
+                } else {
+                    listViewContainer.classList.add("hidden");
+                    gridViewContainer.classList.remove("hidden");
+                    
+                    viewGridBtn.classList.add("bg-white/10", "text-white");
+                    viewGridBtn.classList.remove("text-white/50");
+                    
+                    viewListBtn.classList.remove("bg-white/10", "text-white");
+                    viewListBtn.classList.add("text-white/50");
+                }
+            }
+            
+            viewListBtn.addEventListener("click", () => {
+                viewMode = "list";
+                localStorage.setItem("samsco_admin_view_mode", "list");
+                updateViewModeUI();
+            });
+            
+            viewGridBtn.addEventListener("click", () => {
+                viewMode = "grid";
+                localStorage.setItem("samsco_admin_view_mode", "grid");
+                updateViewModeUI();
+            });
+            
+            // Initialize View Mode
+            updateViewModeUI();
 
 
             // ==========================================
