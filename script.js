@@ -595,7 +595,6 @@ document.querySelectorAll(".magnetic-btn").forEach(e => {
         )
     }
     )
-}
 function updateTime() {
     const e = (new Date).toLocaleTimeString("en-US", {
         timeZone: "Africa/Lagos", hour: "numeric", minute: "2-digit"
