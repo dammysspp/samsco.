@@ -1059,7 +1059,8 @@
                 uploadPercent.textContent = "0%";
                 uploadBar.style.width = "0%";
                 
-                const cleanName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+                const cleanName = `${Date.now()}_${sanitizedBaseName}`;
                 
                 try {
                     // Step 1: Request pre-signed URL from worker
@@ -1181,7 +1182,8 @@
                 uploadPercent.textContent = "0%";
                 uploadBar.style.width = "0%";
                 
-                const cleanName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+                const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+                const cleanName = `${Date.now()}_${sanitizedBaseName}`;
                 
                 try {
                     const { data, error } = await window.supabaseClient.storage
