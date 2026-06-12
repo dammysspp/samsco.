@@ -320,23 +320,73 @@ function openLightbox(e) {
 }
 function updateLightboxContent() {
     if (currentLbIndex < 0 || currentLbIndex >= visibleGalleryItems.length) return;
-    lbImg.classList.add("hidden"), lbVideo.classList.add("hidden"), lbIframe && lbIframe.classList.add("hidden"), lbError.classList.add("hidden"), lbVideo.src = "", lbImg.src = "", lbIframe && (lbIframe.src = "");
+    
+    // 1. Detach event handlers first to prevent asynchronous onerror calls when clearing src
+    lbImg.onerror = null;
+    lbVideo.onerror = null;
+    lbVideo.oncanplay = null;
+    if (lbIframe) lbIframe.onload = null;
+
+    // 2. Clear sources and hide everything
+    lbVideo.src = "";
+    lbImg.src = "";
+    if (lbIframe) lbIframe.src = "";
+    
+    lbImg.classList.add("hidden");
+    lbImg.style.display = "none";
+    lbVideo.classList.add("hidden");
+    lbVideo.style.display = "none";
+    if (lbIframe) {
+        lbIframe.classList.add("hidden");
+        lbIframe.style.display = "none";
+    }
+    lbError.classList.add("hidden");
+    lbError.style.display = "none";
+    
+    // 3. Load next item data
     const e = visibleGalleryItems[currentLbIndex];
     let t = e.getAttribute("data-url"), a = t.split("?")[0];
     const r = e.getAttribute("data-type"), i = e.getAttribute("data-title"), o = e.getAttribute("data-cat");
-    lbTitle.innerText = i, lbCat.innerText = o, "iframe" === r && lbIframe ? (lbIframe.classList.remove("hidden"), lbIframe.src = t + "?embed") : "video" === r ? (lbVideo.classList.remove("hidden"), lbVideo.src = t, lbVideo.onerror = function () {
-        lbVideo.style.display = "none", lbVideo.classList.add("hidden"), lbError.classList.remove("hidden"), lbError.style.display = "flex"
+    lbTitle.innerText = i, lbCat.innerText = o;
+
+    if ("iframe" === r && lbIframe) {
+        lbIframe.classList.remove("hidden");
+        lbIframe.style.display = "block";
+        lbIframe.src = t + "?embed";
+    } else if ("video" === r) {
+        lbVideo.classList.remove("hidden");
+        // Attach event handlers BEFORE setting src
+        lbVideo.onerror = function () {
+            lbVideo.style.display = "none";
+            lbVideo.classList.add("hidden");
+            lbError.classList.remove("hidden");
+            lbError.style.display = "flex";
+        };
+        lbVideo.oncanplay = function () {
+            lbVideo.style.display = "block";
+            lbVideo.play().catch(err => console.log("Video play was interrupted or auto-play prevented:", err));
+        };
+        lbVideo.src = t;
+        lbVideo.load();
+    } else {
+        lbImg.classList.remove("hidden");
+        lbImg.style.display = "block";
+        if (a.includes("imgix.net")) {
+            a += "?w=1200&q=75&auto=format";
+        }
+        // Attach event handlers BEFORE setting src
+        lbImg.onerror = function () {
+            lbImg.classList.add("hidden");
+            lbImg.style.display = "none";
+            lbError.classList.remove("hidden");
+            lbError.style.display = "flex";
+        };
+        lbImg.src = a;
     }
-        , lbVideo.oncanplay = function () {
-            lbVideo.style.display = "block", lbVideo.play()
-        }
-        , lbVideo.load()) : (lbImg.classList.remove("hidden"), a.includes("imgix.net") && (a += "?w=1200&q=75&auto=format"), lbImg.src = a, lbImg.onerror = function () {
-            lbImg.classList.add("hidden"), lbError.classList.remove("hidden"), lbError.style.display = "flex"
-        }
-    );
+    
     const n = e.getAttribute("data-project-url");
     let s = document.getElementById("lightbox-link-btn");
-    n ? (s || (s = document.createElement("a"), s.id = "lightbox-link-btn", s.className = "mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-blue-500/30", s.target = "_blank", s.rel = "noopener noreferrer", s.innerHTML = '\n                <span>Visit Project</span>\n                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>\n            ', lbCat.parentNode.appendChild(s)), s.href = n, s.style.display = "inline-flex") : s && (s.style.display = "none")
+    n ? (s || (s = document.createElement("a"), s.id = "lightbox-link-btn", s.className = "mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-blue-500/30", s.target = "_blank", s.rel = "noopener noreferrer", s.innerHTML = '\n                <span>Visit Project</span>\n                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>\n            ', lbCat.parentNode.appendChild(s)), s.href = n, s.style.display = "inline-flex") : s && (s.style.display = "none");
 }
 function nextLightboxItem() {
     currentLbIndex = (currentLbIndex + 1) % visibleGalleryItems.length, updateLightboxContent()
@@ -345,7 +395,15 @@ function prevLightboxItem() {
     currentLbIndex = (currentLbIndex - 1 + visibleGalleryItems.length) % visibleGalleryItems.length, updateLightboxContent()
 }
 function closeLightbox() {
-    lightbox.classList.remove("active"), lbVideo.pause(), lbVideo.currentTime = 0, lbVideo.src = ""
+    lightbox.classList.remove("active");
+    lbVideo.pause();
+    lbVideo.onerror = null;
+    lbVideo.oncanplay = null;
+    lbImg.onerror = null;
+    lbVideo.currentTime = 0;
+    lbVideo.src = "";
+    lbImg.src = "";
+    if (lbIframe) lbIframe.src = "";
 }
 allGalleryItems.forEach(e => {
     e.addEventListener("click", () => {
