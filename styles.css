@@ -2906,3 +2906,131 @@ button:focus-visible,
         padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
     }
 }
+
+/* ==============================================
+   GPU ACCELERATED MESH GRADIENT
+   ============================================== */
+.mesh-gradient-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mesh-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.35;
+    mix-blend-mode: screen;
+    will-change: transform;
+    pointer-events: none;
+}
+
+.mesh-circle-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-blue) 0%, transparent 80%);
+    top: -10%;
+    left: -10%;
+    animation: floatMesh1 25s ease-in-out infinite alternate;
+}
+
+.mesh-circle-2 {
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, var(--accent-purple) 0%, transparent 80%);
+    bottom: -20%;
+    right: -10%;
+    animation: floatMesh2 30s ease-in-out infinite alternate;
+}
+
+.mesh-circle-3 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-pink) 0%, transparent 80%);
+    top: 40%;
+    left: 50%;
+    animation: floatMesh3 20s ease-in-out infinite alternate;
+}
+
+@keyframes floatMesh1 {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(80px, 100px, 0) scale(1.1); }
+}
+
+@keyframes floatMesh2 {
+    0% { transform: translate3d(0, 0, 0) scale(1.1); }
+    100% { transform: translate3d(-100px, -80px, 0) scale(0.9); }
+}
+
+@keyframes floatMesh3 {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(-50px, 50px, 0) rotate(180deg); }
+}
+
+/* ==============================================
+   SMOOTH CUSTOM CURSOR
+   ============================================== */
+.custom-cursor-dot,
+.custom-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate3d(-50%, -50%, 0);
+    display: none;
+    will-change: transform, width, height, background-color, border-color;
+}
+
+.custom-cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-blue);
+    transition: background-color 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+
+.custom-cursor-ring {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: border-color 0.3s ease, background-color 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* Cursor Hover States */
+.custom-cursor-ring.cursor-hover {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.custom-cursor-dot.cursor-hover {
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+}
+
+/* Difference Blend Mode state for hovering dark/light sections */
+.custom-cursor-blend {
+    mix-blend-mode: difference;
+}
+
+.custom-cursor-blend .custom-cursor-dot {
+    background-color: #ffffff;
+}
+
+.custom-cursor-blend .custom-cursor-ring {
+    border-color: #ffffff;
+    background-color: #ffffff;
+}
+
+@media (pointer: fine) {
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+        cursor: none !important;
+    }
+}
