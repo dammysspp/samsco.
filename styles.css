@@ -159,69 +159,11 @@ body.god-mode {
 }
 
 /* ==============================================
-   3D HEADSET SCROLL ANIMATION (GPU-Optimized)
+   BACKGROUND CONTAINER
    ============================================== */
 
 #headset-bg-container {
     overflow: hidden;
-}
-
-#headset-wrapper {
-    will-change: transform;
-    transform: translateZ(0);
-}
-
-.headset-3d {
-    /* CSS will be sized by JS, but provide defaults */
-    max-width: min(75vw, 500px);
-    max-height: 90vh;
-
-    /* GPU-Optimized Rendering */
-    will-change: opacity, filter;
-    transform: translateZ(0);
-
-    /* High-quality canvas rendering */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-
-    /* Start slightly visible so users can see it's there */
-    opacity: 0.4;
-
-    /* Removed drop-shadow for scroll performance, using brightness instead */
-    filter: brightness(1.2);
-
-    /* Smooth opacity transition on load - JS will enhance visibility */
-    transition: opacity 0.8s ease-out, filter 0.3s ease;
-}
-
-/* Enhance headset visibility on scroll */
-.headset-3d.active {
-    opacity: 0.9;
-    filter: brightness(1.4);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .headset-3d {
-        max-width: 80vw;
-    }
-}
-
-@media (min-width: 1200px) {
-    .headset-3d {
-        max-width: min(60vw, 800px);
-    }
-}
-
-/* Reduce motion for accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .headset-3d {
-        transition: none !important;
-    }
-
-    #headset-wrapper {
-        transform: none !important;
-    }
 }
 
 /* ==============================================

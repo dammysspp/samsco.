@@ -81,27 +81,9 @@
     <div id="cursor" aria-hidden="true"></div>
 
     <!-- PREMIUM ANIMATED BACKGROUND -->
-    <!-- 3D HEADSET SCROLL-CONTROLLED BACKGROUND -->
     <div class="fixed inset-0 bg-black -z-10" id="headset-bg-container">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-transparent opacity-50"></div>
-
-        <!-- Scroll-Controlled 3D Headset Frame Sequence -->
-        <div id="headset-wrapper" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <canvas id="headset-canvas" class="headset-3d" aria-label="3D Headset Animation"></canvas>
-
-            <!-- Loading Progress Indicator -->
-            <div id="headset-loader"
-                class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-500">
-                <div class="w-32 h-1 bg-white/10 rounded-full overflow-hidden mb-3">
-                    <div id="headset-loader-bar"
-                        class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-100"
-                        style="width: 0%"></div>
-                </div>
-                <span id="headset-loader-text" class="text-white/50 text-xs tracking-widest font-mono">LOADING 0%</span>
-            </div>
-        </div>
-
-        <!-- Subtle overlay to blend headset with content -->
+        <!-- Subtle overlay to blend background with content -->
         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none"></div>
     </div>
 
