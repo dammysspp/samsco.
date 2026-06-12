@@ -1524,9 +1524,11 @@
                     }
                 }
                 
-                // 3. Check Cloudflare R2
+                // 3. Check Cloudflare R2 Upload Pipeline
                 const r2Worker = localStorage.getItem("samsco_r2_worker");
-                if (!r2Worker) {
+                const r2Key = localStorage.getItem("samsco_r2_key");
+                
+                if (!r2Worker || !r2Key) {
                     r2Ok = true;
                     setStatus(r2Badge, r2Msg, 'warning', 'NOT USED', 'Using Supabase storage instead');
                 } else if (!netOk) {
@@ -1534,25 +1536,52 @@
                     setStatus(r2Badge, r2Msg, 'error', 'OFFLINE', 'Internet connection required');
                 } else {
                     try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 5000);
-                        
                         const startTime = Date.now();
-                        await fetch(r2Worker, { 
-                            method: "OPTIONS", 
-                            signal: controller.signal 
-                        }).catch(err => {
-                            if (err.name === 'AbortError') throw new Error("Worker request timed out.");
-                            throw err;
+                        
+                        // Step 3a: Request pre-signed URL for a test connection file
+                        const presignUrl = `${r2Worker.replace(/\/$/, '')}/presign?name=.r2-connection-test&type=text/plain`;
+                        const presignResponse = await fetch(presignUrl, {
+                            method: "POST",
+                            headers: {
+                                "Authorization": `Bearer ${r2Key}`
+                            }
                         });
-                        clearTimeout(timeoutId);
+                        
+                        if (!presignResponse.ok) {
+                            const errText = await presignResponse.text();
+                            throw new Error(`Worker rejected: ${errText}`);
+                        }
+                        
+                        const { uploadUrl } = await presignResponse.json();
+                        
+                        // Step 3b: Test upload using a PUT request
+                        const testPutResponse = await fetch(uploadUrl, {
+                            method: "PUT",
+                            body: ""
+                        });
                         
                         const latency = Date.now() - startTime;
-                        r2Ok = true;
-                        setStatus(r2Badge, r2Msg, 'ok', 'REACHABLE', `Worker online (${latency}ms latency)`);
+                        
+                        if (testPutResponse.ok) {
+                            r2Ok = true;
+                            setStatus(r2Badge, r2Msg, 'ok', 'FULLY WORKING', `Upload verified (${latency}ms latency)`);
+                        } else {
+                            r2Ok = false;
+                            let errorDetail = `Upload rejected (${testPutResponse.status})`;
+                            if (testPutResponse.status === 404) {
+                                errorDetail = "Bucket not found (404). Check Account ID & Bucket Name in Cloudflare.";
+                            } else if (testPutResponse.status === 403) {
+                                errorDetail = "Access denied (403). Check R2 S3 Access Keys in Cloudflare.";
+                            }
+                            setStatus(r2Badge, r2Msg, 'error', 'CONFIG ERROR', errorDetail);
+                        }
                     } catch (e) {
                         r2Ok = false;
-                        setStatus(r2Badge, r2Msg, 'error', 'UNREACHABLE', e.message || "Worker not reachable");
+                        let msgStr = e.message || "Upload pipeline check failed";
+                        if (msgStr.includes("TypeError: Failed to fetch") || msgStr.includes("NetworkError")) {
+                            msgStr = "CORS Block / Network Error. Verify R2 CORS settings in Cloudflare.";
+                        }
+                        setStatus(r2Badge, r2Msg, 'error', 'ERROR', msgStr);
                     }
                 }
                 
@@ -1563,10 +1592,10 @@
                         headerDot.classList.add("bg-green-500");
                         headerDot.parentNode.title = "All systems connected";
                     } else if (!netOk || (!sbOk && !r2Worker)) {
-                        headerDot.classList.add("bg-red-500");
+                        headerDot.className = "w-2 h-2 rounded-full bg-red-500";
                         headerDot.parentNode.title = "Connection error";
                     } else {
-                        headerDot.classList.add("bg-[#ff9f0a]");
+                        headerDot.className = "w-2 h-2 rounded-full bg-[#ff9f0a]";
                         headerDot.parentNode.title = "Warning: Some services offline";
                     }
                 }
