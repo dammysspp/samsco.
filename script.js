@@ -578,24 +578,7 @@ projectArray.forEach((e, t) => e.addEventListener("click", () => openProjectModa
     e.target === projectModal && closeProjectModal()
 }
 );
-const cursor = document.getElementById("cursor");
-if (window.matchMedia("(pointer: fine)").matches) {
-    cursor.style.display = "block";
-    let targetX = 0, targetY = 0;
-    let currentX = 0, currentY = 0;
-    function updateCursor() {
-        currentX += (targetX - currentX) * 0.15;
-        currentY += (targetY - currentY) * 0.15;
-        cursor.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
-        requestAnimationFrame(updateCursor);
-    }
-    document.addEventListener("mousemove", e => {
-        targetX = e.clientX, targetY = e.clientY
-    }
-    ), updateCursor(), document.querySelectorAll("a, button, .project-card, .service-card, .gallery-item, .cursor-hover, .magnetic-btn, .filter-btn, .nav-btn, .footer-link, .vault-filter-btn, .ctx-item").forEach(e => {
-        e.addEventListener("mouseenter", () => cursor.classList.add("hovered")), e.addEventListener("mouseleave", () => cursor.classList.remove("hovered"))
-    }
-    ), document.querySelectorAll(".magnetic-btn").forEach(e => {
+document.querySelectorAll(".magnetic-btn").forEach(e => {
         e.addEventListener("mousemove", t => {
             const a = e.getBoundingClientRect(), r = .5 * (t.clientX - a.left - a.width / 2), i = .5 * (t.clientY - a.top - a.height / 2);
             gsap.to(e, {

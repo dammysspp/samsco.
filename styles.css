@@ -691,61 +691,7 @@ body.DO_NOT_REVEAL_ACTIVE .hero-content~div {
     }
 }
 
-/* ==============================================
-   CUSTOM CURSOR - Sleek & Minimal
-   ============================================== */
 
-@media (pointer: fine) {
-    body {
-        cursor: none;
-    }
-
-    a,
-    button,
-    .project-card,
-    .service-card,
-    .gallery-item,
-    .cursor-hover,
-    .magnetic-btn,
-    .filter-btn,
-    .nav-btn,
-    .footer-link,
-    .vault-filter-btn,
-    .ctx-item {
-        cursor: none;
-    }
-}
-
-#cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--text-primary);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    transition: width var(--duration-fast) var(--ease-apple),
-        height var(--duration-fast) var(--ease-apple),
-        background-color var(--duration-fast) var(--ease-apple),
-        border-color var(--duration-fast) var(--ease-apple),
-        opacity var(--duration-fast) var(--ease-apple);
-    mix-blend-mode: difference;
-    display: none;
-    will-change: transform, width, height;
-    opacity: 0.8;
-}
-
-#cursor.hovered {
-    width: 48px;
-    height: 48px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: transparent;
-    backdrop-filter: blur(4px);
-    opacity: 1;
-}
 
 /* ==============================================
    SCROLLBAR - Minimal Apple Style
@@ -2870,29 +2816,7 @@ button:focus-visible,
         transform: translateY(0) !important;
     }
 
-    /* Disable custom cursor on touch */
-    #cursor {
-        display: none !important;
-    }
 
-    body {
-        cursor: auto !important;
-    }
-
-    a,
-    button,
-    .project-card,
-    .service-card,
-    .gallery-item,
-    .cursor-hover,
-    .magnetic-btn,
-    .filter-btn,
-    .nav-btn,
-    .footer-link,
-    .vault-filter-btn,
-    .ctx-item {
-        cursor: auto !important;
-    }
 
     /* Make hover overlays always visible on gallery items */
     .gallery-masonry .gallery-item .absolute.inset-0.bg-gradient-to-t {

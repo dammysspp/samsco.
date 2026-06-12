@@ -544,61 +544,20 @@
         </svg>
     </button>
 
-    <!-- Custom Cursor -->
-    <div id="cursor"
-        class="fixed top-0 left-0 w-4 h-4 border border-white rounded-full pointer-events-none z-[9999] mix-blend-difference opacity-0 transition-opacity duration-300 hidden md:block">
-    </div>
-
     <script>
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
+        // Magnetic Buttons
         const magneticBtns = document.querySelectorAll('.magnetic-btn');
-
-        if (window.matchMedia("(pointer: fine)").matches) {
-            cursor.style.opacity = '1';
-
-            let mouseX = 0, mouseY = 0;
-            let cursorX = 0, cursorY = 0;
-
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) * 0.5;
+                const y = (e.clientY - rect.top - rect.height / 2) * 0.5;
+                btn.style.transform = `translate(${x}px, ${y}px)`;
             });
-
-            function animateCursor() {
-                const dt = 0.1; // Smoothness factor
-                cursorX += (mouseX - cursorX) * dt;
-                cursorY += (mouseY - cursorY) * dt;
-
-                cursor.style.transform = `translate(${cursorX - 8}px, ${cursorY - 8}px)`; // -8 for centering (16px/2)
-                requestAnimationFrame(animateCursor);
-            }
-            animateCursor();
-
-            // Hover effects
-            const interactables = document.querySelectorAll('a, button, .exp-item, .glass-card');
-            interactables.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.classList.add('scale-[3]', 'bg-white/10', 'backdrop-blur-sm', 'border-transparent');
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.classList.remove('scale-[3]', 'bg-white/10', 'backdrop-blur-sm', 'border-transparent');
-                });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
             });
-
-            // Magnetic Buttons
-            magneticBtns.forEach(btn => {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = (e.clientX - rect.left - rect.width / 2) * 0.5;
-                    const y = (e.clientY - rect.top - rect.height / 2) * 0.5;
-                    btn.style.transform = `translate(${x}px, ${y}px)`;
-                });
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transform = 'translate(0, 0)';
-                });
-            });
-        }
+        });
     </script>
 </body>
 
