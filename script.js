@@ -104,10 +104,111 @@ async function fetchWorksFromSupabase() {
     }
 }
 
+async function fetchSkillsFromSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("skills")
+            .select("*")
+            .order("id", { ascending: true });
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            const container = document.getElementById("skills-container");
+            if (container) {
+                container.innerHTML = "";
+                data.forEach(skill => {
+                    const item = document.createElement("div");
+                    item.className = "skill-item";
+                    item.setAttribute("data-skill", skill.level);
+                    item.innerHTML = `
+                        <div class="flex justify-between mb-2">
+                            <span class="text-white font-medium">${skill.name}</span>
+                            <span class="text-[#64d2ff] font-bold">${skill.level}%</span>
+                        </div>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar-fill" style="--skill-level: ${skill.level}%"></div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+                if (typeof initSkillsAnimation === 'function') initSkillsAnimation();
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching skills from Supabase:", e);
+    }
+}
+
+async function fetchExperienceFromSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("experience")
+            .select("*")
+            .order("order_index", { ascending: true });
+            
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            const container = document.querySelector(".timeline-container");
+            if (container) {
+                container.innerHTML = "";
+                data.forEach(exp => {
+                    const item = document.createElement("div");
+                    item.className = "timeline-item";
+                    item.innerHTML = `
+                        <div class="timeline-date">${exp.year}</div>
+                        <div class="timeline-title">${exp.title}</div>
+                        <div class="timeline-subtitle">${exp.subtitle}</div>
+                    `;
+                    container.appendChild(item);
+                });
+                if (typeof initTimelineAnimation === 'function') initTimelineAnimation();
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching experience from Supabase:", e);
+    }
+}
+
+async function fetchProfileImagesFromSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("site_settings")
+            .select("*")
+            .in("key", ["profile_image_1", "profile_image_2"]);
+            
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            const img1 = document.getElementById("profile-img-1");
+            const img2 = document.getElementById("profile-img-2");
+            
+            data.forEach(setting => {
+                if (setting.key === "profile_image_1" && img1) {
+                    img1.src = setting.value;
+                } else if (setting.key === "profile_image_2" && img2) {
+                    img2.src = setting.value;
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Error fetching profile settings from Supabase:", e);
+    }
+}
+
 // Start fetch in background
 document.addEventListener("DOMContentLoaded", () => {
     // Small delay to let initial paint complete smoothly
-    setTimeout(fetchWorksFromSupabase, 200);
+    setTimeout(() => {
+        fetchWorksFromSupabase();
+        fetchSkillsFromSupabase();
+        fetchExperienceFromSupabase();
+        fetchProfileImagesFromSupabase();
+    }, 200);
 });
 
 const galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"], galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
@@ -857,39 +958,52 @@ if (counterElements.length > 0) {
     }
     )
 }
-const skillItems = document.querySelectorAll(".skill-item");
-if (skillItems.length > 0) {
-    const f = document.getElementById("skills");
-    f && ScrollTrigger.create({
-        trigger: f, start: "top 70%", onEnter: () => {
-            skillItems.forEach((e, t) => {
-                setTimeout(() => {
-                    e.classList.add("visible");
-                    const t = e.querySelector(".skill-bar-fill"), a = e.getAttribute("data-skill");
-                    t && a && (t.style.width = a + "%")
+let skillsTrigger = null;
+function initSkillsAnimation() {
+    if (skillsTrigger) skillsTrigger.kill();
+    const skillItems = document.querySelectorAll(".skill-item");
+    if (skillItems.length > 0) {
+        const f = document.getElementById("skills");
+        if (f && typeof ScrollTrigger !== "undefined") {
+            skillsTrigger = ScrollTrigger.create({
+                trigger: f, start: "top 70%", onEnter: () => {
+                    skillItems.forEach((e, t) => {
+                        setTimeout(() => {
+                            e.classList.add("visible");
+                            const fill = e.querySelector(".skill-bar-fill"), a = e.getAttribute("data-skill");
+                            if (fill && a) fill.style.width = a + "%";
+                        }
+                            , 150 * t)
+                    }
+                    )
                 }
-                    , 150 * t)
-            }
-            )
+                , once: !0
+            });
         }
-        , once: !0
     }
-    )
 }
-const timelineItems = document.querySelectorAll(".timeline-item");
-timelineItems.length > 0 && ScrollTrigger.create({
-    trigger: ".timeline-container", start: "top 80%", onEnter: () => {
-        timelineItems.forEach((e, t) => {
-            setTimeout(() => {
-                e.classList.add("visible")
+initSkillsAnimation();
+
+let timelineTrigger = null;
+function initTimelineAnimation() {
+    if (timelineTrigger) timelineTrigger.kill();
+    const timelineItems = document.querySelectorAll(".timeline-item");
+    if (timelineItems.length > 0 && typeof ScrollTrigger !== "undefined") {
+        timelineTrigger = ScrollTrigger.create({
+            trigger: ".timeline-container", start: "top 80%", onEnter: () => {
+                timelineItems.forEach((e, t) => {
+                    setTimeout(() => {
+                        e.classList.add("visible")
+                    }
+                        , 200 * t)
+                }
+                )
             }
-                , 200 * t)
-        }
-        )
+            , once: !0
+        });
     }
-    , once: !0
 }
-);
+initTimelineAnimation();
 const themeDots = document.querySelectorAll(".theme-dot"), accentColors = {
     blue: {
         primary: "#0071e3", glow: "rgba(0, 113, 227, 0.4)", secondary: "#64d2ff"
