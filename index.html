@@ -22,32 +22,12 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
     </script>
     <script type="text/javascript">
         (function () {
             emailjs.init("YOUR_PUBLIC_KEY_HERE"); // USER MUST REPLACE THIS
         })();
-    </script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-                        display: ['Space Grotesk', 'Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        apple: {
-                            blue: '#0071e3',
-                            cyan: '#64d2ff',
-                            gray: { 100: '#f5f5f7', 200: '#d2d2d7', 500: '#86868b', 800: '#1d1d1f' }
-                        }
-                    }
-                }
-            }
-        }
     </script>
 
     <link rel="stylesheet" href="styles.css">
