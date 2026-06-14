@@ -730,12 +730,12 @@ body.DO_NOT_REVEAL_ACTIVE .hero-content~div {
     backdrop-filter: blur(var(--blur-md)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--blur-md)) saturate(180%);
     border: 1px solid var(--border-subtle);
-    padding: 8px 14px;
+    padding: 12px 20px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.625rem;
+    gap: 10px;
+    font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     z-index: 80;
@@ -2905,52 +2905,4 @@ button:focus-visible,
     footer {
         padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
     }
-}
-
-/* Navbar Scroll-Spy Active indicator */
-#navbar .hidden.md\:flex a {
-    position: relative;
-    transition: color 0.3s ease;
-}
-#navbar .hidden.md\:flex a.active {
-    color: #ffffff !important;
-}
-#navbar .hidden.md\:flex a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 25%;
-    width: 50%;
-    height: 2px;
-    background: var(--accent-primary, #0071e3);
-    border-radius: 999px;
-    transition: all 0.3s ease;
-}
-
-/* Premium Vault Filter Button styling */
-.vault-filter-btn {
-    padding: 8px 16px;
-    border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.02);
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    margin: 4px;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    outline: none;
-    flex-shrink: 0;
-}
-.vault-filter-btn:hover {
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
-}
-.vault-filter-btn.active {
-    background: #ffffff !important;
-    border-color: #ffffff !important;
-    color: #000000 !important;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
 }
