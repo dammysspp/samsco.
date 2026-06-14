@@ -76,24 +76,7 @@
         </svg>
     </button>
 
-    <div class="lagos-badge" aria-label="Current time in Lagos">
-        <div class="live-dot"></div>
-        <span id="lagos-time">LAGOS: --:-- --</span>
-    </div>
 
-    <!-- THEME ACCENT SWITCHER -->
-    <div id="theme-switcher">
-        <div class="theme-handle" aria-label="Change Accent Color" role="button">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-        </div>
-        <div class="theme-switcher-panel">
-            <div class="theme-dot active" style="background: #0071e3;" data-accent="blue" title="Apple Blue"></div>
-            <div class="theme-dot" style="background: #bf5af2;" data-accent="purple" title="Cosmic Purple"></div>
-            <div class="theme-dot" style="background: #ff375f;" data-accent="pink" title="Vibrant Pink"></div>
-            <div class="theme-dot" style="background: #30d158;" data-accent="green" title="Matrix Green"></div>
-            <div class="theme-dot" style="background: #ff9f0a;" data-accent="orange" title="Sunset Orange"></div>
-        </div>
-    </div>
 
     <!-- KEYBOARD SHORTCUTS MODAL -->
     <div id="shortcuts-modal">
@@ -270,8 +253,8 @@
         <section id="home"
             class="min-h-screen flex flex-col justify-center items-center text-center px-6 relative pt-24 pb-32">
 
-            <!-- Premium WebGL 3D Mesh Canvas -->
-            <canvas id="hero-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+            <!-- Simple gradient background (no blur, performant) -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-[#000000] z-0"></div>
 
 
             <div class="hero-content z-20 max-w-5xl">
@@ -1036,36 +1019,7 @@
         </div>
     </div>
 
-    <!-- Floating Spotlight Command Trigger (Cmd+K) -->
-    <button id="floating-spotlight-trigger" class="fixed bottom-6 left-6 z-40 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95 text-white/70 hover:text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.5)] cursor-pointer" title="Open Search Palette (Cmd+K)">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-    </button>
 
-    <!-- ========================================== -->
-    <!-- SPOTLIGHT COMMAND PALETTE OVERLAY -->
-    <!-- ========================================== -->
-    <div id="spotlight-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xl flex justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="max-w-xl w-full bg-[#0a0a0a]/90 border border-white/5 rounded-3xl p-5 mt-[10vh] h-fit relative transform scale-95 transition-all duration-300 shadow-2xl flex flex-col gap-4">
-            <div class="flex items-center gap-3 border-b border-white/5 pb-3">
-                <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input type="text" id="spotlight-input" class="w-full bg-transparent text-white text-sm outline-none placeholder-white/30" placeholder="Type a command or search portfolio..." autocomplete="off">
-                <button id="close-spotlight-btn" class="text-white/40 hover:text-white text-lg transition-colors">&times;</button>
-            </div>
-            
-            <div id="spotlight-results" class="flex flex-col gap-1 overflow-y-auto max-h-[350px] scrollbar-thin">
-                <!-- Results will be dynamically populated here -->
-            </div>
-            
-            <div class="flex items-center justify-between border-t border-white/5 pt-3 text-[10px] text-white/30 font-semibold tracking-wider uppercase">
-                <span>[↑↓] Navigate · [Enter] Select · [Esc] Close</span>
-                <span>CMD + K</span>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -1103,7 +1057,5 @@
 
     <script src="script.js"></script>
     <script src="email-handler.js"></script>
-    <script src="src/spotlight-palette.js" defer></script>
 </body>
-
 </html>

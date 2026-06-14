@@ -269,16 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchExperienceFromSupabase();
         fetchProfileImagesFromSupabase();
         fetchTestimonialsFromSupabase();
-        
-        // Lazy-load Three.js and our custom 3D hero canvas
-        const threeScript = document.createElement("script");
-        threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-        threeScript.onload = () => {
-            const heroScript = document.createElement("script");
-            heroScript.src = "src/three-hero.js";
-            document.body.appendChild(heroScript);
-        };
-        document.body.appendChild(threeScript);
     }, 200);
 });
 
@@ -767,16 +757,7 @@ document.querySelectorAll(".magnetic-btn").forEach(e => {
         )
     }
     )
-function updateTime() {
-    const e = (new Date).toLocaleTimeString("en-US", {
-        timeZone: "Africa/Lagos", hour: "numeric", minute: "2-digit"
-    }
-    );
-    document.getElementById("lagos-time").innerText = `LAGOS: ${e
-        }
-`
-}
-setInterval(updateTime, 1e3), updateTime();
+
 const menuBtn = document.getElementById("menu-btn"), closeMenuBtn = document.getElementById("close-menu"), mobileMenu = document.getElementById("mobile-menu");
 menuBtn.addEventListener("click", () => mobileMenu.classList.add("active")), closeMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("active")), document.querySelectorAll(".mobile-link").forEach(e => e.addEventListener("click", () => mobileMenu.classList.remove("active")));
 const ctxMenu = document.getElementById("custom-context-menu");
