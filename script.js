@@ -231,35 +231,16 @@ function initVaultFilters() {
     ), filtersInitialized = !0
 }
 function applyFilterButtonStyles(e, t, a) {
-    e.style.cssText = `\n        padding: 10px 20px;
-\n        border-radius: 9999px;
-\n        border: 1px solid ${t ? a : "rgba(255,255,255,0.2)"
-        }
-;
-\n        background: ${t ? a : "rgba(255,255,255,0.05)"
-        }
-;
-\n        color: ${t ? "#fff" : "rgba(255,255,255,0.7)"
-        }
-;
-\n        font-size: 12px;
-\n        font-weight: 600;
-\n        letter-spacing: 0.05em;
-\n        cursor: pointer;
-\n        margin: 4px;
-\n        transition: all 0.3s ease;
-\n        outline: none;
-\n        flex-shrink: 0;
-\n    `, t && e.classList.add("active")
+    e.className = "vault-filter-btn";
+    if (t) e.classList.add("active");
 }
 function handleFilterClick(e, t) {
-    const a = categoryColors[t] || "#0071e3";
-    document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(e => {
-        e.classList.remove("active");
-        e.getAttribute("data-filter");
-        e.style.background = "rgba(255,255,255,0.05)", e.style.borderColor = "rgba(255,255,255,0.2)", e.style.color = "rgba(255,255,255,0.7)"
-    }
-    ), e.classList.add("active"), e.style.background = a, e.style.borderColor = a, e.style.color = "#fff", currentFilter = t, filterGalleryItems(t)
+    document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    e.classList.add("active");
+    currentFilter = t;
+    filterGalleryItems(t);
 }
 function filterGalleryItems(e) {
     const t = document.querySelectorAll(".gallery-item");
@@ -830,7 +811,26 @@ mobileGalleryBtn && mobileGalleryBtn.addEventListener("click", () => {
 );
 const navbar = document.getElementById("navbar");
 navbar && window.addEventListener("scroll", () => {
-    window.scrollY > 20 ? navbar.classList.add("scrolled") : navbar.classList.remove("scrolled")
+    window.scrollY > 20 ? navbar.classList.add("scrolled") : navbar.classList.remove("scrolled");
+    
+    // Scroll Spy active navigation highlight
+    const sections = document.querySelectorAll("section[id]");
+    let currentActive = "";
+    sections.forEach(sec => {
+        const top = sec.offsetTop - 150; // Offset for header trigger
+        const height = sec.offsetHeight;
+        if (window.scrollY >= top && window.scrollY < top + height) {
+            currentActive = sec.getAttribute("id");
+        }
+    });
+    
+    const navLinks = document.querySelectorAll("#navbar a[href^='#']");
+    navLinks.forEach(link => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${currentActive}`) {
+            link.classList.add("active");
+        }
+    });
 }
     , {
         passive: !0

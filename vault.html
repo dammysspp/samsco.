@@ -18,36 +18,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
     </script>
     <script type="text/javascript">
         (function () {
             emailjs.init("YOUR_PUBLIC_KEY_HERE"); // USER MUST REPLACE THIS
         })();
-    </script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-                        display: ['Space Grotesk', 'Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        apple: {
-                            blue: '#0071e3',
-                            cyan: '#64d2ff',
-                            gray: { 100: '#f5f5f7', 200: '#d2d2d7', 500: '#86868b', 800: '#1d1d1f' }
-                        }
-                    }
-                }
-            }
-        }
     </script>
 
     <link rel="stylesheet" href="styles.css">
@@ -307,15 +283,15 @@
                         <!-- Title Section -->
                         <div class="flex items-center gap-6">
                             <div
-                                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[2px]">
+                                class="w-16 h-16 rounded-2xl border border-white/10 p-[2px]">
                                 <div class="w-full h-full rounded-2xl bg-black flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
+                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
                                 </div>
                             </div>
                             <div>
                                 <h2
-                                    class="text-4xl md:text-5xl font-black bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent">
-                                    THE VAULT</h2>
+                                    class="text-4xl md:text-5xl font-semibold font-display text-white">
+                                    The <span class="text-white/60 font-light italic">Vault</span></h2>
                                 <p class="text-white/40 text-sm mt-1 flex items-center gap-2">
                                     <span class="w-2 h-2 bg-[#30d158] rounded-full animate-pulse"></span>
                                     <span id="gallery-count">60+ Creative Works</span>
