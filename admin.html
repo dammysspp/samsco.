@@ -504,6 +504,49 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                     </button>
                 </div>
             </div>
+
+            <!-- Tab Section: Testimonials -->
+            <div id="section-testimonials" class="tab-section hidden flex flex-col gap-6 animate-fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold font-display">CLIENT TESTIMONIALS</h2>
+                        <p class="text-xs text-white/40 mt-1">Manage client reviews and testimonials shown on the homepage.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="import-testimonials-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-bold text-xs tracking-wider uppercase transition-all duration-300">
+                            Import Defaults
+                        </button>
+                        <button id="new-testimonial-btn" class="bg-[#0071e3] hover:bg-[#0077ed] text-white px-5 py-2.5 rounded-full font-bold text-xs tracking-wider uppercase transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
+                            + Add Testimonial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Testimonials Table Card -->
+                <div class="admin-glass rounded-3xl overflow-hidden border border-white/5">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-white/[0.06] text-[10px] uppercase tracking-wider text-white/40 bg-white/[0.01]">
+                                    <th class="py-4 px-6 font-semibold">Client</th>
+                                    <th class="py-4 px-6 font-semibold">Role & Company</th>
+                                    <th class="py-4 px-6 font-semibold">Content</th>
+                                    <th class="py-4 px-6 font-semibold">Rating</th>
+                                    <th class="py-4 px-6 font-semibold text-center">Index</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testimonials-table-body" class="divide-y divide-white/[0.04] text-sm text-white/80">
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center text-white/40 text-xs">
+                                        Loading testimonials data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -570,6 +613,55 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                     </button>
                     <button type="submit" class="px-5 py-2.5 bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-full font-bold text-xs tracking-wider transition-all duration-300 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
                         SAVE ITEM
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4D. ADD / EDIT TESTIMONIAL DIALOG (MODAL) -->
+    <!-- ========================================== -->
+    <div id="testimonial-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="admin-glass max-w-md w-full p-6 md:p-8 rounded-3xl relative transform scale-95 transition-transform duration-300">
+            <button id="close-testimonial-modal-btn" class="absolute top-4 right-4 text-white/40 hover:text-white text-2xl transition-colors">&times;</button>
+            <h2 id="testimonial-modal-heading" class="text-2xl font-bold font-display mb-6">Create New Testimonial</h2>
+            <form id="testimonial-form" class="space-y-5">
+                <input type="hidden" id="testimonial-id-input">
+                <div>
+                    <label for="testimonial-name" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Client Name</label>
+                    <input type="text" id="testimonial-name" required placeholder="e.g. Alexander Tobi" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="testimonial-role" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Role</label>
+                        <input type="text" id="testimonial-role" required placeholder="e.g. Lead Designer" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                    <div>
+                        <label for="testimonial-company" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Company (Optional)</label>
+                        <input type="text" id="testimonial-company" placeholder="e.g. Covenant University" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="testimonial-rating" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Rating (1-5)</label>
+                        <input type="number" id="testimonial-rating" min="1" max="5" required placeholder="5" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                    <div>
+                        <label for="testimonial-order" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Order Index</label>
+                        <input type="number" id="testimonial-order" required placeholder="0" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label for="testimonial-content" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Review Content</label>
+                    <textarea id="testimonial-content" required rows="4" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs resize-none" placeholder="Write client feedback here..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 border-t border-white/5 pt-6 mt-6">
+                    <button type="button" id="cancel-testimonial-modal-btn" class="px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-full font-semibold text-xs tracking-wider transition-all duration-300">
+                        CANCEL
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-full font-bold text-xs tracking-wider transition-all duration-300 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
+                        SAVE REVIEW
                     </button>
                 </div>
             </form>
@@ -1162,6 +1254,7 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                 loadSkillsData();
                 loadExperienceData();
                 loadProfileSettingsData();
+                loadTestimonialsData();
             }
 
             // ==========================================
@@ -1385,6 +1478,157 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                     showToast(`Import failed: ${e.message}`, "error");
                 }
             }
+
+            // ==========================================
+            // TESTIMONIALS CRUD OPERATIONS
+            // ==========================================
+            let testimonialsData = [];
+
+            async function loadTestimonialsData() {
+                const tbody = document.getElementById("testimonials-table-body");
+                if (!tbody) return;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-white/30 font-light">Loading testimonials...</td></tr>`;
+                try {
+                    const { data, error } = await window.supabaseClient
+                        .from("testimonials")
+                        .select("*")
+                        .order("order_index", { ascending: true });
+                    if (error) throw error;
+                    testimonialsData = data || [];
+                    renderTestimonialsTable(testimonialsData);
+                } catch (e) {
+                    console.error("Fetch testimonials failed:", e);
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Table 'testimonials' not found. Run the SQL script!"}</td></tr>`;
+                }
+            }
+
+            function renderTestimonialsTable(data) {
+                const tbody = document.getElementById("testimonials-table-body");
+                if (!tbody) return;
+                
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-white/40 text-xs">No testimonials found. Click "Import Defaults" or "+ Add Testimonial" to create one.</td></tr>`;
+                    return;
+                }
+                
+                tbody.innerHTML = "";
+                data.forEach(item => {
+                    const tr = document.createElement("tr");
+                    tr.className = "border-b border-white/[0.04] hover:bg-white/[0.01] transition-colors";
+                    
+                    const stars = "★".repeat(item.rating || 5);
+                    const companyText = item.company ? ` @ ${item.company}` : "";
+                    
+                    tr.innerHTML = `
+                        <td class="py-4 px-6 font-semibold text-white">${escapeHtml(item.client_name)}</td>
+                        <td class="py-4 px-6 text-white/60">${escapeHtml(item.client_role)}${escapeHtml(companyText)}</td>
+                        <td class="py-4 px-6 text-white/50 max-w-xs truncate" title="${escapeHtml(item.content)}">${escapeHtml(item.content)}</td>
+                        <td class="py-4 px-6 text-[#ff9f0a] font-mono">${stars}</td>
+                        <td class="py-4 px-6 text-center text-white/60 font-mono">${item.order_index}</td>
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button class="edit-testimonial-btn bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-colors" data-id="${item.id}">Edit</button>
+                                <button class="delete-testimonial-btn bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-colors" data-id="${item.id}">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                // Add event listeners
+                document.querySelectorAll(".edit-testimonial-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const id = parseInt(btn.dataset.id);
+                        const item = testimonialsData.find(t => t.id === id);
+                        if (item) openTestimonialModal(item);
+                    });
+                });
+                
+                document.querySelectorAll(".delete-testimonial-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        deleteTestimonialItem(btn.dataset.id);
+                    });
+                });
+            }
+
+            // Modal manager
+            const testimonialModal = document.getElementById("testimonial-modal");
+            const testimonialForm = document.getElementById("testimonial-form");
+            
+            function openTestimonialModal(item = null) {
+                if (item) {
+                    document.getElementById("testimonial-modal-heading").textContent = "Edit Testimonial";
+                    document.getElementById("testimonial-id-input").value = item.id;
+                    document.getElementById("testimonial-name").value = item.client_name;
+                    document.getElementById("testimonial-role").value = item.client_role;
+                    document.getElementById("testimonial-company").value = item.company || "";
+                    document.getElementById("testimonial-rating").value = item.rating;
+                    document.getElementById("testimonial-order").value = item.order_index;
+                    document.getElementById("testimonial-content").value = item.content;
+                } else {
+                    document.getElementById("testimonial-modal-heading").textContent = "Create New Testimonial";
+                    testimonialForm.reset();
+                    document.getElementById("testimonial-id-input").value = "";
+                    document.getElementById("testimonial-order").value = testimonialsData.length;
+                    document.getElementById("testimonial-rating").value = 5;
+                }
+                testimonialModal.classList.remove("opacity-0", "pointer-events-none");
+                testimonialModal.querySelector(".transform").classList.remove("scale-95");
+            }
+            
+            function closeTestimonialModal() {
+                testimonialModal.classList.add("opacity-0", "pointer-events-none");
+                testimonialModal.querySelector(".transform").classList.add("scale-95");
+            }
+            
+            async function deleteTestimonialItem(id) {
+                if (!confirm("Are you sure you want to delete this testimonial?")) return;
+                showToast("Deleting testimonial...", "info");
+                try {
+                    const { error } = await window.supabaseClient
+                        .from("testimonials")
+                        .delete()
+                        .eq("id", id);
+                    if (error) throw error;
+                    showToast("Testimonial deleted successfully!", "success");
+                    loadTestimonialsData();
+                } catch (e) {
+                    showToast(`Delete failed: ${e.message}`, "error");
+                }
+            }
+            
+            async function importDefaultTestimonials() {
+                const defaultTestimonials = [
+                    { client_name: "Alexander Tobi", client_role: "Lead Creative", company: "Covenant University", content: "The best 3D artist I’ve seen in CU (Covenant University). His work is simply outstanding.", rating: 5, order_index: 0 },
+                    { client_name: "Dr. Tunji Oyedepo", client_role: "Faculty", company: "Covenant University", content: "Samuel is the best graphics designer in the whole of Mass Communication at Covenant University.", rating: 5, order_index: 1 },
+                    { client_name: "Dr. Tolu", client_role: "Faculty", company: "High Impact Agency", content: "Possesses exceptional technical proficiency and a deep understanding of modern digital tools.", rating: 5, order_index: 2 },
+                    { client_name: "Abraham", client_role: "Detailed Client", company: null, content: "Samsco too good! He delivers quality every single time.", rating: 5, order_index: 3 }
+                ];
+                
+                if (!confirm(`Import ${defaultTestimonials.length} default testimonials?`)) return;
+                showToast("Importing default testimonials...", "info");
+                try {
+                    const { error } = await window.supabaseClient
+                        .from("testimonials")
+                        .insert(defaultTestimonials);
+                    if (error) throw error;
+                    showToast("Successfully imported default testimonials!", "success");
+                    loadTestimonialsData();
+                } catch (e) {
+                    showToast(`Import failed: ${e.message}`, "error");
+                }
+            }
+
+            function escapeHtml(str) {
+                if (!str) return "";
+                return String(str)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
 
             // ==========================================
             // MODAL TRIGGERS FOR SKILLS AND EXPERIENCE
@@ -2569,7 +2813,7 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
             });
 
             // Tab switcher navigation handler
-            const tabs = ["works", "skills", "experience", "profile"];
+            const tabs = ["works", "skills", "experience", "profile", "testimonials"];
             let activeTab = "works";
             
             tabs.forEach(tab => {
@@ -2583,9 +2827,9 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                             const sec = document.getElementById(`section-${t}`);
                             if (b) {
                                 if (t === tab) {
-                                    b.className = "tab-btn w-full py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
+                                    b.className = "tab-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
                                 } else {
-                                    b.className = "tab-btn w-full py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
+                                    b.className = "tab-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
                                 }
                             }
                             if (sec) {
@@ -2722,6 +2966,47 @@ CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_sett
                     }
                 });
             }
+
+            // Testimonial modal form submit and click listeners
+            testimonialForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const id = document.getElementById("testimonial-id-input").value;
+                const client_name = document.getElementById("testimonial-name").value.trim();
+                const client_role = document.getElementById("testimonial-role").value.trim();
+                const company = document.getElementById("testimonial-company").value.trim() || null;
+                const rating = parseInt(document.getElementById("testimonial-rating").value) || 5;
+                const order_index = parseInt(document.getElementById("testimonial-order").value) || 0;
+                const content = document.getElementById("testimonial-content").value.trim();
+                
+                const testimonialData = { client_name, client_role, company, rating, order_index, content };
+                showToast("Saving testimonial...", "info");
+                
+                try {
+                    if (id) {
+                        const { error } = await window.supabaseClient
+                            .from("testimonials")
+                            .update(testimonialData)
+                            .eq("id", id);
+                        if (error) throw error;
+                        showToast("Testimonial updated successfully!", "success");
+                    } else {
+                        const { error } = await window.supabaseClient
+                            .from("testimonials")
+                            .insert([testimonialData]);
+                        if (error) throw error;
+                        showToast("Testimonial added successfully!", "success");
+                    }
+                    closeTestimonialModal();
+                    loadTestimonialsData();
+                } catch (err) {
+                    showToast(`Save failed: ${err.message}`, "error");
+                }
+            });
+
+            document.getElementById("close-testimonial-modal-btn")?.addEventListener("click", closeTestimonialModal);
+            document.getElementById("cancel-testimonial-modal-btn")?.addEventListener("click", closeTestimonialModal);
+            document.getElementById("new-testimonial-btn")?.addEventListener("click", () => openTestimonialModal());
+            document.getElementById("import-testimonials-btn")?.addEventListener("click", importDefaultTestimonials);
 
             // Initialize app state
             checkAppState();

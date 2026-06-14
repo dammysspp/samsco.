@@ -200,6 +200,66 @@ async function fetchProfileImagesFromSupabase() {
     }
 }
 
+async function fetchTestimonialsFromSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("testimonials")
+            .select("*")
+            .order("order_index", { ascending: true });
+            
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            const track = document.querySelector(".testimonials-track");
+            if (track) {
+                track.innerHTML = "";
+                
+                // Duplicate items to ensure smooth infinite loop scroll
+                let itemsList = [...data];
+                while (itemsList.length < 8) {
+                    itemsList = [...itemsList, ...data];
+                }
+                const finalItemsList = [...itemsList, ...itemsList];
+                
+                const gradients = [
+                    "from-[#0071e3] to-[#64d2ff]", // Blue-Cyan
+                    "from-[#bf5af2] to-[#ff375f]", // Purple-Pink
+                    "from-[#30d158] to-[#64d2ff]", // Green-Cyan
+                    "from-[#ff9f0a] to-[#ff375f]"  // Orange-Pink
+                ];
+                
+                finalItemsList.forEach((test, idx) => {
+                    const card = document.createElement("div");
+                    card.className = "testimonial-card";
+                    
+                    const stars = "★".repeat(test.rating || 5);
+                    const initial = (test.client_name || "C").charAt(0).toUpperCase();
+                    const grad = gradients[idx % gradients.length];
+                    const subtitle = test.company ? `${test.client_role}, ${test.company}` : test.client_role;
+                    
+                    card.innerHTML = `
+                        <div class="testimonial-stars mb-4">${stars}</div>
+                        <p class="text-white/70 mb-6 leading-relaxed">"${test.content}"</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br ${grad} flex items-center justify-center text-white font-bold">
+                                ${initial}
+                            </div>
+                            <div>
+                                <div class="text-white font-semibold">${test.client_name}</div>
+                                <div class="text-white/40 text-sm">${subtitle}</div>
+                            </div>
+                        </div>
+                    `;
+                    track.appendChild(card);
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching testimonials from Supabase:", e);
+    }
+}
+
 // Start fetch in background
 document.addEventListener("DOMContentLoaded", () => {
     // Small delay to let initial paint complete smoothly
@@ -208,6 +268,17 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchSkillsFromSupabase();
         fetchExperienceFromSupabase();
         fetchProfileImagesFromSupabase();
+        fetchTestimonialsFromSupabase();
+        
+        // Lazy-load Three.js and our custom 3D hero canvas
+        const threeScript = document.createElement("script");
+        threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+        threeScript.onload = () => {
+            const heroScript = document.createElement("script");
+            heroScript.src = "src/three-hero.js";
+            document.body.appendChild(heroScript);
+        };
+        document.body.appendChild(threeScript);
     }, 200);
 });
 
