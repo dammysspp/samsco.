@@ -276,8 +276,10 @@ document.addEventListener("DOMContentLoaded", () => {
 let galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"];
 const galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
 let currentFilter = "ALL", galleryItems = [], visibleGalleryItems = [], galleryInitialized = !1, filtersInitialized = !1;
+let categoryColorsMap = {};
 
 function getCategoryColor(cat) {
+    if (categoryColorsMap[cat]) return categoryColorsMap[cat];
     const colors = {
         "3D & VFX": "#bf5af2",
         "Graphics Design": "#0071e3",
@@ -307,7 +309,7 @@ async function fetchCategoriesFromSupabase() {
     try {
         const { data, error } = await window.supabaseClient
             .from("categories")
-            .select("name")
+            .select("name, color")
             .order("name", { ascending: true });
             
         if (error) {
@@ -319,6 +321,11 @@ async function fetchCategoriesFromSupabase() {
         }
         
         if (data && data.length > 0) {
+            data.forEach(item => {
+                if (item.color) {
+                    categoryColorsMap[item.name] = item.color;
+                }
+            });
             const fetchedCategories = data.map(item => item.name);
             const isChanged = JSON.stringify(fetchedCategories) !== JSON.stringify(galleryCategories);
             if (isChanged) {
