@@ -349,35 +349,20 @@ function initVaultFilters(force = false) {
     ), filtersInitialized = !0
 }
 function applyFilterButtonStyles(e, t, a) {
-    e.style.cssText = `\n        padding: 10px 20px;
-\n        border-radius: 9999px;
-\n        border: 1px solid ${t ? a : "rgba(255,255,255,0.2)"
-        }
-;
-\n        background: ${t ? a : "rgba(255,255,255,0.05)"
-        }
-;
-\n        color: ${t ? "#fff" : "rgba(255,255,255,0.7)"
-        }
-;
-\n        font-size: 12px;
-\n        font-weight: 600;
-\n        letter-spacing: 0.05em;
-\n        cursor: pointer;
-\n        margin: 4px;
-\n        transition: all 0.3s ease;
-\n        outline: none;
-\n        flex-shrink: 0;
-\n    `, t && e.classList.add("active")
+    e.style.setProperty('--category-color', a);
+    if (t) {
+        e.classList.add("active");
+    } else {
+        e.classList.remove("active");
+    }
 }
 function handleFilterClick(e, t) {
-    const a = getCategoryColor(t);
-    document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(e => {
-        e.classList.remove("active");
-        e.getAttribute("data-filter");
-        e.style.background = "rgba(255,255,255,0.05)", e.style.borderColor = "rgba(255,255,255,0.2)", e.style.color = "rgba(255,255,255,0.7)"
-    }
-    ), e.classList.add("active"), e.style.background = a, e.style.borderColor = a, e.style.color = "#fff", currentFilter = t, filterGalleryItems(t)
+    document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    e.classList.add("active");
+    currentFilter = t;
+    filterGalleryItems(t);
 }
 function filterGalleryItems(e) {
     const t = document.querySelectorAll(".gallery-item");

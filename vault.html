@@ -310,43 +310,54 @@
         <div class="min-h-screen px-4 py-8 md:px-8 lg:px-16 relative z-10">
             <!-- Premium Header -->
             <div class="sticky top-0 z-30 pt-4 pb-6">
-                <div class="glass-card rounded-2xl p-6 md:p-8 border border-white/10 backdrop-blur-2xl bg-black/60">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div class="glass-card rounded-2xl p-5 md:p-6 border border-white/10 backdrop-blur-2xl bg-black/60 shadow-2xl">
+                    <!-- Row 1: Branding & Navigation -->
+                    <div class="flex justify-between items-center w-full gap-4">
                         <!-- Title Section -->
-                        <div class="flex items-center gap-6">
-                            <div
-                                class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[2px]">
-                                <div class="w-full h-full rounded-2xl bg-black flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[1.5px] flex-shrink-0">
+                                <div class="w-full h-full rounded-xl bg-black flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
                                 </div>
                             </div>
                             <div>
-                                <h2
-                                    class="text-4xl md:text-5xl font-black bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent">
-                                    THE VAULT</h2>
-                                <p class="text-white/40 text-sm mt-1 flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-[#30d158] rounded-full animate-pulse"></span>
+                                <h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent tracking-tight">
+                                    THE VAULT
+                                </h2>
+                                <p class="text-white/40 text-xs mt-0.5 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 bg-[#30d158] rounded-full animate-pulse"></span>
                                     <span id="gallery-count">60+ Creative Works</span>
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Filters -->
-                        <div class="flex flex-wrap gap-2" id="vault-filters">
-                            <!-- Filters injected here -->
-                        </div>
-
-                        <!-- Close Button changed to Home -->
+                        <!-- Home Button -->
                         <a href="index.html"
-                            class="group absolute top-4 right-4 lg:static w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#0071e3] hover:border-[#0071e3] transition-all duration-300 cursor-hover"
+                            class="group w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#0071e3] hover:border-[#0071e3] transition-all duration-300 cursor-hover"
                             title="Go Home">
-                            <svg class="w-5 h-5 text-white/60 group-hover:text-white transition-colors" fill="none"
+                            <svg class="w-4.5 h-4.5 text-white/60 group-hover:text-white transition-colors" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                 </path>
                             </svg>
                         </a>
+                    </div>
+
+                    <!-- Divider Line -->
+                    <div class="h-[1px] bg-white/5 my-4 w-full"></div>
+
+                    <!-- Row 2: Scrolling Filter Strip -->
+                    <div class="relative w-full overflow-hidden flex items-center">
+                        <!-- Left Fade Mask -->
+                        <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/80 to-transparent pointer-events-none z-10"></div>
+                        <!-- Right Fade Mask -->
+                        <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/80 to-transparent pointer-events-none z-10"></div>
+                        
+                        <!-- Filter Strip Container -->
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 py-1 w-full no-scrollbar" id="vault-filters" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+                            <!-- Filters dynamically injected here -->
+                        </div>
                     </div>
                 </div>
             </div>
