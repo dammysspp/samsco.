@@ -5,8 +5,8 @@
  * via the Setup Screen on the /admin page (which saves them to localStorage).
  */
 
-const SUPABASE_DEFAULT_URL = ""; // Paste your Supabase project URL here
-const SUPABASE_DEFAULT_ANON_KEY = ""; // Paste your Supabase project Anon Key here
+const SUPABASE_DEFAULT_URL = "https://dmjcdxslpqqsyoylahvf.supabase.co"; // Paste your Supabase project URL here
+const SUPABASE_DEFAULT_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtamNkeHNscHFxc3lveWxhaHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExODQwNzMsImV4cCI6MjA5Njc2MDA3M30.75nedGUsMZBeE9fzMrGqBstM6kpjMcg3AlvfeXbkcCY"; // Paste your Supabase project Anon Key here
 
 // Helper to get active config (local storage takes precedence for easy setup)
 function getSupabaseConfig() {
