@@ -264,6 +264,7 @@ async function fetchTestimonialsFromSupabase() {
 document.addEventListener("DOMContentLoaded", () => {
     // Small delay to let initial paint complete smoothly
     setTimeout(() => {
+        fetchCategoriesFromSupabase();
         fetchWorksFromSupabase();
         fetchSkillsFromSupabase();
         fetchExperienceFromSupabase();
@@ -272,19 +273,75 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 200);
 });
 
-const galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"], galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
+let galleryCategories = ["Graphics Design", "3D & VFX", "Video Editing", "Coding & Data Analytics", "AI", "Website", "Social Management", "Presentations"];
+const galleryGrid = document.getElementById("gallery-grid-content"), filterContainer = document.getElementById("vault-filters");
 let currentFilter = "ALL", galleryItems = [], visibleGalleryItems = [], galleryInitialized = !1, filtersInitialized = !1;
-const categoryColors = {
-    ALL: "#0071e3", "Graphics Design": "#0071e3", "3D & VFX": "#bf5af2", "Video Editing": "#ff375f", "Coding & Data Analytics": "#30d158", AI: "#ff9f0a", Website: "#06b6d4", "Social Management": "#ec4899", "Presentations": "#10b981", "Presentations": "#10b981"
+
+function getCategoryColor(cat) {
+    const colors = {
+        "3D & VFX": "#bf5af2",
+        "Graphics Design": "#0071e3",
+        "Video Editing": "#ff375f",
+        "Coding & Data Analytics": "#30d158",
+        "AI": "#ff9f0a",
+        "Website": "#06b6d4",
+        "Social Management": "#ec4899",
+        "Presentations": "#10b981"
+    };
+    if (colors[cat]) return colors[cat];
+    if (cat === "ALL") return "#0071e3";
+    let hash = 0;
+    for (let i = 0; i < cat.length; i++) {
+        hash = cat.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 85%, 65%)`;
 }
-    ;
-function initVaultFilters() {
-    if (filtersInitialized || !filterContainer) return;
+
+async function fetchCategoriesFromSupabase() {
+    if (!window.supabaseClient) {
+        console.log("Supabase client not initialized - using local categories");
+        return;
+    }
+    console.log("Fetching categories from Supabase...");
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("categories")
+            .select("name")
+            .order("name", { ascending: true });
+            
+        if (error) {
+            if (error.code === 'PGRST116' || error.message.includes("does not exist")) {
+                console.log("Categories table does not exist in Supabase yet. Using defaults.");
+                return;
+            }
+            throw error;
+        }
+        
+        if (data && data.length > 0) {
+            const fetchedCategories = data.map(item => item.name);
+            const isChanged = JSON.stringify(fetchedCategories) !== JSON.stringify(galleryCategories);
+            if (isChanged) {
+                galleryCategories = fetchedCategories;
+                
+                // Re-initialize filter buttons if vault is initialized
+                if (filterContainer) {
+                    initVaultFilters(true);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error fetching categories from Supabase:", e);
+    }
+}
+
+function initVaultFilters(force = false) {
+    if (filtersInitialized && !force || !filterContainer) return;
     filterContainer.innerHTML = "";
     ["ALL", ...galleryCategories].forEach(e => {
         const t = document.createElement("button");
         t.textContent = e, t.setAttribute("data-filter", e), t.className = "vault-filter-btn";
-        applyFilterButtonStyles(t, "ALL" === e, categoryColors[e] || "#0071e3"), t.addEventListener("click", function () {
+        applyFilterButtonStyles(t, currentFilter === e, getCategoryColor(e)), t.addEventListener("click", function () {
             handleFilterClick(this, e)
         }
         ), filterContainer.appendChild(t)
@@ -314,7 +371,7 @@ function applyFilterButtonStyles(e, t, a) {
 \n    `, t && e.classList.add("active")
 }
 function handleFilterClick(e, t) {
-    const a = categoryColors[t] || "#0071e3";
+    const a = getCategoryColor(t);
     document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(e => {
         e.classList.remove("active");
         e.getAttribute("data-filter");
@@ -408,10 +465,7 @@ function initGallery(force = false) {
         let o = "", n = e.url.split("?")[0], s = n;
         e.url.includes("imgix.net") && (s = n + "?w=400&q=40&auto=format");
         const firstCat = a ? a.split(",")[0].trim() : "";
-        const l = {
-            "Graphics Design": "#0071e3", "3D & VFX": "#bf5af2", "Video Editing": "#ff375f", "Coding & Data Analytics": "#30d158", AI: "#ff9f0a", Website: "#06b6d4", "Social Management": "#ff375f", "Presentations": "#10b981"
-        }
-        [firstCat] || "#0071e3";
+        const l = getCategoryColor(firstCat);
         e.projectUrl && i.setAttribute("data-project-url", e.projectUrl);
         const thumbUrl = e.type === "iframe" ? `https://image.thum.io/get/width/400/crop/800/noanimate/${e.url}` : s;
         o = e.type === "iframe" ? `<div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">\n            <img data-src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">\n            <div class="absolute inset-0 flex items-center justify-center">\n                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">\n                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>\n                </div>\n            </div>\n        </div>` : r ? `
