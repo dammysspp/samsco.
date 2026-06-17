@@ -1221,13 +1221,15 @@ button:focus-visible,
    GALLERY MODAL
    ============================================== */
 
-#full-gallery-modal {
+#full-gallery-modal,
+#vault-background {
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--duration-normal) var(--ease-apple);
 }
 
-#full-gallery-modal.active {
+#full-gallery-modal.active,
+#vault-background.active {
     opacity: 1;
     pointer-events: auto;
 }
@@ -1376,8 +1378,9 @@ button:focus-visible,
 .gallery-item {
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: all var(--duration-normal) var(--ease-apple);
+    transition: transform var(--duration-normal) var(--ease-apple), box-shadow var(--duration-normal) var(--ease-apple);
     position: relative;
+    will-change: transform;
 }
 
 .gallery-item:hover {
@@ -1536,6 +1539,7 @@ button:focus-visible,
 /* Custom Modals visibility */
 #project-modal,
 #full-gallery-modal,
+#vault-background,
 #lightbox-modal {
     opacity: 0;
     pointer-events: none;
@@ -1544,6 +1548,7 @@ button:focus-visible,
 
 #project-modal.active,
 #full-gallery-modal.active,
+#vault-background.active,
 #lightbox-modal.active {
     opacity: 1;
     pointer-events: all;
@@ -2042,8 +2047,9 @@ button:focus-visible,
     position: relative;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s ease, box-shadow 0.4s ease;
     border: 1px solid transparent;
+    will-change: transform;
 }
 
 .gallery-masonry .gallery-item::before {

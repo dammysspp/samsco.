@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+    <script>
+        window.vaultStartTime = Date.now();
+        window.vaultImagesLoaded = 0;
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
@@ -53,7 +57,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="antialiased selection:bg-apple-blue selection:text-white font-sans">
+<body class="antialiased selection:bg-apple-blue selection:text-white font-sans" style="overflow: hidden;">
 
     <!-- SVG FILTERS (Hidden) -->
     <svg style="display: none;">
@@ -285,10 +289,10 @@
 
     <!-- Main content removed, this page is dedicated to the vault. -->
 
-    <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
-    <div id="full-gallery-modal" class="fixed inset-0 z-[90] overflow-y-auto gallery-modal-bg" data-lenis-prevent>
+    <!-- Fixed Background for the Vault (Decoupled from scroll container for maximum smoothness) -->
+    <div id="vault-background" class="fixed inset-0 z-[80] gallery-modal-bg pointer-events-none">
         <!-- Animated Background -->
-        <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute inset-0 pointer-events-none">
             <div
                 class="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-[#0071e3]/20 via-transparent to-transparent blur-3xl animate-pulse transform-gpu will-change-transform">
             </div>
@@ -298,6 +302,10 @@
                 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-[#30d158]/5 via-transparent to-transparent blur-3xl transform-gpu will-change-transform">
             </div>
         </div>
+    </div>
+
+    <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
+    <div id="full-gallery-modal" class="relative w-full z-[10] bg-transparent" style="display: none;">
 
         <div class="min-h-screen px-4 py-8 md:px-8 lg:px-16 relative z-10">
             <!-- Premium Header -->
@@ -494,6 +502,7 @@
             infinite: false,
         });
         window.lenis = lenis;
+        lenis.stop(); // Disable scroll while preloader is active
 
         // Connect Lenis to GSAP ScrollTrigger
         if (typeof ScrollTrigger !== "undefined") {
@@ -518,30 +527,29 @@
             // Start initializing gallery immediately so images start loading behind the scenes
             if (typeof initVaultFilters !== 'undefined') initVaultFilters();
             if (typeof initGallery !== 'undefined') initGallery();
-        });
 
-        window.addEventListener('load', () => {
+            // Preloader logic
             const minTime = 3000; // Minimum loader time
-            const startTime = Date.now();
+            const startTime = window.vaultStartTime || Date.now();
             let loaderFinished = false;
 
             const checkReady = () => {
                 const now = Date.now();
                 const elapsed = now - startTime;
 
-                // We consider it ready if:
-                // 1. Min time has passed
-                // 2. AND (at least 15 images have loaded OR it's been 8 seconds)
+                // Dynamically determine target image count based on galleryConfig size (avoid infinite load if < 15 works)
+                const targetImagesCount = Math.min(15, (typeof galleryConfig !== 'undefined' && galleryConfig.length) ? galleryConfig.length : 15);
                 const loadedCount = window.vaultImagesLoaded || 0;
 
                 // Smooth time-based percentage (reach 90% by minTime)
                 const timePercent = Math.min(90, Math.round((elapsed / minTime) * 90));
                 // Image-based percentage (reach up to 99% based on loadedCount)
-                const imagePercent = Math.min(99, Math.round((loadedCount / 15) * 100));
+                const maxTarget = targetImagesCount > 0 ? targetImagesCount : 1;
+                const imagePercent = Math.min(99, Math.round((loadedCount / maxTarget) * 100));
                 // Maximum of time-based progress or image-based progress
                 const targetPercent = Math.max(timePercent, imagePercent);
 
-                if (elapsed >= minTime && (loadedCount >= 15 || elapsed >= 8000)) {
+                if (elapsed >= minTime && (loadedCount >= targetImagesCount || elapsed >= 8000)) {
                     if (loaderFinished) return;
                     loaderFinished = true;
 
@@ -569,11 +577,18 @@
             function revealVault() {
                 const gm = document.getElementById("full-gallery-modal");
                 if (gm) {
+                    gm.style.display = "block";
+                    gm.offsetHeight; // force browser layout reflow to trigger CSS transition
                     gm.classList.add("active");
                 }
+                const bg = document.getElementById("vault-background");
+                if (bg) {
+                    bg.classList.add("active");
+                }
 
-                document.body.style.overflow = "hidden";
-                if (window.lenis) window.lenis.stop();
+                // Restore scrolling on the body and start Lenis
+                document.body.style.overflow = "";
+                if (window.lenis) window.lenis.start();
 
                 if (typeof gsap !== 'undefined') {
                     gsap.fromTo(".gallery-item", {

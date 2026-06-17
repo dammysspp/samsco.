@@ -448,7 +448,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
     )
 }
     , {
-        root: document.getElementById("full-gallery-modal"), rootMargin: "200px"
+        root: window.isVaultPage ? null : document.getElementById("full-gallery-modal"), rootMargin: "200px"
     }
 );
 function initGallery(force = false) {
