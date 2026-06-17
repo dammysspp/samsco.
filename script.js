@@ -468,14 +468,14 @@ function initGallery(force = false) {
         const l = getCategoryColor(firstCat);
         e.projectUrl && i.setAttribute("data-project-url", e.projectUrl);
         const thumbUrl = e.type === "iframe" ? `https://image.thum.io/get/width/400/crop/800/noanimate/${e.url}` : s;
-        o = e.type === "iframe" ? `<div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">\n            <img data-src="${thumbUrl}" loading="lazy" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">\n            <div class="absolute inset-0 flex items-center justify-center">\n                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">\n                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>\n                </div>\n            </div>\n        </div>` : r ? `
-<video data-src="${e.url
-            }
-" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" class="w-full h-full object-cover"></video>\n            <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">\n                <span class="text-2xl mb-2">⚠️</span>\n                <span class="text-white/50 text-xs font-mono">Video Unavailable</span>\n            </div>` : `<img data-src="${s
-        }
-" loading="lazy" alt="${e.title
-        }
-" class="w-full h-full object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">`, i.innerHTML = `\n            ${o
+        
+        // Eager load the first 15 items to speed up preloader and avoid pop-in
+        const isEager = t < 15;
+        
+        o = e.type === "iframe" ? `<div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">\n            <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">\n            <div class="absolute inset-0 flex items-center justify-center">\n                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">\n                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>\n                </div>\n            </div>\n        </div>` : r ? `
+<video ${isEager ? `src="${e.url}"` : `data-src="${e.url}"`} muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover"></video>\n            <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">\n                <span class="text-2xl mb-2">⚠️</span>\n                <span class="text-white/50 text-xs font-mono">Video Unavailable</span>\n            </div>` : `<img ${isEager ? `src="${s}"` : `data-src="${s}"`} loading="${isEager ? 'eager' : 'lazy'}" alt="${e.title}" class="w-full h-full object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1">`;
+
+        i.innerHTML = `\n            ${o
             }
 \n            <div class="category-badge" style="color: ${l
             }
@@ -491,7 +491,11 @@ function initGallery(force = false) {
             }
 ">${a
             }
-</span>\n            </div>\n        `, galleryGrid.appendChild(i), galleryObserver.observe(i)
+</span>\n            </div>\n        `, galleryGrid.appendChild(i);
+        
+        if (!isEager) {
+            galleryObserver.observe(i);
+        }
     }
     visibleGalleryItems = Array.from(document.querySelectorAll(".gallery-item")), galleryInitialized = !0, document.querySelectorAll(".gallery-item").forEach(e => {
         e.addEventListener("click", () => {

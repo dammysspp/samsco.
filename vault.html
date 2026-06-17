@@ -290,12 +290,12 @@
         <!-- Animated Background -->
         <div class="fixed inset-0 pointer-events-none">
             <div
-                class="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-[#0071e3]/20 via-transparent to-transparent blur-3xl animate-pulse">
+                class="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-[#0071e3]/20 via-transparent to-transparent blur-3xl animate-pulse transform-gpu will-change-transform">
             </div>
-            <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-[#bf5af2]/15 via-transparent to-transparent blur-3xl"
+            <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-[#bf5af2]/15 via-transparent to-transparent blur-3xl transform-gpu will-change-transform"
                 style="animation: pulse 4s ease-in-out infinite alternate;"></div>
             <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-[#30d158]/5 via-transparent to-transparent blur-3xl">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-[#30d158]/5 via-transparent to-transparent blur-3xl transform-gpu will-change-transform">
             </div>
         </div>
 
@@ -534,17 +534,29 @@
                 // 2. AND (at least 15 images have loaded OR it's been 8 seconds)
                 const loadedCount = window.vaultImagesLoaded || 0;
 
+                // Smooth time-based percentage (reach 90% by minTime)
+                const timePercent = Math.min(90, Math.round((elapsed / minTime) * 90));
+                // Image-based percentage (reach up to 99% based on loadedCount)
+                const imagePercent = Math.min(99, Math.round((loadedCount / 15) * 100));
+                // Maximum of time-based progress or image-based progress
+                const targetPercent = Math.max(timePercent, imagePercent);
+
                 if (elapsed >= minTime && (loadedCount >= 15 || elapsed >= 8000)) {
                     if (loaderFinished) return;
                     loaderFinished = true;
-                    revealVault();
-                } else {
-                    // Update loader percentage based on loadedCount for more realism
+
+                    // Animate to 100% smoothly before calling reveal
                     const percentElement = document.getElementById('loader-percent');
                     const barElement = document.getElementById('loader-bar');
-                    if (percentElement && barElement && loadedCount > 0) {
-                        const targetPercent = Math.min(99, Math.round((loadedCount / 30) * 100)); // Estimate total 30
-                        const currentPercent = parseInt(percentElement.textContent);
+                    if (percentElement) percentElement.textContent = "100";
+                    if (barElement) barElement.style.width = "100%";
+
+                    setTimeout(revealVault, 300);
+                } else {
+                    const percentElement = document.getElementById('loader-percent');
+                    const barElement = document.getElementById('loader-bar');
+                    if (percentElement && barElement) {
+                        const currentPercent = parseInt(percentElement.textContent) || 0;
                         if (targetPercent > currentPercent) {
                             percentElement.textContent = targetPercent;
                             barElement.style.width = targetPercent + "%";
