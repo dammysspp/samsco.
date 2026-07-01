@@ -1068,7 +1068,7 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
                     const r2Worker = localStorage.getItem("samsco_r2_worker");
                     const r2Key = localStorage.getItem("samsco_r2_key");
                     if (r2Worker && r2Key) {
-                        limitLabel.textContent = "Supports images & video (max 400MB via R2)";
+                        limitLabel.textContent = "Supports images & video (max 800MB via R2)";
                     } else {
                         limitLabel.textContent = "Supports images & video (max 20MB)";
                     }
@@ -2705,10 +2705,10 @@ Provide the response in structured JSON matching this schema:
             });
 
             async function uploadToCloudflareR2(file, workerUrl, uploadKey) {
-                // R2 supports larger files, up to 400MB for this worker stream
-                const maxSize = 400 * 1024 * 1024;
+                // R2 supports larger files, up to 800MB for this worker stream
+                const maxSize = 800 * 1024 * 1024;
                 if (file.size > maxSize) {
-                    showToast("File is too large. Max size is 400MB for R2.", "error");
+                    showToast("File is too large. Max size is 800MB for R2.", "error");
                     return;
                 }
                 
