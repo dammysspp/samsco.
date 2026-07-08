@@ -1121,6 +1121,7 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
                         loginCard.classList.add("hidden");
                         dashboard.classList.remove("hidden");
                         
+                        await syncAIPredsWithDb();
                         loadDashboardData();
                     } else {
                         activeUser = null;
@@ -1133,6 +1134,74 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
                     setupCard.classList.add("hidden");
                     loginCard.classList.remove("hidden");
                     dashboard.classList.add("hidden");
+                }
+            }
+
+            async function syncAIPredsWithDb() {
+                if (!window.supabaseClient) return;
+                try {
+                    const { data, error } = await window.supabaseClient
+                        .from("site_settings")
+                        .select("*")
+                        .in("key", ["r2_worker", "r2_key", "groq_api_key"]);
+                    
+                    if (error) throw error;
+                    
+                    let dbWorker = "";
+                    let dbKey = "";
+                    let dbGroq = "";
+                    
+                    if (data) {
+                        data.forEach(item => {
+                            if (item.key === "r2_worker") dbWorker = item.value;
+                            if (item.key === "r2_key") dbKey = item.value;
+                            if (item.key === "groq_api_key") dbGroq = item.value;
+                        });
+                    }
+                    
+                    const localWorker = localStorage.getItem("samsco_r2_worker") || "";
+                    const localKey = localStorage.getItem("samsco_r2_key") || "";
+                    const localGroq = localStorage.getItem("samsco_groq_api_key") || "";
+                    
+                    let localUpdated = false;
+                    
+                    // 1. Sync from DB to LocalStorage
+                    if (dbWorker && dbWorker !== localWorker) {
+                        localStorage.setItem("samsco_r2_worker", dbWorker);
+                        localUpdated = true;
+                    }
+                    if (dbKey && dbKey !== localKey) {
+                        localStorage.setItem("samsco_r2_key", dbKey);
+                        localUpdated = true;
+                    }
+                    if (dbGroq && dbGroq !== localGroq) {
+                        localStorage.setItem("samsco_groq_api_key", dbGroq);
+                        localUpdated = true;
+                    }
+                    
+                    // 2. Sync from LocalStorage to DB (if DB does not have them but local does)
+                    const upsertData = [];
+                    if (!dbWorker && localWorker) upsertData.push({ key: "r2_worker", value: localWorker });
+                    if (!dbKey && localKey) upsertData.push({ key: "r2_key", value: localKey });
+                    if (!dbGroq && localGroq) upsertData.push({ key: "groq_api_key", value: localGroq });
+                    
+                    if (upsertData.length > 0) {
+                        await window.supabaseClient.from("site_settings").upsert(upsertData);
+                    }
+                    
+                    if (localUpdated) {
+                        // Re-trigger limit label and setup card prefill updates
+                        const limitLabel = document.getElementById("upload-limit-label");
+                        if (limitLabel) {
+                            if (dbWorker && dbKey) {
+                                limitLabel.textContent = "Supports images & video (max 900MB via R2)";
+                            } else {
+                                limitLabel.textContent = "Supports images & video (max 20MB)";
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to sync settings with DB:", e);
                 }
             }
 
@@ -1221,6 +1290,18 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
                     // Refresh client reference only if credentials changed to avoid warnings
                     if (credentialsChanged || !window.supabaseClient) {
                         window.supabaseClient = initSupabase();
+                    }
+
+                    // Save R2 & Groq credentials to DB for cross-session sync
+                    if (window.supabaseClient) {
+                        const upsertData = [
+                            { key: "r2_worker", value: r2Worker || "" },
+                            { key: "r2_key", value: r2Key || "" },
+                            { key: "groq_api_key", value: groqKey || "" }
+                        ];
+                        await window.supabaseClient.from("site_settings").upsert(upsertData).catch(err => {
+                            console.error("Failed to save settings to DB:", err);
+                        });
                     }
                     
                     // Clear setup inputs
