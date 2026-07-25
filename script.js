@@ -589,103 +589,6 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         searchSortBound = true;
     }
 
-    initFeaturedWorks();
-}
-
-function initFeaturedWorks() {
-    const featuredGrid = document.getElementById("featured-works-grid");
-    if (!featuredGrid) return;
-    featuredGrid.innerHTML = "";
-    
-    const featuredTitles = [
-        "Sweet Touch Ventures",
-        "Character FX Simulation",
-        "Hypo Ad Campaign",
-        "Presentation 1"
-    ];
-    
-    let featuredWorks = galleryConfig.filter(w => w.featured === true || w.featured === "true");
-    if (featuredWorks.length === 0) {
-        featuredWorks = galleryConfig.filter(w => featuredTitles.includes(w.title));
-    }
-    if (featuredWorks.length === 0) {
-        featuredWorks = galleryConfig.slice(0, 4);
-    }
-    
-    featuredWorks = featuredWorks.slice(0, 4);
-    
-    featuredWorks.forEach(work => {
-        const configIndex = galleryConfig.indexOf(work);
-        const mappedCat = mapCategoryToOutcome(work.cat);
-        const outcomeColor = getOutcomeColor(mappedCat);
-        const isVideo = "video" === work.type || work.url.endsWith(".mp4");
-        
-        let mediaHtml = "";
-        const isTypographic = !work.url || work.url.includes("placeholder") || work.url.trim() === "" || work.url.includes("missing");
-        
-        if (isTypographic) {
-            mediaHtml = getTypographicFallbackHTML(work.title, mappedCat, outcomeColor);
-        } else if (isVideo) {
-            mediaHtml = `<video src="${work.url}" muted loop playsinline preload="metadata" class="w-full h-full object-cover" onmouseover="this.play()" onmouseout="this.pause()"></video>`;
-        } else if (work.type === "iframe") {
-            const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${work.url}`;
-            mediaHtml = `<img src="${thumbUrl}" class="w-full h-full object-cover" loading="lazy">`;
-        } else {
-            let thumbUrl = work.url.split("?")[0];
-            if (work.url.includes("imgix.net")) {
-                thumbUrl = thumbUrl + "?w=400&q=50&auto=format";
-            }
-            mediaHtml = `<img src="${thumbUrl}" class="w-full h-full object-cover" loading="lazy">`;
-        }
-        
-        const tags = Array.isArray(work.tags) ? work.tags : (work.tags ? work.tags.split(",").map(t => t.trim()) : []);
-        const keyTools = tags.slice(0, 3).map(tag => `
-            <span class="px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-[8px] text-white/80 font-mono tracking-tight">${tag}</span>
-        `).join("");
-        const toolsContainer = keyTools ? `<div class="flex flex-wrap gap-1 mt-1.5">${keyTools}</div>` : '';
-        
-        const card = document.createElement("div");
-        card.className = "featured-item relative bg-gray-900/40 rounded-2xl overflow-hidden group cursor-pointer border border-white/5 hover:border-white/20 hover:scale-[1.02] shadow-lg hover:shadow-blue-500/5 transition-all duration-300 flex flex-col h-[280px]";
-        card.setAttribute("data-index", configIndex);
-        card.setAttribute("data-title", work.title);
-        card.setAttribute("data-cat", mappedCat);
-        
-        card.innerHTML = `
-            <div class="relative w-full h-[55%] overflow-hidden bg-black/40">
-                ${mediaHtml}
-            </div>
-            <div class="p-4 flex flex-col justify-between flex-1 bg-gradient-to-b from-transparent to-black/60">
-                <div>
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <span class="px-1.5 py-0.5 rounded-[4px] text-[7px] font-bold tracking-widest uppercase" style="color: ${outcomeColor}; border: 1px solid ${outcomeColor}30; background: ${outcomeColor}08">
-                            ${mappedCat}
-                        </span>
-                        <span class="text-[7px] text-[#bf5af2] border border-[#bf5af2]/30 bg-[#bf5af2]/08 px-1.5 py-0.5 rounded-[4px] font-bold tracking-widest uppercase flex items-center gap-0.5">
-                            <svg class="w-1.5 h-1.5 text-[#bf5af2]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-                            FEATURED
-                        </span>
-                    </div>
-                    <h4 class="text-white text-xs font-bold truncate">${work.title}</h4>
-                    <p class="text-white/50 text-[9px] mt-0.5">Role: <span class="text-white/85 font-medium">${work.role || 'Lead Creator'}</span></p>
-                </div>
-                ${toolsContainer}
-            </div>
-        `;
-        
-        card.addEventListener("click", () => {
-            openProjectModal(configIndex);
-        });
-        
-        featuredGrid.appendChild(card);
-    });
-    
-    const featuredSection = document.getElementById("featured-works-section");
-    const searchVal = document.getElementById("vault-search")?.value || "";
-    if (featuredSection && currentFilter === "ALL" && !searchVal) {
-        featuredSection.classList.remove("hidden");
-        featuredSection.style.opacity = "1";
-        featuredSection.style.height = "auto";
-    }
 }
 
 function filterAndSortVault() {
@@ -703,13 +606,13 @@ function filterAndSortVault() {
         const work = galleryConfig[index];
         if (!work) return;
 
-        const mappedOutcome = mapCategoryToOutcome(work.cat);
         const titleMatches = work.title.toLowerCase().includes(searchVal);
         const toolMatches = (work.tags || []).some(tag => tag.toLowerCase().includes(searchVal));
         const roleMatches = (work.role || "").toLowerCase().includes(searchVal);
         const searchMatches = !searchVal || titleMatches || toolMatches || roleMatches;
 
-        const catMatches = currentFilter === "ALL" || mappedOutcome === currentFilter;
+        const workCats = (work.cat || "").split(",").map(c => c.trim().toLowerCase());
+        const catMatches = currentFilter === "ALL" || workCats.includes(currentFilter.toLowerCase());
 
         if (searchMatches && catMatches) {
             visibleItems.push(item);
@@ -761,21 +664,6 @@ function filterAndSortVault() {
     const countElement = document.getElementById("gallery-count");
     if (countElement) {
         countElement.textContent = `${visibleItems.length} Creative Work${visibleItems.length === 1 ? '' : 's'}`;
-    }
-
-    const featuredSection = document.getElementById("featured-works-section");
-    if (featuredSection) {
-        if (currentFilter === "ALL" && !searchVal) {
-            featuredSection.classList.remove("hidden");
-            gsap.to(featuredSection, { opacity: 1, height: "auto", duration: 0.4 });
-        } else {
-            gsap.to(featuredSection, { 
-                opacity: 0, 
-                height: 0, 
-                duration: 0.3, 
-                onComplete: () => featuredSection.classList.add("hidden") 
-            });
-        }
     }
 
     const existingMsg = document.getElementById('empty-category-msg');
