@@ -1139,6 +1139,11 @@ function getSlugFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('work')) return urlParams.get('work');
     if (urlParams.has('project')) return urlParams.get('project');
+
+    if (window.location.hash) {
+        const hash = window.location.hash.replace(/^#\/?/, '');
+        if (hash && !hash.startsWith('!')) return decodeURIComponent(hash);
+    }
     return null;
 }
 

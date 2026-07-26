@@ -3,7 +3,7 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
-        { "source": "/vault/:slug", "destination": "/vault.html" },
-        { "source": "/work/:slug", "destination": "/vault.html" }
+        { "source": "/vault/:path*", "destination": "/vault" },
+        { "source": "/work/:path*", "destination": "/vault" }
     ]
 }
