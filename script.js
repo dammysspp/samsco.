@@ -1089,6 +1089,8 @@ function generateContextualDescription(title, cat, field, tags = []) {
     return fallbackText[field];
 }
 
+const projectModal = document.getElementById("project-modal"), closeModalBtn = document.getElementById("close-modal"), prevBtn = document.getElementById("prev-project"), nextBtn = document.getElementById("next-project"), mTitle = document.getElementById("modal-title"), mCat = document.getElementById("modal-category"), mDesc = document.getElementById("modal-desc"), mClient = document.getElementById("modal-client"), mYear = document.getElementById("modal-year"), mRole = document.getElementById("modal-role"), mTags = document.getElementById("modal-tags");
+
 // URL & Asset Helpers
 function formatAssetUrl(url) {
     if (!url) return "";
