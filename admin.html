@@ -300,6 +300,12 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
                         </svg>
                         IMPORT LOCAL
                     </button>
+                    <button id="clean-duplicates-btn" class="bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30 text-red-300 px-5 py-2.5 rounded-full font-semibold text-xs tracking-wider transition-all duration-300 flex items-center gap-2" title="Remove duplicate works from database">
+                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        CLEAN DUPLICATES
+                    </button>
                     <button id="show-status-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300 flex items-center gap-2" title="Check Connection Status">
                         <span class="w-2 h-2 rounded-full bg-white/30" id="header-status-dot"></span>
                         STATUS
@@ -3109,7 +3115,7 @@ Provide the response in structured JSON matching this schema:
                 return window.localGalleryConfig || [];
             }
 
-            // Function to run bulk import
+            // Function to run bulk import with automatic deduplication
             async function importLocalWorksToSupabase() {
                 try {
                     const localWorks = getLocalWorks();
@@ -3117,13 +3123,32 @@ Provide the response in structured JSON matching this schema:
                         throw new Error("No default works found to import.");
                     }
                     
-                    if (!confirm(`Found ${localWorks.length} works in local backup. Are you sure you want to import them all to Supabase?`)) {
+                    // Fetch existing titles & URLs from DB to avoid inserting duplicates
+                    const { data: existingData } = await window.supabaseClient
+                        .from("works")
+                        .select("title, url");
+                    
+                    const existingTitles = new Set((existingData || []).map(w => (w.title || "").trim().toLowerCase()));
+                    const existingUrls = new Set((existingData || []).map(w => (w.url || "").trim().toLowerCase()));
+
+                    const worksToImport = localWorks.filter(w => {
+                        const cleanTitle = (w.title || "").trim().toLowerCase();
+                        const cleanUrl = (w.url || "").trim().toLowerCase();
+                        return !existingTitles.has(cleanTitle) && !existingUrls.has(cleanUrl);
+                    });
+
+                    if (worksToImport.length === 0) {
+                        showToast("All local works already exist in your database! No duplicates imported.", "info");
                         return;
                     }
                     
-                    showToast(`Importing ${localWorks.length} works...`, "info");
+                    if (!confirm(`Found ${worksToImport.length} new unique works to import (${localWorks.length - worksToImport.length} existing skipped). Proceed?`)) {
+                        return;
+                    }
                     
-                    const cleanWorks = localWorks.map(w => ({
+                    showToast(`Importing ${worksToImport.length} new works...`, "info");
+                    
+                    const cleanWorks = worksToImport.map(w => ({
                         title: w.title,
                         cat: w.cat,
                         url: w.url,
@@ -3136,7 +3161,7 @@ Provide the response in structured JSON matching this schema:
                         
                     if (error) throw error;
                     
-                    showToast(`Successfully imported ${cleanWorks.length} works!`, "success");
+                    showToast(`Successfully imported ${cleanWorks.length} new works!`, "success");
                     loadDashboardData();
                 } catch (e) {
                     console.error("Bulk import failed:", e);
@@ -3144,10 +3169,90 @@ Provide the response in structured JSON matching this schema:
                 }
             }
 
-            // Event listener for Import Local button in header
+            // Function to find and clean existing duplicate works in database
+            async function cleanDuplicateWorksInSupabase() {
+                if (!window.supabaseClient) {
+                    showToast("Supabase client is not connected.", "error");
+                    return;
+                }
+
+                try {
+                    showToast("Scanning database for duplicate works...", "info");
+                    
+                    // Fetch all works ordered by id ascending (keeps older/original items)
+                    const { data, error } = await window.supabaseClient
+                        .from("works")
+                        .select("*")
+                        .order("id", { ascending: true });
+
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        showToast("No works found in database.", "info");
+                        return;
+                    }
+
+                    const seenTitles = new Map();
+                    const seenUrls = new Map();
+                    const duplicateIds = [];
+
+                    data.forEach(work => {
+                        const cleanTitle = (work.title || "").trim().toLowerCase();
+                        const cleanUrl = (work.url || "").trim().toLowerCase();
+                        
+                        let isDuplicate = false;
+
+                        if (cleanTitle && seenTitles.has(cleanTitle)) {
+                            isDuplicate = true;
+                        } else if (cleanUrl && seenUrls.has(cleanUrl)) {
+                            isDuplicate = true;
+                        }
+
+                        if (isDuplicate) {
+                            duplicateIds.push(work.id);
+                        } else {
+                            if (cleanTitle) seenTitles.set(cleanTitle, work.id);
+                            if (cleanUrl) seenUrls.set(cleanUrl, work.id);
+                        }
+                    });
+
+                    if (duplicateIds.length === 0) {
+                        showToast("No duplicate works found! Your database is completely clean.", "success");
+                        return;
+                    }
+
+                    if (!confirm(`Found ${duplicateIds.length} duplicate work(s) out of ${data.length} total items in your database.\n\nClick OK to permanently delete these ${duplicateIds.length} duplicates.`)) {
+                        return;
+                    }
+
+                    showToast(`Deleting ${duplicateIds.length} duplicates...`, "info");
+
+                    const chunkSize = 50;
+                    for (let i = 0; i < duplicateIds.length; i += chunkSize) {
+                        const chunk = duplicateIds.slice(i, i + chunkSize);
+                        const { error: delErr } = await window.supabaseClient
+                            .from("works")
+                            .delete()
+                            .in("id", chunk);
+                        if (delErr) throw delErr;
+                    }
+
+                    showToast(`Successfully removed ${duplicateIds.length} duplicate work(s)!`, "success");
+                    loadDashboardData();
+                } catch (e) {
+                    console.error("Failed to clean duplicates:", e);
+                    showToast(e.message || "Failed to remove duplicates", "error");
+                }
+            }
+
+            // Header Button Listeners
             const importBtn = document.getElementById("import-btn");
             if (importBtn) {
                 importBtn.addEventListener("click", importLocalWorksToSupabase);
+            }
+
+            const cleanDupesBtn = document.getElementById("clean-duplicates-btn");
+            if (cleanDupesBtn) {
+                cleanDupesBtn.addEventListener("click", cleanDuplicateWorksInSupabase);
             }
 
             // Live Media Preview logic
