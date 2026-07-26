@@ -72,6 +72,7 @@ async function fetchWorksFromSupabase() {
             console.log(`Loaded ${data.length} works from Supabase`);
             // Format works to match galleryConfig structure
             const formattedWorks = data.map(item => ({
+                id: item.id,
                 title: item.title,
                 cat: item.cat,
                 url: item.url,
@@ -101,6 +102,9 @@ async function fetchWorksFromSupabase() {
                         initGallery(true);
                     }
                 }
+            }
+            if (typeof checkAndOpenDeepLink === 'function') {
+                checkAndOpenDeepLink();
             }
         }
     } catch (e) {
@@ -589,6 +593,9 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         searchSortBound = true;
     }
 
+    if (typeof checkAndOpenDeepLink === 'function') {
+        checkAndOpenDeepLink();
+    }
 }
 
 function filterAndSortVault() {
@@ -1083,7 +1090,58 @@ function generateContextualDescription(title, cat, field, tags = []) {
 
 const projectModal = document.getElementById("project-modal"), closeModalBtn = document.getElementById("close-modal"), prevBtn = document.getElementById("prev-project"), nextBtn = document.getElementById("next-project"), mTitle = document.getElementById("modal-title"), mCat = document.getElementById("modal-category"), mDesc = document.getElementById("modal-desc"), mClient = document.getElementById("modal-client"), mYear = document.getElementById("modal-year"), mRole = document.getElementById("modal-role"), mTags = document.getElementById("modal-tags");
 
-function openProjectModal(indexOrEl) {
+// URL Slug Helpers & Deep Linking
+function getWorkSlug(work) {
+    if (!work) return "";
+    if (work.slug) return work.slug;
+    if (work.title) {
+        return work.title
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    return String(work.id || "");
+}
+
+function getSlugFromUrl() {
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(Boolean);
+    
+    if (parts.length >= 2 && (parts[0] === 'vault' || parts[0] === 'work')) {
+        return decodeURIComponent(parts[1]);
+    }
+    if (parts.length === 1 && !['vault', 'vault.html', 'index.html', 'admin.html', 'business_card'].includes(parts[0])) {
+        return decodeURIComponent(parts[0]);
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('work')) return urlParams.get('work');
+    if (urlParams.has('project')) return urlParams.get('project');
+    return null;
+}
+
+function openModalBySlug(slug, skipHistory = false) {
+    if (!slug || !galleryConfig || galleryConfig.length === 0) return false;
+    const cleanSlug = slug.toLowerCase().trim();
+    const index = galleryConfig.findIndex(w => {
+        const wSlug = getWorkSlug(w);
+        return wSlug === cleanSlug || (w.id && String(w.id) === cleanSlug);
+    });
+    if (index !== -1) {
+        openProjectModal(index, skipHistory);
+        return true;
+    }
+    return false;
+}
+
+function checkAndOpenDeepLink() {
+    const slug = getSlugFromUrl();
+    if (slug) {
+        openModalBySlug(slug, true);
+    }
+}
+
+function openProjectModal(indexOrEl, skipHistory = false) {
     let configIndex = 0;
     if (typeof indexOrEl === 'object' && indexOrEl.getAttribute) {
         // Passed DOM element
@@ -1103,6 +1161,16 @@ function openProjectModal(indexOrEl) {
     
     const work = galleryConfig[configIndex];
     if (!work) return;
+
+    // Update URL bar seamlessly with unique work link
+    const slug = getWorkSlug(work);
+    if (slug && !skipHistory && history.pushState) {
+        const basePath = window.isVaultPage ? '/vault' : '';
+        const targetPath = `${basePath}/${slug}`;
+        if (window.location.pathname !== targetPath) {
+            history.pushState({ workSlug: slug, configIndex }, '', targetPath);
+        }
+    }
 
     const mappedCat = mapCategoryToOutcome(work.cat);
 
@@ -1248,7 +1316,8 @@ function openProjectModal(indexOrEl) {
     if (window.lenis) window.lenis.stop();
 }
 
-function closeProjectModal() {
+function closeProjectModal(skipHistory = false) {
+    if (!projectModal) return;
     projectModal.classList.remove("active");
     projectModal.classList.add("opacity-0", "pointer-events-none");
     const modalContent = projectModal.querySelector(".modal-content");
@@ -1268,6 +1337,14 @@ function closeProjectModal() {
 
     document.body.style.overflow = "";
     if (window.lenis) window.lenis.start();
+
+    // Revert URL bar back to base page
+    if (!skipHistory && history.pushState) {
+        const basePath = window.isVaultPage ? '/vault' : '/';
+        if (window.location.pathname !== basePath) {
+            history.pushState({}, '', basePath);
+        }
+    }
 }
 
 function nextProjectFunc() {
@@ -1282,11 +1359,23 @@ function prevProjectFunc() {
     openProjectModal(prevIndex);
 }
 
-closeModalBtn?.addEventListener("click", closeProjectModal);
+closeModalBtn?.addEventListener("click", () => closeProjectModal());
 nextBtn?.addEventListener("click", nextProjectFunc);
 prevBtn?.addEventListener("click", prevProjectFunc);
 projectModal?.addEventListener("click", e => {
     e.target === projectModal && closeProjectModal();
+});
+
+// Handle browser Back / Forward buttons
+window.addEventListener("popstate", () => {
+    const slug = getSlugFromUrl();
+    if (slug) {
+        openModalBySlug(slug, true);
+    } else {
+        if (projectModal && projectModal.classList.contains("active")) {
+            closeProjectModal(true);
+        }
+    }
 });
 document.querySelectorAll(".magnetic-btn").forEach(e => {
         e.addEventListener("mousemove", t => {
