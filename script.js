@@ -75,8 +75,8 @@ async function fetchWorksFromSupabase() {
                 id: item.id,
                 title: item.title,
                 cat: item.cat,
-                url: item.url,
-                type: item.type || (item.url.endsWith(".mp4") ? "video" : "image"),
+                url: formatAssetUrl(item.url),
+                type: item.type || (isVideoUrl(item.url, item.type) ? "video" : "image"),
                 projectUrl: item.projectUrl || "",
                 client: item.client || "Private Client",
                 year: item.year || "2024",
@@ -496,7 +496,8 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         const work = galleryConfig[t];
         const rawCat = work.cat;
         const mappedCat = mapCategoryToOutcome(rawCat);
-        const isVideo = "video" === work.type || work.url.endsWith(".mp4");
+        const workUrl = formatAssetUrl(work.url);
+        const isVideo = isVideoUrl(workUrl, work.type);
         
         const i = document.createElement("div");
         i.className = "gallery-item relative bg-gray-900/50 rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-white/10 transition-all duration-300", 
@@ -504,7 +505,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         i.setAttribute("data-title", work.title), 
         i.setAttribute("data-cat", mappedCat), 
         i.setAttribute("data-type", work.type === "iframe" ? "iframe" : isVideo ? "video" : "image"), 
-        i.setAttribute("data-url", work.url);
+        i.setAttribute("data-url", workUrl);
         
         if (work.projectUrl) i.setAttribute("data-project-url", work.projectUrl);
         
@@ -514,13 +515,13 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         const isEager = t < 15;
         
         // Typographic fallback detection
-        const isTypographic = !work.url || work.url.includes("placeholder") || work.url.trim() === "" || work.url.includes("missing");
+        const isTypographic = !workUrl || workUrl.includes("placeholder") || workUrl.trim() === "" || workUrl.includes("missing");
         
         let mediaHtml = "";
         if (isTypographic) {
             mediaHtml = getTypographicFallbackHTML(work.title, mappedCat, outcomeColor);
         } else if (work.type === "iframe") {
-            const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${work.url}`;
+            const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${workUrl}`;
             mediaHtml = `
                 <div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">
                     <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
@@ -532,14 +533,14 @@ const galleryObserver = new IntersectionObserver((e, t) => {
                 </div>`;
         } else if (isVideo) {
             mediaHtml = `
-                <video ${isEager ? `src="${work.url}"` : `data-src="${work.url}"`} muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover" onerror="window.handleGridVideoError(this)"></video>
+                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover" onerror="window.handleGridVideoError(this)"></video>
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">
                     <span class="text-2xl mb-2">⚠️</span>
                     <span class="text-white/50 text-xs font-mono">Video Unavailable</span>
                 </div>`;
         } else {
-            let thumbUrl = work.url.split("?")[0];
-            if (work.url.includes("imgix.net")) {
+            let thumbUrl = workUrl.split("?")[0];
+            if (workUrl.includes("imgix.net")) {
                 thumbUrl = thumbUrl + "?w=400&q=40&auto=format";
             }
             mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" alt="${work.title}" class="w-full h-full object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
@@ -1088,7 +1089,26 @@ function generateContextualDescription(title, cat, field, tags = []) {
     return fallbackText[field];
 }
 
-const projectModal = document.getElementById("project-modal"), closeModalBtn = document.getElementById("close-modal"), prevBtn = document.getElementById("prev-project"), nextBtn = document.getElementById("next-project"), mTitle = document.getElementById("modal-title"), mCat = document.getElementById("modal-category"), mDesc = document.getElementById("modal-desc"), mClient = document.getElementById("modal-client"), mYear = document.getElementById("modal-year"), mRole = document.getElementById("modal-role"), mTags = document.getElementById("modal-tags");
+// URL & Asset Helpers
+function formatAssetUrl(url) {
+    if (!url) return "";
+    let clean = url.trim();
+    if (clean.startsWith("./assets/")) {
+        return "/" + clean.slice(2);
+    }
+    if (clean.startsWith("assets/")) {
+        return "/" + clean;
+    }
+    return clean;
+}
+
+function isVideoUrl(url, type) {
+    if (type === "video") return true;
+    if (type === "image" || type === "iframe") return false;
+    if (!url) return false;
+    const cleanUrl = url.split("?")[0].toLowerCase();
+    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes('/video/upload/');
+}
 
 // URL Slug Helpers & Deep Linking
 function getWorkSlug(work) {
@@ -1268,24 +1288,52 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
-        if (mError) mError.classList.add("hidden");
+        if (mError) {
+            mError.classList.add("hidden");
+            mError.style.display = "";
+        }
 
-        const mediaType = work.type || (work.url.endsWith(".mp4") ? "video" : "image");
+        const workUrl = formatAssetUrl(work.url);
+        const isVideo = isVideoUrl(workUrl, work.type);
+        const mediaType = work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
+
         if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
-            mIframe.src = work.url + "?embed";
+            mIframe.src = workUrl + "?embed";
         } else if (mediaType === "video") {
             mVideo.classList.remove("hidden");
-            mVideo.src = work.url;
+            mVideo.src = workUrl;
             mVideo.load();
-            mVideo.play().catch(err => console.log("Video auto-play blocked:", err));
+
+            mVideo.onerror = () => {
+                console.warn("Video failed to load in modal:", workUrl);
+                mVideo.classList.add("hidden");
+                if (mError) {
+                    mError.classList.remove("hidden");
+                    mError.style.display = "flex";
+                }
+            };
+
+            const playPromise = mVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => console.log("Video auto-play blocked by browser:", err));
+            }
         } else {
             mImg.classList.remove("hidden");
-            let cleanUrl = work.url.split("?")[0];
+            let cleanUrl = workUrl.split("?")[0];
             if (cleanUrl.includes("imgix.net")) {
                 cleanUrl += "?w=1200&q=75&auto=format";
             }
             mImg.src = cleanUrl;
+
+            mImg.onerror = () => {
+                console.warn("Image failed to load in modal:", cleanUrl);
+                mImg.classList.add("hidden");
+                if (mError) {
+                    mError.classList.remove("hidden");
+                    mError.style.display = "flex";
+                }
+            };
         }
     }
 
