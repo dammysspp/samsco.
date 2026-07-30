@@ -1285,18 +1285,24 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const mError = document.getElementById("modal-media-error");
 
     if (mImg && mVideo && mIframe) {
+        // Unbind previous error & load handlers to prevent blank src triggers
+        mImg.onerror = null;
+        mImg.onload = null;
+        mVideo.onerror = null;
+        mVideo.onloadeddata = null;
+
         // Reset src
         mImg.src = "";
         mVideo.src = "";
         mIframe.src = "";
 
-        // Hide all
+        // Hide all elements initially
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
         if (mError) {
             mError.classList.add("hidden");
-            mError.style.display = "";
+            mError.style.display = "none";
         }
 
         const workUrl = formatAssetUrl(work.url);
@@ -1308,10 +1314,16 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             mIframe.src = workUrl + "?embed";
         } else if (mediaType === "video") {
             mVideo.classList.remove("hidden");
-            mVideo.src = workUrl;
-            mVideo.load();
+
+            mVideo.onloadeddata = () => {
+                if (mError) {
+                    mError.classList.add("hidden");
+                    mError.style.display = "none";
+                }
+            };
 
             mVideo.onerror = () => {
+                if (!mVideo.src || mVideo.src.endsWith("/") || mVideo.src === window.location.href) return;
                 console.warn("Video failed to load in modal:", workUrl);
                 mVideo.classList.add("hidden");
                 if (mError) {
@@ -1319,6 +1331,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     mError.style.display = "flex";
                 }
             };
+
+            mVideo.src = workUrl;
+            mVideo.load();
 
             const playPromise = mVideo.play();
             if (playPromise !== undefined) {
@@ -1330,9 +1345,16 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             if (cleanUrl.includes("imgix.net")) {
                 cleanUrl += "?w=1200&q=75&auto=format";
             }
-            mImg.src = cleanUrl;
+
+            mImg.onload = () => {
+                if (mError) {
+                    mError.classList.add("hidden");
+                    mError.style.display = "none";
+                }
+            };
 
             mImg.onerror = () => {
+                if (!mImg.src || mImg.src.endsWith("/") || mImg.src === window.location.href) return;
                 console.warn("Image failed to load in modal:", cleanUrl);
                 mImg.classList.add("hidden");
                 if (mError) {
@@ -1340,6 +1362,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     mError.style.display = "flex";
                 }
             };
+
+            mImg.src = cleanUrl;
         }
     }
 
