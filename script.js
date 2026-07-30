@@ -1208,74 +1208,73 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     mRole.innerText = work.role || "Creative Lead";
 
     // Tech Stack Tags
+    const tagsContainer = document.getElementById("modal-tags-container");
     const tags = Array.isArray(work.tags) ? work.tags : (work.tags ? work.tags.split(",").map(t => t.trim()) : []);
     mTags.innerHTML = "";
+    let validTagCount = 0;
     tags.forEach(tag => {
         if (!tag) return;
+        validTagCount++;
         const span = document.createElement("span");
         span.className = "px-2.5 py-0.5 bg-white/5 border border-white/5 rounded-full text-[10px] text-blue-300 tracking-wide font-mono";
         span.innerText = tag;
         mTags.appendChild(span);
     });
-
-    // Description fallback
-    const rawDesc = work.desc ? work.desc.trim() : "";
-    if (!rawDesc || rawDesc === "Description goes here...") {
-        mDesc.innerText = "--";
-    } else {
-        mDesc.innerText = rawDesc;
-    }
-
-    // Case Study fields
-    const mProblem = document.getElementById("modal-problem");
-    const mProcess = document.getElementById("modal-process");
-    const mResult = document.getElementById("modal-result");
-    const mDemoLink = document.getElementById("modal-demo-link");
-    const mProjectLink = document.getElementById("modal-project-link");
-
-    // Problem fallback
-    const rawProblem = work.problem ? work.problem.trim() : "";
-    if (!rawProblem || rawProblem === "Details on goals and challenges...") {
-        if (mProblem) mProblem.innerText = "--";
-    } else {
-        if (mProblem) mProblem.innerText = rawProblem;
-    }
-
-    // Process fallback
-    const rawProcess = work.process ? work.process.trim() : "";
-    if (!rawProcess || rawProcess === "Details on optimization, scripts, techniques...") {
-        if (mProcess) mProcess.innerText = "--";
-    } else {
-        if (mProcess) mProcess.innerText = rawProcess;
-    }
-
-    // Result fallback
-    const rawResult = work.result ? work.result.trim() : "";
-    if (!rawResult || rawResult === "Outcome, metrics, and details...") {
-        if (mResult) mResult.innerText = "--";
-    } else {
-        if (mResult) mResult.innerText = rawResult;
-    }
-
-    // Action buttons
-    if (mDemoLink) {
-        if (work.demoUrl) {
-            mDemoLink.href = work.demoUrl;
-            mDemoLink.style.display = "inline-flex";
-            mDemoLink.classList.remove("hidden");
+    if (tagsContainer) {
+        if (validTagCount > 0) {
+            tagsContainer.classList.remove("hidden");
         } else {
-            mDemoLink.style.display = "none";
-            mDemoLink.classList.add("hidden");
+            tagsContainer.classList.add("hidden");
         }
     }
-    if (mProjectLink) {
-        if (work.projectUrl) {
-            mProjectLink.href = work.projectUrl;
-            mProjectLink.style.display = "inline-flex";
-            mProjectLink.classList.remove("hidden");
+
+    // Description (hide if empty or dummy fallback)
+    const rawDesc = work.desc ? work.desc.trim() : "";
+    if (mDesc) {
+        if (!rawDesc || rawDesc === "Description goes here..." || rawDesc === "--") {
+            mDesc.innerText = "";
+            mDesc.classList.add("hidden");
         } else {
-            mProjectLink.style.display = "none";
-            mProjectLink.classList.add("hidden");
+            mDesc.innerText = rawDesc;
+            mDesc.classList.remove("hidden");
+        }
+    }
+
+    // Action Link Button Handling
+    const actionContainer = document.getElementById("modal-action-container");
+    const mProjectLink = document.getElementById("modal-project-link");
+    const mProjectLinkText = document.getElementById("modal-project-link-text");
+
+    let targetLink = (work.projectUrl || work.demoUrl || "").trim();
+    if (!targetLink && work.url && /^https?:\/\//i.test(work.url.trim())) {
+        const u = work.url.trim();
+        if (!u.includes("r2.dev") && !u.includes("imgix.net") && !/\.(mp4|webm|ogg|mov|m4v|jpg|jpeg|png|gif|avif|webp)$/i.test(u.split('?')[0])) {
+            targetLink = u;
+        }
+    }
+
+    if (actionContainer && mProjectLink) {
+        if (targetLink) {
+            mProjectLink.href = targetLink;
+            if (mProjectLinkText) {
+                const lower = targetLink.toLowerCase();
+                if (lower.includes("youtube.com") || lower.includes("youtu.be")) {
+                    mProjectLinkText.innerText = "WATCH ON YOUTUBE ↗";
+                } else if (lower.includes("behance.net")) {
+                    mProjectLinkText.innerText = "VIEW ON BEHANCE ↗";
+                } else if (lower.includes("vimeo.com")) {
+                    mProjectLinkText.innerText = "WATCH ON VIMEO ↗";
+                } else if (lower.includes("drive.google.com")) {
+                    mProjectLinkText.innerText = "OPEN GOOGLE DRIVE ↗";
+                } else {
+                    mProjectLinkText.innerText = "VISIT PROJECT ↗";
+                }
+            }
+            actionContainer.classList.remove("hidden");
+            actionContainer.style.display = "flex";
+        } else {
+            actionContainer.classList.add("hidden");
+            actionContainer.style.display = "none";
         }
     }
 
