@@ -7,7 +7,7 @@
 
     <title>Samsco Communications | Aiyedun Samuel</title>
     <meta name="description"
-        content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & Mass Comm Student at Covenant University.">
+        content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & 3D Visualizer based in Lagos, Nigeria. Mass Comm Student at Covenant University specializing in 3D Art, VFX, and Creative Coding.">
 
     <meta property="og:title" content="Samsco Communications | Creativity Evolved">
     <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
@@ -26,7 +26,10 @@
     </script>
     <script type="text/javascript">
         (function () {
-            emailjs.init("YOUR_PUBLIC_KEY_HERE"); // USER MUST REPLACE THIS
+            var key = "YOUR_PUBLIC_KEY_HERE";
+            if (typeof emailjs !== "undefined" && key && key !== "YOUR_PUBLIC_KEY_HERE") {
+                emailjs.init(key);
+            }
         })();
     </script>
 
@@ -313,6 +316,13 @@
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-[#30d158]"></span>
                     </span>
                     <span class="text-white/60 tracking-[0.15em] text-[10px] font-medium">AVAILABLE FOR PROJECTS</span>
+                </div>
+
+                <!-- Role Eyebrow Badge for Instant Recruiter Clarity -->
+                <div class="mb-4 inline-block">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[#64d2ff] font-mono text-[11px] tracking-widest uppercase font-semibold shadow-sm">
+                        CREATIVE TECHNOLOGIST & 3D VISUALIZER
+                    </span>
                 </div>
 
                 <!-- Hero Typography -->
@@ -1038,6 +1048,11 @@
                 <div>
                     <h4 class="font-medium text-white/80 mb-5 tracking-[0.1em] text-[10px]">CONNECT</h4>
                     <ul class="space-y-3 text-white/40">
+                        <li><a href="https://github.com/dammysspp" target="_blank" rel="noopener noreferrer"
+                                class="hover:text-white transition-colors duration-300 footer-link text-sm flex items-center gap-2">
+                                <span>GitHub</span>
+                            </a>
+                        </li>
                         <li><a href="https://linkedin.com/in/samsco" target="_blank" rel="noopener noreferrer"
                                 class="hover:text-white transition-colors duration-300 footer-link text-sm">LinkedIn</a>
                         </li>

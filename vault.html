@@ -9,9 +9,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <title>Samsco Communications | Aiyedun Samuel</title>
+    <title>Samsco Communications | Vault & Archive</title>
     <meta name="description"
-        content="Portfolio of Aiyedun Samuel (Samsco) - Multidisciplinary Creative Technologist & Mass Comm Student at Covenant University.">
+        content="Archive & Portfolio Vault of Aiyedun Samuel (Samsco) - Creative Technologist & 3D Visualizer based in Lagos, Nigeria. Mass Comm Student at Covenant University.">
 
     <meta property="og:title" content="Samsco Communications | Creativity Evolved">
     <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
@@ -31,7 +31,10 @@
     </script>
     <script type="text/javascript">
         (function () {
-            emailjs.init("YOUR_PUBLIC_KEY_HERE"); // USER MUST REPLACE THIS
+            var key = "YOUR_PUBLIC_KEY_HERE";
+            if (typeof emailjs !== "undefined" && key && key !== "YOUR_PUBLIC_KEY_HERE") {
+                emailjs.init(key);
+            }
         })();
     </script>
     <script>

@@ -1476,83 +1476,73 @@ document.querySelectorAll(".magnetic-btn").forEach(e => {
 const menuBtn = document.getElementById("menu-btn"), closeMenuBtn = document.getElementById("close-menu"), mobileMenu = document.getElementById("mobile-menu");
 menuBtn.addEventListener("click", () => mobileMenu.classList.add("active")), closeMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("active")), document.querySelectorAll(".mobile-link").forEach(e => e.addEventListener("click", () => mobileMenu.classList.remove("active")));
 const ctxMenu = document.getElementById("custom-context-menu");
-document.addEventListener("contextmenu", e => {
-    e.preventDefault();
-    let t = e.clientX, a = e.clientY;
-    const r = window.innerWidth, i = window.innerHeight;
-    t + 200 > r && (t = r - 200), a + 200 > i && (a = i - 200), ctxMenu.style.left = `${t
-        }
-px`, ctxMenu.style.top = `${a
-        }
-px`, ctxMenu.classList.add("visible")
+if (ctxMenu) {
+    document.addEventListener("contextmenu", e => {
+        if (e.shiftKey || window.innerWidth < 768) return; // Allow native context menu on Shift+RightClick or mobile
+        e.preventDefault();
+        let t = e.clientX, a = e.clientY;
+        const r = window.innerWidth, i = window.innerHeight;
+        t + 200 > r && (t = r - 200), a + 200 > i && (a = i - 200);
+        ctxMenu.style.left = `${t}px`;
+        ctxMenu.style.top = `${a}px`;
+        ctxMenu.classList.add("visible");
+    });
+    document.addEventListener("click", () => ctxMenu.classList.remove("visible"));
+    document.addEventListener("scroll", () => ctxMenu.classList.remove("visible"), { passive: true });
 }
-), document.addEventListener("click", () => ctxMenu.classList.remove("visible")), document.addEventListener("scroll", () => ctxMenu.classList.remove("visible"), {
-    passive: !0
-}
-);
-let ticking = !1;
+
+let ticking = false;
 window.addEventListener("scroll", () => {
     ticking || (window.requestAnimationFrame(() => {
         const e = (window.pageYOffset || document.documentElement.scrollTop) / (document.documentElement.scrollHeight - window.innerHeight) * 100;
-        document.getElementById("scroll-progress").style.width = e + "%", ticking = !1
-    }
-    ), ticking = !0)
-}
-    , {
-        passive: !0
-    }
-);
+        document.getElementById("scroll-progress").style.width = e + "%", ticking = false;
+    }), ticking = true);
+}, { passive: true });
+
 const isMobile = window.innerWidth < 768;
 function startTextAnimation() {
-    setInterval(rotateText, 4e3)
+    setInterval(rotateText, 4e3);
 }
-const preloader = document.getElementById("preloader"), loaderPercent = document.getElementById("loader-percent"), loaderBar = document.getElementById("loader-bar"), allImages = Array.from(document.querySelectorAll("img[src]")).map(e => e.src), criticalResources = ["./SAMSCO.jpg", "./me_3.jpg", "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"];
+const preloader = document.getElementById("preloader"), loaderPercent = document.getElementById("loader-percent"), loaderBar = document.getElementById("loader-bar"), allImages = Array.from(document.querySelectorAll("img[src]")).map(e => e.src), criticalResources = ["./SAMSCO.jpg", "./me_3.jpg"];
 let loadedCount = 0;
 const totalResources = criticalResources.length + 2;
 function updateProgress(e = 1) {
     loadedCount += e;
     const t = Math.min(Math.round(loadedCount / totalResources * 100), 100);
-    return loaderPercent && (loaderPercent.textContent = t), loaderBar && (loaderBar.style.width = t + "%"), t
+    return loaderPercent && (loaderPercent.textContent = t), loaderBar && (loaderBar.style.width = t + "%"), t;
 }
 function preloadImage(e) {
     return new Promise(t => {
         const a = new Image;
-        a.onload = () => {
-            updateProgress(), t(!0)
-        }
-            , a.onerror = () => {
-                updateProgress(), t(!1)
-            }
-            , a.src = e
-    }
-    )
+        a.onload = () => { updateProgress(); t(true); };
+        a.onerror = () => { updateProgress(); t(false); };
+        a.src = e;
+    });
 }
 function waitForFonts() {
     return new Promise(e => {
-        document.fonts && document.fonts.ready ? document.fonts.ready.then(() => {
-            updateProgress(), e()
-        }
-        ) : setTimeout(() => {
-            updateProgress(), e()
-        }
-            , 300)
-    }
-    )
+        document.fonts && document.fonts.ready ? document.fonts.ready.then(() => { updateProgress(); e(); }) : setTimeout(() => { updateProgress(); e(); }, 150);
+    });
 }
 function waitForDOM() {
     return new Promise(e => {
-        "complete" === document.readyState ? (updateProgress(), e()) : window.addEventListener("load", () => {
-            updateProgress(), e()
-        }
-        )
-    }
-    )
+        "complete" === document.readyState ? (updateProgress(), e()) : window.addEventListener("load", () => { updateProgress(); e(); });
+    });
 }
 function hidePreloader() {
-    preloader && (loaderPercent && (loaderPercent.textContent = "100"), loaderBar && (loaderBar.style.width = "100%"), document.body.classList.add("loading"), setTimeout(() => {
-        preloader.classList.add("exit"), document.body.classList.remove("loading"), document.body.classList.add("reveal-active"), setTimeout(finalizeLoad, 2200)
-    }
-        , 500))
+    if (!preloader) return;
+    loaderPercent && (loaderPercent.textContent = "100");
+    loaderBar && (loaderBar.style.width = "100%");
+    document.body.classList.add("loading");
+    setTimeout(() => {
+        preloader.classList.add("exit");
+        document.body.classList.remove("loading");
+        document.body.classList.add("reveal-active");
+        setTimeout(finalizeLoad, 400); // Accelerated from 2200ms down to 400ms for fast recruiter access
+    }, 200);
+}
+if (preloader) {
+    preloader.addEventListener("click", hidePreloader); // Instant click-to-skip preloader
 }
 function finalizeLoad() {
     preloader.style.display = "none", (document.body.style.overflow = "", window.lenis && window.lenis.start()), setTimeout(() => {
