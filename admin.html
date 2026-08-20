@@ -3053,6 +3053,11 @@ Provide the response in structured JSON matching this schema:
                 const cat = selectedCats.join(', ');
                 const type = document.getElementById("work-type").value;
                 const url = document.getElementById("work-url").value.trim();
+
+                if (/^[a-zA-Z]:\\|^file:\/\//i.test(url)) {
+                    showToast("Cannot save local file path (C:\\...). Please drag & drop the file into the upload box to upload it!", "error");
+                    return;
+                }
                 const projectUrl = document.getElementById("work-projectUrl").value.trim();
                 const client = document.getElementById("work-client").value.trim();
                 const year = document.getElementById("work-year").value.trim();
@@ -3263,7 +3268,7 @@ Provide the response in structured JSON matching this schema:
 
             function updateMediaPreview() {
                 const url = workUrlInput.value.trim();
-                const type = workTypeSelect.value;
+                let type = workTypeSelect.value;
 
                 if (!url) {
                     mediaPreviewContainer.classList.add("hidden");
@@ -3271,15 +3276,36 @@ Provide the response in structured JSON matching this schema:
                     return;
                 }
 
+                // Check for local file paths
+                if (/^[a-zA-Z]:\\|^file:\/\//i.test(url)) {
+                    mediaPreviewContainer.classList.remove("hidden");
+                    showPreviewError("⚠️ Local file path detected! Visitors cannot view files on your computer. Please upload the file using the Drag & Drop upload box above.");
+                    return;
+                }
+
+                // Auto-detect media type if matching extensions
+                const cleanUrl = url.split("?")[0].toLowerCase();
+                if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) {
+                    if (type !== "video") {
+                        workTypeSelect.value = "video";
+                        type = "video";
+                    }
+                } else if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) {
+                    if (type !== "image") {
+                        workTypeSelect.value = "image";
+                        type = "image";
+                    }
+                }
+
                 mediaPreviewContainer.classList.remove("hidden");
 
                 if (type === "image") {
                     mediaPreviewElement.innerHTML = `
-                        <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. Ensure URL is correct.')">
+                        <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. If hosted on Supabase, ensure the storage bucket portfolio is set to Public!')">
                     `;
                 } else if (type === "video") {
                     mediaPreviewElement.innerHTML = `
-                        <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure URL is correct.')"></video>
+                        <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure the file URL is public and supported by browsers (.mp4, .webm).')"></video>
                     `;
                 } else if (type === "iframe") {
                     let embedUrl = url;
@@ -3294,11 +3320,11 @@ Provide the response in structured JSON matching this schema:
 
             function showPreviewError(msg) {
                 mediaPreviewElement.innerHTML = `
-                    <div class="p-8 text-center text-xs text-white/30 flex flex-col items-center justify-center gap-2">
-                        <svg class="w-8 h-8 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-8 text-center text-xs text-amber-300 flex flex-col items-center justify-center gap-2 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                        <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
-                        <span>${msg}</span>
+                        <span class="font-medium max-w-md leading-relaxed">${msg}</span>
                     </div>
                 `;
             }
