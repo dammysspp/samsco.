@@ -223,72 +223,84 @@
         <a href="#contact" class="text-3xl font-bold hover:text-blue-500 mobile-link">CONTACT</a>
     </div>
 
-    <!-- PROJECT DETAILS MODAL -->
+    <!-- PROJECT DETAILS MODAL (CINEMATIC THEATER EXPERIENCE) -->
     <div id="project-modal"
-        class="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
-        <div class="modal-content glass-card p-6 md:p-8 max-w-5xl w-full rounded-3xl relative border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-500">
-            <!-- Close Button -->
-            <button id="close-modal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl bg-white/5 w-10 h-10 rounded-full flex items-center justify-center cursor-hover z-30 transition-colors">✕</button>
+        class="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
+        <div class="modal-content cinematic-modal-card max-w-5xl w-full rounded-3xl relative overflow-hidden shadow-2xl max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-500">
+            <!-- Top Action Header / Close & Nav -->
+            <div class="absolute top-4 right-4 z-40 flex items-center gap-2">
+                <button id="prev-project" class="w-9 h-9 rounded-full bg-black/60 hover:bg-white/20 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md" title="Previous Project">❮</button>
+                <button id="next-project" class="w-9 h-9 rounded-full bg-black/60 hover:bg-white/20 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md" title="Next Project">❯</button>
+                <button id="close-modal" class="w-9 h-9 rounded-full bg-black/60 hover:bg-red-500/80 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md ml-1" title="Close">✕</button>
+            </div>
 
-            <!-- Navigation Buttons -->
-            <button id="prev-project" class="nav-btn nav-prev cursor-hover">❮</button>
-            <button id="next-project" class="nav-btn nav-next cursor-hover">❯</button>
-
-            <div class="grid lg:grid-cols-12 gap-8 items-start mt-6 lg:mt-0">
-                <!-- Left/Media Column (7 Cols on desktop) -->
-                <div class="lg:col-span-7 flex flex-col gap-4">
-                    <div class="relative w-full bg-black/60 rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center min-h-[260px] md:min-h-[400px] max-h-[75vh]">
-                        <!-- Image Viewer -->
-                        <img id="modal-img" src="" alt="Project Image" class="w-full h-full max-h-[75vh] object-contain hidden">
-                        <!-- Video Player -->
-                        <video id="modal-video" controls class="w-full h-full max-h-[75vh] object-contain hidden" playsinline preload="metadata"></video>
-                        <!-- Iframe Embed -->
-                        <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full min-h-[350px] hidden border-none"></iframe>
-                        <!-- Error state -->
-                        <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-6 text-center">
-                            <span class="text-3xl mb-2">⚠️</span>
-                            <span class="text-white/70 text-sm font-semibold">Media Link Broken or Offline</span>
-                        </div>
+            <!-- Scrollable Modal Body -->
+            <div class="overflow-y-auto no-scrollbar flex flex-col flex-1">
+                <!-- TOP CINEMATIC MEDIA STAGE -->
+                <div class="cinematic-media-stage relative min-h-[280px] md:min-h-[460px] max-h-[62vh] w-full bg-black flex items-center justify-center">
+                    <!-- Image Viewer -->
+                    <img id="modal-img" src="" alt="Project Image" class="w-full h-full max-h-[62vh] object-contain hidden">
+                    <!-- Video Player -->
+                    <video id="modal-video" controls class="w-full h-full max-h-[62vh] object-contain hidden" playsinline preload="metadata"></video>
+                    <!-- Iframe Embed -->
+                    <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full min-h-[380px] hidden border-none"></iframe>
+                    <!-- Error state -->
+                    <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-8 text-center">
+                        <span class="text-4xl mb-2">⚠️</span>
+                        <span class="text-white/80 text-sm font-semibold">Media Link Broken or Offline</span>
                     </div>
                 </div>
 
-                <!-- Right/Content Column (5 Cols on desktop) -->
-                <div class="lg:col-span-5 flex flex-col h-full">
-                    <span id="modal-category" class="text-blue-500 text-[10px] font-bold tracking-[0.2em] mb-2 block uppercase font-display">CATEGORY</span>
-                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold mb-4 text-white leading-tight font-display">Project Title</h2>
-                    
-                    <!-- Metadata Grid -->
-                    <div class="grid grid-cols-3 gap-4 mb-6 border-y border-white/5 py-4 text-left">
-                        <div>
-                            <span class="block text-[8px] text-gray-500 font-bold tracking-widest uppercase">CLIENT</span>
-                            <span id="modal-client" class="text-white text-xs font-medium truncate block">Private Client</span>
+                <!-- BOTTOM CINEMATIC INFO DOCK -->
+                <div class="cinematic-info-dock p-5 md:p-8 flex flex-col gap-5 border-t border-white/10">
+                    <div class="flex flex-col md:flex-row items-start gap-6">
+                        <!-- Poster Thumbnail (Movie style) -->
+                        <div class="hidden sm:block flex-shrink-0 w-20 md:w-24 aspect-[2/3] rounded-xl overflow-hidden cinematic-poster bg-black/60">
+                            <img id="modal-poster-thumb" src="" alt="Poster" class="w-full h-full object-cover">
                         </div>
-                        <div>
-                            <span class="block text-[8px] text-gray-500 font-bold tracking-widest uppercase">YEAR</span>
-                            <span id="modal-year" class="text-white text-xs font-medium block">2025</span>
-                        </div>
-                        <div>
-                            <span class="block text-[8px] text-gray-500 font-bold tracking-widest uppercase">ROLE</span>
-                            <span id="modal-role" class="text-white text-xs font-medium truncate block">Lead Creator</span>
-                        </div>
-                    </div>
 
-                    <!-- Clean Description & Tech Stack -->
-                    <div class="space-y-4 text-gray-300 text-sm leading-relaxed font-light flex-1 overflow-y-auto max-h-[300px] no-scrollbar">
-                        <p id="modal-desc" class="text-white/80 hidden"></p>
-                        <div id="modal-tags-container" class="pt-2 hidden">
-                            <span class="block text-[10px] text-gray-500 font-bold mb-2 tracking-widest uppercase">TECH STACK</span>
-                            <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
-                        </div>
-                    </div>
+                        <!-- Main Details Column -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Title, Year & Badges Header -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+                                <div class="flex flex-wrap items-baseline gap-3">
+                                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-white tracking-tight font-display">Project Title</h2>
+                                    <span id="modal-year" class="text-white/40 text-base md:text-lg font-mono font-medium">2025</span>
+                                </div>
 
-                    <!-- Action Link Button (Visits project URL if available) -->
-                    <div id="modal-action-container" class="flex flex-col gap-2 mt-6 pt-4 border-t border-white/5 hidden">
-                        <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0071e3] to-[#64d2ff] hover:from-[#0077ed] hover:to-[#7fe0ff] text-white px-6 py-3.5 rounded-full text-xs font-bold transition-all shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.01] active:scale-95">
-                            <span id="modal-project-link-text">VISIT PROJECT</span>
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </a>
+                                <!-- Category Pills Bar -->
+                                <div id="modal-category-badges" class="flex flex-wrap items-center gap-2">
+                                    <span id="modal-category" class="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider cinematic-cat-pill-primary font-bold">CATEGORY</span>
+                                </div>
+                            </div>
+
+                            <!-- Description / Synopsis -->
+                            <p id="modal-desc" class="text-white/70 text-xs md:text-sm font-light leading-relaxed mb-4 max-w-3xl"></p>
+
+                            <!-- Credits & Meta Grid (Director / Client / Role / Stack) -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 py-3 border-y border-white/5 text-[11px]">
+                                <div>
+                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-0.5">CLIENT</span>
+                                    <span id="modal-client" class="text-white/90 font-medium truncate block">Private Client</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-0.5">ROLE</span>
+                                    <span id="modal-role" class="text-white/90 font-medium truncate block">Lead Creator</span>
+                                </div>
+                                <div class="col-span-2 sm:col-span-1 md:col-span-2">
+                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-1">TECH STACK / TOOLS</span>
+                                    <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
+                                </div>
+                            </div>
+
+                            <!-- Action Button Bar -->
+                            <div id="modal-action-container" class="mt-4 flex items-center justify-between gap-4 hidden">
+                                <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#0071e3] to-[#64d2ff] hover:from-[#0077ed] hover:to-[#7fe0ff] text-white px-6 py-2.5 rounded-full text-xs font-bold tracking-wider transition-all shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.02] active:scale-95">
+                                    <span id="modal-project-link-text">VISIT PROJECT</span>
+                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

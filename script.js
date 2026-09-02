@@ -1202,10 +1202,40 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const mappedCat = mapCategoryToOutcome(work.cat);
 
     mTitle.innerText = work.title;
-    mCat.innerText = mappedCat;
+    if (mCat) mCat.innerText = mappedCat;
     mClient.innerText = work.client || "Private Client";
     mYear.innerText = work.year || "2024";
     mRole.innerText = work.role || "Creative Lead";
+
+    // Dynamic Category Badges (Movie genre style)
+    const catBadgesContainer = document.getElementById("modal-category-badges");
+    if (catBadgesContainer) {
+        catBadgesContainer.innerHTML = "";
+        const rawCats = (work.cat || "").split(",").map(c => c.trim()).filter(Boolean);
+        if (rawCats.length === 0) rawCats.push(mappedCat || "Creative Work");
+        rawCats.forEach((catName, idx) => {
+            const pill = document.createElement("span");
+            pill.className = idx === 0 
+                ? "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold cinematic-cat-pill-primary shadow-sm"
+                : "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold cinematic-cat-pill-secondary";
+            pill.innerText = catName;
+            catBadgesContainer.appendChild(pill);
+        });
+    }
+
+    // Poster Thumbnail (Movie poster style)
+    const mPoster = document.getElementById("modal-poster-thumb");
+    if (mPoster) {
+        let posterUrl = "";
+        if (work.type === "image" || (!work.type && !work.url?.endsWith(".mp4"))) {
+            posterUrl = formatAssetUrl(work.url);
+        } else if (work.thumbnailUrl) {
+            posterUrl = formatAssetUrl(work.thumbnailUrl);
+        } else {
+            posterUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80";
+        }
+        mPoster.src = posterUrl;
+    }
 
     // Tech Stack Tags
     const tagsContainer = document.getElementById("modal-tags-container");
