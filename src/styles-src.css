@@ -3005,6 +3005,48 @@ button:focus-visible,
    CINEMATIC STREAMING MODAL (DESKTOP & MOBILE)
    ========================================== */
 
+/* Desktop Specific Rules */
+@media (min-width: 768px) {
+    #project-modal {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 2rem !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+    }
+
+    #project-modal .modal-content {
+        max-width: 56rem !important; /* 896px max-w-4xl */
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        border-radius: 1.5rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background: #12151c !important;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 113, 227, 0.1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+
+    #cinematic-stage {
+        width: 100% !important;
+        aspect-ratio: 16 / 9 !important;
+        max-height: 58vh !important;
+        background: #000000 !important;
+        position: relative !important;
+    }
+
+    #modal-img, #modal-video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important; /* contain so media is never cut off */
+        background: #000000 !important;
+    }
+}
+
 /* Mobile Native Player App UI (Portrait Optimized) */
 @media (max-width: 767px) {
     #project-modal {
@@ -3012,7 +3054,7 @@ button:focus-visible,
         align-items: stretch !important;
         justify-content: flex-start !important;
         background: #000000 !important;
-        backdrop-filter: none !important; /* Save GPU on mobile */
+        backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
 
