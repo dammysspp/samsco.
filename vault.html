@@ -257,87 +257,118 @@
     </div>
 
     <!-- PROJECT DETAILS MODAL -->
-    <!-- PROJECT DETAILS MODAL (CINEMATIC THEATER EXPERIENCE) -->
+    <!-- PROJECT DETAILS MODAL (EXACT CINEMATIC STREAMING CARD) -->
     <div id="project-modal"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
-        <div class="modal-content cinematic-modal-card max-w-5xl w-full rounded-3xl relative overflow-hidden shadow-2xl max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-500">
-            <!-- Top Action Header / Close & Nav -->
-            <div class="absolute top-4 right-4 z-40 flex items-center gap-2">
-                <button id="prev-project" class="w-9 h-9 rounded-full bg-black/60 hover:bg-white/20 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md" title="Previous Project">❮</button>
-                <button id="next-project" class="w-9 h-9 rounded-full bg-black/60 hover:bg-white/20 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md" title="Next Project">❯</button>
-                <button id="close-modal" class="w-9 h-9 rounded-full bg-black/60 hover:bg-red-500/80 border border-white/10 text-white/80 hover:text-white flex items-center justify-center text-sm transition-all cursor-hover shadow-lg backdrop-blur-md ml-1" title="Close">✕</button>
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
+        
+        <!-- Outer Glowing Card Wrapper (Floating Center) -->
+        <div class="relative max-w-4xl w-full rounded-2xl md:rounded-3xl overflow-hidden bg-[#12151c] border border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col transform scale-95 transition-transform duration-500 modal-content">
+            
+            <!-- Top Controls Overlay: Close, Prev, Next -->
+            <div class="absolute top-4 right-4 z-50 flex items-center gap-2">
+                <button id="prev-project" class="w-8 h-8 rounded-full bg-black/50 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10" title="Previous">❮</button>
+                <button id="next-project" class="w-8 h-8 rounded-full bg-black/50 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10" title="Next">❯</button>
+                <button id="close-modal" class="w-8 h-8 rounded-full bg-black/50 hover:bg-red-500/80 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10 ml-1" title="Close">✕</button>
             </div>
 
-            <!-- Scrollable Modal Body -->
-            <div class="overflow-y-auto no-scrollbar flex flex-col flex-1">
-                <!-- TOP CINEMATIC MEDIA STAGE -->
-                <div class="cinematic-media-stage relative min-h-[280px] md:min-h-[460px] max-h-[62vh] w-full bg-black flex items-center justify-center">
-                    <!-- Image Viewer -->
-                    <img id="modal-img" src="" alt="Project Image" class="w-full h-full max-h-[62vh] object-contain hidden">
-                    <!-- Video Player -->
-                    <video id="modal-video" controls class="w-full h-full max-h-[62vh] object-contain hidden" playsinline preload="metadata"></video>
-                    <!-- Iframe Embed -->
-                    <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full min-h-[380px] hidden border-none"></iframe>
-                    <!-- Error state -->
-                    <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-8 text-center">
-                        <span class="text-4xl mb-2">⚠️</span>
-                        <span class="text-white/80 text-sm font-semibold">Media Link Broken or Offline</span>
-                    </div>
+            <!-- TOP HALF: HERO MEDIA STAGE WITH EMBEDDED SCRUBBER -->
+            <div id="cinematic-stage" class="relative w-full aspect-[16/10] md:aspect-[16/9] bg-black overflow-hidden flex items-center justify-center group">
+                <!-- Image Viewer -->
+                <img id="modal-img" src="" alt="Project Visual" class="w-full h-full object-cover hidden">
+                
+                <!-- Video Player -->
+                <video id="modal-video" class="w-full h-full object-cover hidden" playsinline preload="metadata"></video>
+                
+                <!-- Iframe Embed -->
+                <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full hidden border-none"></iframe>
+                
+                <!-- Error state -->
+                <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-8 text-center z-10">
+                    <span class="text-4xl mb-2">⚠️</span>
+                    <span class="text-white/80 text-sm font-semibold">Media Link Broken or Offline</span>
                 </div>
 
-                <!-- BOTTOM CINEMATIC INFO DOCK -->
-                <div class="cinematic-info-dock p-5 md:p-8 flex flex-col gap-5 border-t border-white/10">
-                    <div class="flex flex-col md:flex-row items-start gap-6">
-                        <!-- Poster Thumbnail (Movie style) -->
-                        <div class="hidden sm:block flex-shrink-0 w-20 md:w-24 aspect-[2/3] rounded-xl overflow-hidden cinematic-poster bg-black/60">
-                            <img id="modal-poster-thumb" src="" alt="Poster" class="w-full h-full object-cover">
-                        </div>
+                <!-- OVERLAY EMBEDDED CONTROLS BAR (Matches Martian concept) -->
+                <div id="cinematic-overlay-bar" class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20 flex items-center gap-3 md:gap-4 transition-opacity duration-300">
+                    <!-- Play / Pause Icon -->
+                    <button id="cinematic-play-btn" class="text-white/90 hover:text-white transition-transform active:scale-90" aria-label="Play/Pause">
+                        <svg id="cinematic-play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
 
-                        <!-- Main Details Column -->
-                        <div class="flex-1 min-w-0">
-                            <!-- Title, Year & Badges Header -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-                                <div class="flex flex-wrap items-baseline gap-3">
-                                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-white tracking-tight font-display">Project Title</h2>
-                                    <span id="modal-year" class="text-white/40 text-base md:text-lg font-mono font-medium">2025</span>
-                                </div>
-
-                                <!-- Category Pills Bar -->
-                                <div id="modal-category-badges" class="flex flex-wrap items-center gap-2">
-                                    <span id="modal-category" class="px-3 py-1 rounded-full text-[10px] uppercase tracking-wider cinematic-cat-pill-primary font-bold">CATEGORY</span>
-                                </div>
-                            </div>
-
-                            <!-- Description / Synopsis -->
-                            <p id="modal-desc" class="text-white/70 text-xs md:text-sm font-light leading-relaxed mb-4 max-w-3xl"></p>
-
-                            <!-- Credits & Meta Grid (Director / Client / Role / Stack) -->
-                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 py-3 border-y border-white/5 text-[11px]">
-                                <div>
-                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-0.5">CLIENT</span>
-                                    <span id="modal-client" class="text-white/90 font-medium truncate block">Private Client</span>
-                                </div>
-                                <div>
-                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-0.5">ROLE</span>
-                                    <span id="modal-role" class="text-white/90 font-medium truncate block">Lead Creator</span>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1 md:col-span-2">
-                                    <span class="block text-[9px] font-mono font-bold text-white/40 uppercase tracking-wider mb-1">TECH STACK / TOOLS</span>
-                                    <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
-                                </div>
-                            </div>
-
-                            <!-- Action Button Bar -->
-                            <div id="modal-action-container" class="mt-4 flex items-center justify-between gap-4 hidden">
-                                <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#0071e3] to-[#64d2ff] hover:from-[#0077ed] hover:to-[#7fe0ff] text-white px-6 py-2.5 rounded-full text-xs font-bold tracking-wider transition-all shadow-[0_4px_20px_rgba(0,113,227,0.3)] hover:scale-[1.02] active:scale-95">
-                                    <span id="modal-project-link-text">VISIT PROJECT</span>
-                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                </a>
-                            </div>
+                    <!-- Interactive Scrubber Track -->
+                    <div id="cinematic-scrubber" class="relative flex-1 h-1.5 bg-white/20 hover:h-2 rounded-full cursor-pointer transition-all">
+                        <!-- Filled Progress with dynamic category color -->
+                        <div id="cinematic-progress" class="absolute left-0 top-0 bottom-0 rounded-full transition-[width]" style="width: 35%; background-color: #ff375f;">
+                            <!-- Scrubber Thumb Dot -->
+                            <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-md"></div>
                         </div>
                     </div>
+
+                    <!-- Volume Toggle Button -->
+                    <button id="cinematic-vol-btn" class="text-white/80 hover:text-white transition-colors" aria-label="Mute/Unmute">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    </button>
+
+                    <!-- Fullscreen Toggle Button -->
+                    <button id="cinematic-fs-btn" class="text-white/80 hover:text-white transition-colors" aria-label="Fullscreen">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    </button>
                 </div>
             </div>
+
+            <!-- BOTTOM HALF: FROSTED GLASS METADATA CARD (Matches Martian concept) -->
+            <div class="p-6 md:p-8 bg-gradient-to-b from-[#181b24]/95 to-[#101218]/95 border-t border-white/5 flex flex-col gap-4">
+                <div class="flex flex-col md:flex-row items-start justify-between gap-6">
+                    
+                    <!-- Left Details Block: Title + Year + Description -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-baseline gap-2.5 mb-2">
+                            <h2 id="modal-title" class="text-xl md:text-2xl font-black tracking-tight text-white uppercase font-display">THE MARTIAN</h2>
+                            <span id="modal-year" class="text-white/40 text-sm md:text-base font-semibold font-mono">2015</span>
+                        </div>
+                        
+                        <!-- Description / Synopsis -->
+                        <p id="modal-desc" class="text-white/60 text-xs md:text-sm font-light leading-relaxed max-w-xl line-clamp-3">
+                            Creative project description and brief details.
+                        </p>
+
+                        <!-- Action Link Button (if available) -->
+                        <div id="modal-action-container" class="mt-3.5 hidden">
+                            <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-white hover:text-[#64d2ff] transition-colors underline decoration-white/30 underline-offset-4">
+                                <span id="modal-project-link-text">VISIT LIVE PROJECT ↗</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Block: Dynamic Category Pills + Metadata Credits -->
+                    <div class="flex flex-col items-start md:items-end gap-3 flex-shrink-0">
+                        <!-- Category Badges / Pills (Dynamic Vault Color for Primary) -->
+                        <div id="modal-category-badges" class="flex flex-wrap items-center gap-2">
+                            <span id="modal-category-pill" class="px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black bg-[#ff375f] shadow-sm">
+                                VIDEO EDITING
+                            </span>
+                        </div>
+
+                        <!-- Credits Block (STARS / ROLE / CLIENT / TOOLS) -->
+                        <div class="flex flex-col items-start md:items-end text-[11px] text-white/50 space-y-1 font-sans">
+                            <p class="leading-tight text-left md:text-right">
+                                <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">ROLE:</span>
+                                <span id="modal-role" class="text-white/80 font-medium">Lead Creator</span>
+                            </p>
+                            <p class="leading-tight text-left md:text-right">
+                                <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">CLIENT:</span>
+                                <span id="modal-client" class="text-white/80 font-medium">Private Client</span>
+                            </p>
+                            <p id="modal-tools-row" class="leading-tight text-left md:text-right hidden">
+                                <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">TOOLS:</span>
+                                <span id="modal-tools-text" class="text-white/80 font-medium">Premiere, After Effects</span>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
 

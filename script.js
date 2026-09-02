@@ -1200,61 +1200,45 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     }
 
     const mappedCat = mapCategoryToOutcome(work.cat);
+    const catColor = getOutcomeColor(mappedCat);
 
     mTitle.innerText = work.title;
     if (mCat) mCat.innerText = mappedCat;
     mClient.innerText = work.client || "Private Client";
     mYear.innerText = work.year || "2024";
-    mRole.innerText = work.role || "Creative Lead";
+    mRole.innerText = work.role || "Lead Creator";
 
-    // Dynamic Category Badges (Movie genre style)
+    // Dynamic Category Badges (First pill takes exact Vault category color, secondaries frosted)
     const catBadgesContainer = document.getElementById("modal-category-badges");
     if (catBadgesContainer) {
         catBadgesContainer.innerHTML = "";
         const rawCats = (work.cat || "").split(",").map(c => c.trim()).filter(Boolean);
         if (rawCats.length === 0) rawCats.push(mappedCat || "Creative Work");
+        
         rawCats.forEach((catName, idx) => {
+            const thisCatColor = getOutcomeColor(mapCategoryToOutcome(catName));
             const pill = document.createElement("span");
-            pill.className = idx === 0 
-                ? "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold cinematic-cat-pill-primary shadow-sm"
-                : "px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold cinematic-cat-pill-secondary";
+            if (idx === 0) {
+                pill.className = "px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black shadow-md";
+                pill.style.backgroundColor = thisCatColor;
+            } else {
+                pill.className = "px-3.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/80 bg-white/10 border border-white/10";
+            }
             pill.innerText = catName;
             catBadgesContainer.appendChild(pill);
         });
     }
 
-    // Poster Thumbnail (Movie poster style)
-    const mPoster = document.getElementById("modal-poster-thumb");
-    if (mPoster) {
-        let posterUrl = "";
-        if (work.type === "image" || (!work.type && !work.url?.endsWith(".mp4"))) {
-            posterUrl = formatAssetUrl(work.url);
-        } else if (work.thumbnailUrl) {
-            posterUrl = formatAssetUrl(work.thumbnailUrl);
-        } else {
-            posterUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80";
-        }
-        mPoster.src = posterUrl;
-    }
-
-    // Tech Stack Tags
-    const tagsContainer = document.getElementById("modal-tags-container");
+    // Tools / Tech Stack text representation
+    const toolsRow = document.getElementById("modal-tools-row");
+    const toolsText = document.getElementById("modal-tools-text");
     const tags = Array.isArray(work.tags) ? work.tags : (work.tags ? work.tags.split(",").map(t => t.trim()) : []);
-    mTags.innerHTML = "";
-    let validTagCount = 0;
-    tags.forEach(tag => {
-        if (!tag) return;
-        validTagCount++;
-        const span = document.createElement("span");
-        span.className = "px-2.5 py-0.5 bg-white/5 border border-white/5 rounded-full text-[10px] text-blue-300 tracking-wide font-mono";
-        span.innerText = tag;
-        mTags.appendChild(span);
-    });
-    if (tagsContainer) {
-        if (validTagCount > 0) {
-            tagsContainer.classList.remove("hidden");
+    if (toolsRow && toolsText) {
+        if (tags && tags.length > 0 && tags[0]) {
+            toolsText.innerText = tags.join(", ");
+            toolsRow.classList.remove("hidden");
         } else {
-            tagsContainer.classList.add("hidden");
+            toolsRow.classList.add("hidden");
         }
     }
 
@@ -1262,11 +1246,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const rawDesc = work.desc ? work.desc.trim() : "";
     if (mDesc) {
         if (!rawDesc || rawDesc === "Description goes here..." || rawDesc === "--") {
-            mDesc.innerText = "";
-            mDesc.classList.add("hidden");
+            mDesc.innerText = "Creative production showcasing high-impact visual design, dynamic composition, and refined craft.";
         } else {
             mDesc.innerText = rawDesc;
-            mDesc.classList.remove("hidden");
         }
     }
 
@@ -1297,22 +1279,33 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 } else if (lower.includes("drive.google.com")) {
                     mProjectLinkText.innerText = "OPEN GOOGLE DRIVE ↗";
                 } else {
-                    mProjectLinkText.innerText = "VISIT PROJECT ↗";
+                    mProjectLinkText.innerText = "VISIT LIVE PROJECT ↗";
                 }
             }
             actionContainer.classList.remove("hidden");
-            actionContainer.style.display = "flex";
         } else {
             actionContainer.classList.add("hidden");
-            actionContainer.style.display = "none";
         }
     }
 
-    // Media Handling (image, video, iframe)
+    // Media & Embedded Cinematic Scrubber Controls
     const mImg = document.getElementById("modal-img");
     const mVideo = document.getElementById("modal-video");
     const mIframe = document.getElementById("modal-iframe");
     const mError = document.getElementById("modal-media-error");
+    const overlayBar = document.getElementById("cinematic-overlay-bar");
+    const playBtn = document.getElementById("cinematic-play-btn");
+    const playIcon = document.getElementById("cinematic-play-icon");
+    const scrubberTrack = document.getElementById("cinematic-scrubber");
+    const scrubberProgress = document.getElementById("cinematic-progress");
+    const volBtn = document.getElementById("cinematic-vol-btn");
+    const fsBtn = document.getElementById("cinematic-fs-btn");
+    const stage = document.getElementById("cinematic-stage");
+
+    if (scrubberProgress) {
+        scrubberProgress.style.backgroundColor = catColor;
+        scrubberProgress.style.width = "0%";
+    }
 
     if (mImg && mVideo && mIframe) {
         // Unbind previous error & load handlers to prevent blank src triggers
@@ -1320,6 +1313,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.onload = null;
         mVideo.onerror = null;
         mVideo.onloadeddata = null;
+        mVideo.ontimeupdate = null;
+        mVideo.onplay = null;
+        mVideo.onpause = null;
 
         // Reset src
         mImg.src = "";
@@ -1330,6 +1326,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
+        if (overlayBar) overlayBar.classList.add("hidden");
         if (mError) {
             mError.classList.add("hidden");
             mError.style.display = "none";
@@ -1344,18 +1341,76 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             mIframe.src = workUrl + "?embed";
         } else if (mediaType === "video") {
             mVideo.classList.remove("hidden");
+            if (overlayBar) overlayBar.classList.remove("hidden");
 
-            mVideo.onloadeddata = () => {
-                if (mError) {
-                    mError.classList.add("hidden");
-                    mError.style.display = "none";
+            function updatePlayIcon(isPlaying) {
+                if (playIcon) {
+                    playIcon.innerHTML = isPlaying
+                        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+                        : '<path d="M8 5v14l11-7z"/>';
+                }
+            }
+
+            mVideo.ontimeupdate = () => {
+                if (mVideo.duration && scrubberProgress) {
+                    const percent = (mVideo.currentTime / mVideo.duration) * 100;
+                    scrubberProgress.style.width = `${percent}%`;
                 }
             };
+
+            mVideo.onplay = () => updatePlayIcon(true);
+            mVideo.onpause = () => updatePlayIcon(false);
+            mVideo.onended = () => {
+                updatePlayIcon(false);
+                if (scrubberProgress) scrubberProgress.style.width = "0%";
+            };
+
+            if (playBtn) {
+                playBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (mVideo.paused) mVideo.play();
+                    else mVideo.pause();
+                };
+            }
+
+            if (scrubberTrack) {
+                scrubberTrack.onclick = (e) => {
+                    e.stopPropagation();
+                    const rect = scrubberTrack.getBoundingClientRect();
+                    const pos = (e.clientX - rect.left) / rect.width;
+                    if (mVideo.duration) {
+                        mVideo.currentTime = pos * mVideo.duration;
+                    }
+                };
+            }
+
+            if (volBtn) {
+                volBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    mVideo.muted = !mVideo.muted;
+                    volBtn.innerHTML = mVideo.muted
+                        ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>'
+                        : '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+                };
+            }
+
+            if (fsBtn && stage) {
+                fsBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (!document.fullscreenElement) {
+                        if (stage.requestFullscreen) stage.requestFullscreen();
+                        else if (mVideo.webkitEnterFullscreen) mVideo.webkitEnterFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                    }
+                };
+            }
 
             mVideo.onerror = () => {
                 if (!mVideo.src || mVideo.src.endsWith("/") || mVideo.src === window.location.href) return;
                 console.warn("Video failed to load in modal:", workUrl);
                 mVideo.classList.add("hidden");
+                if (overlayBar) overlayBar.classList.add("hidden");
                 if (mError) {
                     mError.classList.remove("hidden");
                     mError.style.display = "flex";
@@ -1367,7 +1422,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
             const playPromise = mVideo.play();
             if (playPromise !== undefined) {
-                playPromise.catch(err => console.log("Video auto-play blocked by browser:", err));
+                playPromise.catch(err => {
+                    console.log("Video auto-play blocked by browser:", err);
+                    updatePlayIcon(false);
+                });
             }
         } else {
             mImg.classList.remove("hidden");
@@ -1395,22 +1453,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
             mImg.src = cleanUrl;
         }
-    }
-
-    // Set Active Tab to Overview
-    const tabOverviewBtn = document.getElementById("tab-btn-overview");
-    const tabCaseBtn = document.getElementById("tab-btn-case");
-    const tabOverviewPane = document.getElementById("tab-content-overview");
-    const tabCasePane = document.getElementById("tab-content-case");
-
-    if (tabOverviewBtn && tabCaseBtn && tabOverviewPane && tabCasePane) {
-        tabOverviewBtn.classList.add("active", "border-blue-500");
-        tabOverviewBtn.classList.remove("border-transparent", "text-white/50");
-        tabCaseBtn.classList.remove("active", "border-blue-500");
-        tabCaseBtn.classList.add("border-transparent", "text-white/50");
-        
-        tabOverviewPane.classList.remove("hidden");
-        tabCasePane.classList.add("hidden");
     }
 
     projectModal.classList.add("active");
