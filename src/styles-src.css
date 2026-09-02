@@ -2987,8 +2987,6 @@ button:focus-visible,
 
 /* Utilities */
 .no-scrollbar::-webkit-scrollbar {
-/* Utilities */
-.no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 .no-scrollbar {
