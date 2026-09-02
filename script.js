@@ -1283,6 +1283,40 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const mVideo = document.getElementById("modal-video");
     const mIframe = document.getElementById("modal-iframe");
     const mError = document.getElementById("modal-media-error");
+    const playerContainer = document.getElementById("samsco-player");
+    const ratioBadge = document.getElementById("samsco-player-ratio-badge");
+    const playTrigger = document.getElementById("samsco-play-trigger");
+    const centerPlayIcon = document.getElementById("samsco-center-play-icon");
+    const videoControls = document.getElementById("samsco-video-controls");
+    const ctrlPlayBtn = document.getElementById("samsco-ctrl-play");
+    const ctrlPlayIcon = document.getElementById("samsco-ctrl-play-icon");
+    const timeCurrent = document.getElementById("samsco-time-current");
+    const timeDuration = document.getElementById("samsco-time-duration");
+    const seekBar = document.getElementById("samsco-seek-bar");
+    const seekFill = document.getElementById("samsco-seek-fill");
+    const ctrlMuteBtn = document.getElementById("samsco-ctrl-mute");
+    const ctrlVolIcon = document.getElementById("samsco-ctrl-vol-icon");
+    const volumeSlider = document.getElementById("samsco-volume");
+    const fullscreenBtn = document.getElementById("samsco-ctrl-fullscreen");
+
+    function formatTime(seconds) {
+        if (isNaN(seconds) || seconds < 0) return "0:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function calculateRatioLabel(width, height) {
+        if (!width || !height) return "16:9";
+        const ratio = width / height;
+        if (Math.abs(ratio - 16 / 9) < 0.15) return "16:9";
+        if (Math.abs(ratio - 9 / 16) < 0.15) return "9:16";
+        if (Math.abs(ratio - 1) < 0.15) return "1:1";
+        if (Math.abs(ratio - 4 / 3) < 0.15) return "4:3";
+        if (Math.abs(ratio - 3 / 4) < 0.15) return "3:4";
+        if (Math.abs(ratio - 21 / 9) < 0.2) return "21:9";
+        return `${width}:${height}`;
+    }
 
     if (mImg && mVideo && mIframe) {
         // Unbind previous error & load handlers to prevent blank src triggers
@@ -1290,6 +1324,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.onload = null;
         mVideo.onerror = null;
         mVideo.onloadeddata = null;
+        mVideo.ontimeupdate = null;
+        mVideo.onplay = null;
+        mVideo.onpause = null;
+        mVideo.onended = null;
 
         // Reset src
         mImg.src = "";
@@ -1300,10 +1338,22 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
+        if (playTrigger) playTrigger.classList.add("hidden");
+        if (videoControls) {
+            videoControls.classList.add("hidden");
+            videoControls.classList.remove("flex");
+        }
         if (mError) {
             mError.classList.add("hidden");
             mError.style.display = "none";
         }
+
+        // Reset player container aspect ratio to default
+        if (playerContainer) {
+            playerContainer.style.aspectRatio = "16 / 9";
+            playerContainer.classList.remove("show-controls");
+        }
+        if (ratioBadge) ratioBadge.textContent = "16:9";
 
         const workUrl = formatAssetUrl(work.url);
         const isVideo = isVideoUrl(workUrl, work.type);
@@ -1312,20 +1362,131 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
             mIframe.src = workUrl + "?embed";
+            if (ratioBadge) ratioBadge.textContent = "EMBED";
         } else if (mediaType === "video") {
             mVideo.classList.remove("hidden");
+            if (playTrigger) playTrigger.classList.remove("hidden");
+            if (videoControls) {
+                videoControls.classList.remove("hidden");
+                videoControls.classList.add("flex");
+            }
 
-            mVideo.onloadeddata = () => {
+            function updatePlayStateUI(isPlaying) {
+                if (playTrigger) {
+                    if (isPlaying) {
+                        playTrigger.classList.add("playing");
+                    } else {
+                        playTrigger.classList.remove("playing");
+                    }
+                }
+                if (ctrlPlayIcon) {
+                    ctrlPlayIcon.innerHTML = isPlaying
+                        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+                        : '<path d="M8 5v14l11-7z"/>';
+                }
+            }
+
+            mVideo.onloadedmetadata = () => {
                 if (mError) {
                     mError.classList.add("hidden");
                     mError.style.display = "none";
                 }
+                const vWidth = mVideo.videoWidth;
+                const vHeight = mVideo.videoHeight;
+                if (vWidth && vHeight && playerContainer) {
+                    playerContainer.style.aspectRatio = `${vWidth} / ${vHeight}`;
+                    if (ratioBadge) ratioBadge.textContent = calculateRatioLabel(vWidth, vHeight);
+                }
+                if (timeDuration) timeDuration.textContent = formatTime(mVideo.duration);
             };
+
+            mVideo.ontimeupdate = () => {
+                if (!mVideo.duration) return;
+                const progress = (mVideo.currentTime / mVideo.duration) * 100;
+                if (seekFill) seekFill.style.width = `${progress}%`;
+                if (timeCurrent) timeCurrent.textContent = formatTime(mVideo.currentTime);
+            };
+
+            mVideo.onplay = () => updatePlayStateUI(true);
+            mVideo.onpause = () => updatePlayStateUI(false);
+            mVideo.onended = () => {
+                updatePlayStateUI(false);
+                if (seekFill) seekFill.style.width = "0%";
+            };
+
+            // Custom Player Controls Click Handlers
+            if (playTrigger) {
+                playTrigger.onclick = (e) => {
+                    e.stopPropagation();
+                    if (mVideo.paused) mVideo.play();
+                    else mVideo.pause();
+                };
+            }
+
+            if (ctrlPlayBtn) {
+                ctrlPlayBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (mVideo.paused) mVideo.play();
+                    else mVideo.pause();
+                };
+            }
+
+            if (mVideo) {
+                mVideo.onclick = () => {
+                    if (mVideo.paused) mVideo.play();
+                    else mVideo.pause();
+                };
+            }
+
+            if (seekBar) {
+                seekBar.onclick = (e) => {
+                    e.stopPropagation();
+                    const rect = seekBar.getBoundingClientRect();
+                    const pos = (e.clientX - rect.left) / rect.width;
+                    if (mVideo.duration) {
+                        mVideo.currentTime = pos * mVideo.duration;
+                    }
+                };
+            }
+
+            if (ctrlMuteBtn) {
+                ctrlMuteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    mVideo.muted = !mVideo.muted;
+                    if (ctrlVolIcon) {
+                        ctrlVolIcon.innerHTML = mVideo.muted
+                            ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+                            : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+                    }
+                };
+            }
+
+            if (volumeSlider) {
+                volumeSlider.oninput = (e) => {
+                    e.stopPropagation();
+                    mVideo.volume = parseFloat(e.target.value);
+                    mVideo.muted = mVideo.volume === 0;
+                };
+            }
+
+            if (fullscreenBtn) {
+                fullscreenBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (!document.fullscreenElement) {
+                        if (playerContainer.requestFullscreen) playerContainer.requestFullscreen();
+                        else if (mVideo.webkitEnterFullscreen) mVideo.webkitEnterFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                    }
+                };
+            }
 
             mVideo.onerror = () => {
                 if (!mVideo.src || mVideo.src.endsWith("/") || mVideo.src === window.location.href) return;
                 console.warn("Video failed to load in modal:", workUrl);
                 mVideo.classList.add("hidden");
+                if (playTrigger) playTrigger.classList.add("hidden");
+                if (videoControls) videoControls.classList.add("hidden");
                 if (mError) {
                     mError.classList.remove("hidden");
                     mError.style.display = "flex";
@@ -1337,7 +1498,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
             const playPromise = mVideo.play();
             if (playPromise !== undefined) {
-                playPromise.catch(err => console.log("Video auto-play blocked by browser:", err));
+                playPromise.catch(err => {
+                    console.log("Video auto-play blocked or pending user gesture:", err);
+                    updatePlayStateUI(false);
+                });
             }
         } else {
             mImg.classList.remove("hidden");
@@ -1350,6 +1514,12 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 if (mError) {
                     mError.classList.add("hidden");
                     mError.style.display = "none";
+                }
+                const nWidth = mImg.naturalWidth;
+                const nHeight = mImg.naturalHeight;
+                if (nWidth && nHeight && playerContainer) {
+                    playerContainer.style.aspectRatio = `${nWidth} / ${nHeight}`;
+                    if (ratioBadge) ratioBadge.textContent = calculateRatioLabel(nWidth, nHeight);
                 }
             };
 
@@ -1408,6 +1578,11 @@ function closeProjectModal(skipHistory = false) {
         mVideo.pause();
         mVideo.src = "";
     }
+    const playTrigger = document.getElementById("samsco-play-trigger");
+    if (playTrigger) playTrigger.classList.remove("playing");
+    const seekFill = document.getElementById("samsco-seek-fill");
+    if (seekFill) seekFill.style.width = "0%";
+
     const mIframe = document.getElementById("modal-iframe");
     if (mIframe) mIframe.src = "";
     const mImg = document.getElementById("modal-img");

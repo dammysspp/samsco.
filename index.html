@@ -238,15 +238,72 @@
             <div class="grid lg:grid-cols-12 gap-8 items-start mt-6 lg:mt-0">
                 <!-- Left/Media Column (7 Cols on desktop) -->
                 <div class="lg:col-span-7 flex flex-col gap-4">
-                    <div class="relative w-full aspect-video bg-black/50 rounded-2xl overflow-hidden border border-white/5 flex items-center justify-center min-h-[250px] md:min-h-[400px]">
+                    <div id="samsco-player" class="samsco-player-container min-h-[260px] md:min-h-[420px] max-h-[70vh]">
+                        <!-- Brand/Aspect Badge -->
+                        <div class="samsco-player-badge flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-bold tracking-widest text-[#64d2ff] uppercase font-display">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-pulse"></span>
+                                <span id="samsco-player-ratio-badge">16:9</span>
+                            </span>
+                        </div>
+
+                        <!-- Big Center Play Button for Video -->
+                        <button id="samsco-play-trigger" class="samsco-center-play-btn hidden cursor-pointer group" aria-label="Play video">
+                            <svg id="samsco-center-play-icon" class="w-7 h-7 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+
                         <!-- Image Viewer -->
-                        <img id="modal-img" src="" alt="Project Image" class="w-full h-full object-contain hidden">
-                        <!-- Video Player -->
-                        <video id="modal-video" controls class="w-full h-full object-cover hidden" playsinline></video>
+                        <img id="modal-img" src="" alt="Project Image" class="w-full h-full object-contain hidden transition-opacity duration-300">
+
+                        <!-- Video Player (Native element with dynamic aspect ratio) -->
+                        <video id="modal-video" class="w-full h-full object-contain hidden" playsinline preload="metadata"></video>
+
                         <!-- Iframe Embed -->
                         <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full hidden border-none"></iframe>
+
+                        <!-- Custom Controls Bar for Video -->
+                        <div id="samsco-video-controls" class="samsco-player-controls hidden flex-col gap-2.5">
+                            <!-- Progress & Seek Bar -->
+                            <div id="samsco-seek-bar" class="samsco-seek-bar-track">
+                                <div id="samsco-seek-fill" class="samsco-seek-bar-progress">
+                                    <span class="samsco-seek-bar-thumb"></span>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Controls Row -->
+                            <div class="flex items-center justify-between text-white text-xs font-mono">
+                                <div class="flex items-center gap-3">
+                                    <button id="samsco-ctrl-play" class="samsco-ctrl-btn hover:text-[#64d2ff]" aria-label="Play/Pause">
+                                        <svg id="samsco-ctrl-play-icon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
+
+                                    <!-- Time Display -->
+                                    <div class="text-[10px] text-white/70 tracking-wider">
+                                        <span id="samsco-time-current">0:00</span> / <span id="samsco-time-duration">0:00</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <!-- Mute / Volume -->
+                                    <div class="flex items-center gap-2 group/vol">
+                                        <button id="samsco-ctrl-mute" class="samsco-ctrl-btn hover:text-[#64d2ff]" aria-label="Mute/Unmute">
+                                            <svg id="samsco-ctrl-vol-icon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                        </button>
+                                        <input type="range" id="samsco-volume" min="0" max="1" step="0.05" value="1" class="samsco-volume-slider hidden sm:block">
+                                    </div>
+
+                                    <!-- Fullscreen -->
+                                    <button id="samsco-ctrl-fullscreen" class="samsco-ctrl-btn hover:text-[#64d2ff]" aria-label="Fullscreen">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Error state -->
-                        <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-6 text-center">
+                        <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-6 text-center z-10">
                             <span class="text-3xl mb-2">⚠️</span>
                             <span class="text-white/70 text-sm font-semibold">Media Link Broken or Offline</span>
                         </div>
