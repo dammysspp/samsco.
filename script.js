@@ -1252,10 +1252,11 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         }
     }
 
-    // Action Link Button Handling
+    // Action Link Button Handling (Desktop & Mobile)
     const actionContainer = document.getElementById("modal-action-container");
     const mProjectLink = document.getElementById("modal-project-link");
     const mProjectLinkText = document.getElementById("modal-project-link-text");
+    const mobileDownloadBtn = document.getElementById("mobile-download-btn");
 
     let targetLink = (work.projectUrl || work.demoUrl || "").trim();
     if (!targetLink && work.url && /^https?:\/\//i.test(work.url.trim())) {
@@ -1265,9 +1266,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         }
     }
 
-    if (actionContainer && mProjectLink) {
+    if (mProjectLink) {
         if (targetLink) {
             mProjectLink.href = targetLink;
+            if (mobileDownloadBtn) {
+                mobileDownloadBtn.href = targetLink;
+                mobileDownloadBtn.style.opacity = "1";
+                mobileDownloadBtn.style.pointerEvents = "auto";
+            }
             if (mProjectLinkText) {
                 const lower = targetLink.toLowerCase();
                 if (lower.includes("youtube.com") || lower.includes("youtu.be")) {
@@ -1282,10 +1288,55 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     mProjectLinkText.innerText = "VISIT LIVE PROJECT ↗";
                 }
             }
-            actionContainer.classList.remove("hidden");
+            if (actionContainer) actionContainer.classList.remove("hidden");
         } else {
-            actionContainer.classList.add("hidden");
+            if (mobileDownloadBtn) {
+                mobileDownloadBtn.href = "#";
+                mobileDownloadBtn.style.opacity = "0.4";
+                mobileDownloadBtn.style.pointerEvents = "none";
+            }
+            if (actionContainer) actionContainer.classList.add("hidden");
         }
+    }
+
+    // Populate Mobile Bottom Sheet Elements
+    const mobileTrackTitle = document.getElementById("mobile-track-title");
+    const mobileTrackAuthor = document.getElementById("mobile-track-author");
+    const mobileCategoryText = document.getElementById("mobile-category-text");
+    const mobileCategoryPill = document.getElementById("mobile-category-pill");
+    const mobileBriefDesc = document.getElementById("mobile-brief-desc");
+    const mobileBriefYear = document.getElementById("mobile-brief-year");
+    const mobileTimeCurrent = document.getElementById("mobile-time-current");
+    const mobileTimeDuration = document.getElementById("mobile-time-duration");
+    const mobileProgress = document.getElementById("mobile-progress");
+    const mobileScrubber = document.getElementById("mobile-scrubber");
+    const mobilePlayBtn = document.getElementById("mobile-play-btn");
+    const mobilePlayIcon = document.getElementById("mobile-play-icon");
+    const mobilePrevBtn = document.getElementById("mobile-prev-btn");
+    const mobileNextBtn = document.getElementById("mobile-next-btn");
+    const mobileShuffleBtn = document.getElementById("mobile-shuffle-btn");
+    const mobileFsBtn = document.getElementById("mobile-fs-btn");
+    const mobileShareBtn = document.getElementById("mobile-share-btn");
+    const mobileTrackHeart = document.getElementById("mobile-track-heart");
+
+    if (mobileTrackTitle) mobileTrackTitle.innerText = work.title;
+    if (mobileTrackAuthor) mobileTrackAuthor.innerText = work.client || work.role || "Samsco";
+    if (mobileCategoryText) mobileCategoryText.innerText = mappedCat;
+    if (mobileBriefDesc) mobileBriefDesc.innerText = mDesc ? mDesc.innerText : "Creative project by Samsco.";
+    if (mobileBriefYear) mobileBriefYear.innerText = work.year || "2025";
+    if (mobileProgress) mobileProgress.style.width = "0%";
+    if (mobileTimeCurrent) mobileTimeCurrent.innerText = "00:00";
+    if (mobileTimeDuration) mobileTimeDuration.innerText = "00:00";
+
+    if (mobileCategoryPill) {
+        mobileCategoryPill.style.background = `linear-gradient(135deg, ${catColor}, #ff375f)`;
+    }
+
+    function formatMobileTime(sec) {
+        if (!sec || isNaN(sec)) return "00:00";
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
     // Media & Embedded Cinematic Scrubber Controls
@@ -1344,17 +1395,24 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             if (overlayBar) overlayBar.classList.remove("hidden");
 
             function updatePlayIcon(isPlaying) {
-                if (playIcon) {
-                    playIcon.innerHTML = isPlaying
-                        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
-                        : '<path d="M8 5v14l11-7z"/>';
-                }
+                const playSvg = '<path d="M8 5v14l11-7z"/>';
+                const pauseSvg = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                if (playIcon) playIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
+                if (mobilePlayIcon) mobilePlayIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
             }
 
+            mVideo.onloadedmetadata = () => {
+                if (mobileTimeDuration && mVideo.duration) {
+                    mobileTimeDuration.innerText = formatMobileTime(mVideo.duration);
+                }
+            };
+
             mVideo.ontimeupdate = () => {
-                if (mVideo.duration && scrubberProgress) {
+                if (mVideo.duration) {
                     const percent = (mVideo.currentTime / mVideo.duration) * 100;
-                    scrubberProgress.style.width = `${percent}%`;
+                    if (scrubberProgress) scrubberProgress.style.width = `${percent}%`;
+                    if (mobileProgress) mobileProgress.style.width = `${percent}%`;
+                    if (mobileTimeCurrent) mobileTimeCurrent.innerText = formatMobileTime(mVideo.currentTime);
                 }
             };
 
@@ -1363,24 +1421,37 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             mVideo.onended = () => {
                 updatePlayIcon(false);
                 if (scrubberProgress) scrubberProgress.style.width = "0%";
+                if (mobileProgress) mobileProgress.style.width = "0%";
             };
 
-            if (playBtn) {
-                playBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (mVideo.paused) mVideo.play();
-                    else mVideo.pause();
-                };
-            }
+            const togglePlayback = (e) => {
+                if (e) e.stopPropagation();
+                if (mVideo.paused) mVideo.play();
+                else mVideo.pause();
+            };
+
+            if (playBtn) playBtn.onclick = togglePlayback;
+            if (mobilePlayBtn) mobilePlayBtn.onclick = togglePlayback;
+
+            const handleSeek = (posFraction) => {
+                if (mVideo.duration) {
+                    mVideo.currentTime = posFraction * mVideo.duration;
+                }
+            };
 
             if (scrubberTrack) {
                 scrubberTrack.onclick = (e) => {
                     e.stopPropagation();
                     const rect = scrubberTrack.getBoundingClientRect();
-                    const pos = (e.clientX - rect.left) / rect.width;
-                    if (mVideo.duration) {
-                        mVideo.currentTime = pos * mVideo.duration;
-                    }
+                    handleSeek((e.clientX - rect.left) / rect.width);
+                };
+            }
+
+            if (mobileScrubber) {
+                mobileScrubber.onclick = (e) => {
+                    e.stopPropagation();
+                    const rect = mobileScrubber.getBoundingClientRect();
+                    handleSeek((e.clientX - rect.left) / rect.width);
                 };
             }
 
@@ -1394,15 +1465,45 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 };
             }
 
-            if (fsBtn && stage) {
-                fsBtn.onclick = (e) => {
+            const toggleFs = (e) => {
+                if (e) e.stopPropagation();
+                if (!document.fullscreenElement) {
+                    if (stage && stage.requestFullscreen) stage.requestFullscreen();
+                    else if (mVideo.webkitEnterFullscreen) mVideo.webkitEnterFullscreen();
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            };
+
+            if (fsBtn) fsBtn.onclick = toggleFs;
+            if (mobileFsBtn) mobileFsBtn.onclick = toggleFs;
+
+            if (mobilePrevBtn) mobilePrevBtn.onclick = (e) => { e.stopPropagation(); prevProjectFunc(); };
+            if (mobileNextBtn) mobileNextBtn.onclick = (e) => { e.stopPropagation(); nextProjectFunc(); };
+            if (mobileShuffleBtn) {
+                mobileShuffleBtn.onclick = (e) => {
                     e.stopPropagation();
-                    if (!document.fullscreenElement) {
-                        if (stage.requestFullscreen) stage.requestFullscreen();
-                        else if (mVideo.webkitEnterFullscreen) mVideo.webkitEnterFullscreen();
-                    } else {
-                        if (document.exitFullscreen) document.exitFullscreen();
+                    if (visibleGalleryItems.length > 0) {
+                        const randIdx = Math.floor(Math.random() * visibleGalleryItems.length);
+                        openProjectModal(randIdx);
                     }
+                };
+            }
+            if (mobileShareBtn) {
+                mobileShareBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (navigator.share) {
+                        navigator.share({ title: work.title, url: window.location.href }).catch(() => {});
+                    } else if (navigator.clipboard) {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert("Link copied to clipboard!");
+                    }
+                };
+            }
+            if (mobileTrackHeart) {
+                mobileTrackHeart.onclick = (e) => {
+                    e.stopPropagation();
+                    mobileTrackHeart.classList.toggle("text-red-500");
                 };
             }
 

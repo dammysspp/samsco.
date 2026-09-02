@@ -2987,6 +2987,8 @@ button:focus-visible,
 
 /* Utilities */
 .no-scrollbar::-webkit-scrollbar {
+/* Utilities */
+.no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 .no-scrollbar {
@@ -2995,47 +2997,52 @@ button:focus-visible,
 }
 
 /* ==========================================
-   CINEMATIC STREAMING MODAL (PREMIUM THEATER UI)
+   CINEMATIC STREAMING MODAL (DESKTOP & MOBILE)
    ========================================== */
 
-.cinematic-modal-card {
-    background: rgba(12, 14, 18, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 113, 227, 0.15);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
-}
+/* Mobile Native Player App UI */
+@media (max-width: 767px) {
+    #project-modal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+    }
 
-.cinematic-media-stage {
-    position: relative;
-    width: 100%;
-    background: #000000;
-    border-radius: 1.25rem 1.25rem 0 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+    #project-modal .modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background: #000000 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
 
-.cinematic-info-dock {
-    background: linear-gradient(180deg, rgba(18, 20, 26, 0.75) 0%, rgba(10, 12, 16, 0.95) 100%);
-    border-radius: 0 0 1.25rem 1.25rem;
-}
+    .mobile-player-bottom-sheet {
+        background: rgba(220, 222, 228, 0.95);
+        color: #111827;
+        border-radius: 2rem 2rem 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(30px) saturate(200%);
+        -webkit-backdrop-filter: blur(30px) saturate(200%);
+    }
 
-.cinematic-poster {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 113, 227, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    .mobile-play-main-btn {
+        width: 4.25rem;
+        height: 4.25rem;
+        background: #ffffff;
+        border-radius: 9999px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000000;
+        transition: transform 0.15s ease;
+    }
+    .mobile-play-main-btn:active {
+        transform: scale(0.92);
+    }
 }
-
-.cinematic-cat-pill-primary {
-    background: #eab308;
-    color: #000000;
-    font-weight: 700;
-}
-
-.cinematic-cat-pill-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
+

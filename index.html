@@ -223,27 +223,34 @@
         <a href="#contact" class="text-3xl font-bold hover:text-blue-500 mobile-link">CONTACT</a>
     </div>
 
-    <!-- PROJECT DETAILS MODAL (EXACT CINEMATIC STREAMING CARD) -->
+    <!-- PROJECT DETAILS MODAL (DUAL LAYOUT: CINEMATIC DESKTOP & IOS MUSIC APP MOBILE) -->
     <div id="project-modal"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
+        class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-8 bg-black/95 md:bg-black/90 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
         
-        <!-- Outer Glowing Card Wrapper (Floating Center) -->
-        <div class="relative max-w-4xl w-full rounded-2xl md:rounded-3xl overflow-hidden bg-[#12151c] border border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col transform scale-95 transition-transform duration-500 modal-content">
+        <!-- Outer Modal Container -->
+        <div class="relative w-full h-full md:h-auto max-w-4xl rounded-none md:rounded-3xl overflow-hidden bg-[#0d0f14] md:bg-[#12151c] md:border md:border-white/10 md:shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col justify-between transform scale-95 transition-transform duration-500 modal-content select-none">
             
             <!-- Top Controls Overlay: Close, Prev, Next -->
-            <div class="absolute top-4 right-4 z-50 flex items-center gap-2">
-                <button id="prev-project" class="w-8 h-8 rounded-full bg-black/50 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10" title="Previous">❮</button>
-                <button id="next-project" class="w-8 h-8 rounded-full bg-black/50 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10" title="Next">❯</button>
-                <button id="close-modal" class="w-8 h-8 rounded-full bg-black/50 hover:bg-red-500/80 text-white/70 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10 ml-1" title="Close">✕</button>
+            <div class="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
+                <!-- Mobile Back Chevron / Desktop Prev -->
+                <button id="close-modal" class="w-9 h-9 rounded-full bg-black/60 md:bg-black/50 hover:bg-white/20 text-white/90 flex items-center justify-center text-sm transition-all backdrop-blur-md border border-white/10 pointer-events-auto cursor-hover" title="Close">
+                    <svg class="w-4 h-4 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                    <span class="hidden md:inline">✕</span>
+                </button>
+
+                <div class="flex items-center gap-2 pointer-events-auto">
+                    <button id="prev-project" class="w-9 h-9 rounded-full bg-black/60 md:bg-black/50 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10 cursor-hover" title="Previous">❮</button>
+                    <button id="next-project" class="w-9 h-9 rounded-full bg-black/60 md:bg-black/50 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center text-xs transition-all backdrop-blur-md border border-white/10 cursor-hover" title="Next">❯</button>
+                </div>
             </div>
 
-            <!-- TOP HALF: HERO MEDIA STAGE WITH EMBEDDED SCRUBBER -->
-            <div id="cinematic-stage" class="relative w-full aspect-[16/10] md:aspect-[16/9] bg-black overflow-hidden flex items-center justify-center group">
+            <!-- TOP HALF: HERO MEDIA STAGE (Fullscreen cover on mobile, theater stage on desktop) -->
+            <div id="cinematic-stage" class="relative w-full flex-1 md:flex-initial md:aspect-[16/9] bg-black overflow-hidden flex items-center justify-center group">
                 <!-- Image Viewer -->
-                <img id="modal-img" src="" alt="Project Visual" class="w-full h-full object-cover hidden">
+                <img id="modal-img" src="" alt="Project Visual" class="w-full h-full object-cover md:object-cover hidden">
                 
                 <!-- Video Player -->
-                <video id="modal-video" class="w-full h-full object-cover hidden" playsinline preload="metadata"></video>
+                <video id="modal-video" class="w-full h-full object-cover md:object-cover hidden" playsinline preload="metadata"></video>
                 
                 <!-- Iframe Embed -->
                 <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full hidden border-none"></iframe>
@@ -254,38 +261,31 @@
                     <span class="text-white/80 text-sm font-semibold">Media Link Broken or Offline</span>
                 </div>
 
-                <!-- OVERLAY EMBEDDED CONTROLS BAR (Matches Martian concept) -->
-                <div id="cinematic-overlay-bar" class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20 flex items-center gap-3 md:gap-4 transition-opacity duration-300">
-                    <!-- Play / Pause Icon -->
+                <!-- DESKTOP OVERLAY EMBEDDED CONTROLS BAR (Hidden on mobile) -->
+                <div id="cinematic-overlay-bar" class="hidden md:flex absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20 items-center gap-4 transition-opacity duration-300">
                     <button id="cinematic-play-btn" class="text-white/90 hover:text-white transition-transform active:scale-90" aria-label="Play/Pause">
                         <svg id="cinematic-play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     </button>
 
-                    <!-- Interactive Scrubber Track -->
                     <div id="cinematic-scrubber" class="relative flex-1 h-1.5 bg-white/20 hover:h-2 rounded-full cursor-pointer transition-all">
-                        <!-- Filled Progress with dynamic category color -->
-                        <div id="cinematic-progress" class="absolute left-0 top-0 bottom-0 rounded-full transition-[width]" style="width: 35%; background-color: #ff375f;">
-                            <!-- Scrubber Thumb Dot -->
+                        <div id="cinematic-progress" class="absolute left-0 top-0 bottom-0 rounded-full transition-[width]" style="width: 0%; background-color: #ff375f;">
                             <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-md"></div>
                         </div>
                     </div>
 
-                    <!-- Volume Toggle Button -->
                     <button id="cinematic-vol-btn" class="text-white/80 hover:text-white transition-colors" aria-label="Mute/Unmute">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                     </button>
 
-                    <!-- Fullscreen Toggle Button -->
                     <button id="cinematic-fs-btn" class="text-white/80 hover:text-white transition-colors" aria-label="Fullscreen">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                     </button>
                 </div>
             </div>
 
-            <!-- BOTTOM HALF: FROSTED GLASS METADATA CARD (Matches Martian concept) -->
-            <div class="p-6 md:p-8 bg-gradient-to-b from-[#181b24]/95 to-[#101218]/95 border-t border-white/5 flex flex-col gap-4">
+            <!-- DESKTOP BOTTOM METADATA CARD (Hidden on mobile) -->
+            <div class="hidden md:flex p-6 md:p-8 bg-gradient-to-b from-[#181b24]/95 to-[#101218]/95 border-t border-white/5 flex-col gap-4">
                 <div class="flex flex-col md:flex-row items-start justify-between gap-6">
-                    
                     <!-- Left Details Block: Title + Year + Description -->
                     <div class="flex-1 min-w-0">
                         <div class="flex items-baseline gap-2.5 mb-2">
@@ -293,12 +293,10 @@
                             <span id="modal-year" class="text-white/40 text-sm md:text-base font-semibold font-mono">2015</span>
                         </div>
                         
-                        <!-- Description / Synopsis -->
                         <p id="modal-desc" class="text-white/60 text-xs md:text-sm font-light leading-relaxed max-w-xl line-clamp-3">
                             Creative project description and brief details.
                         </p>
 
-                        <!-- Action Link Button (if available) -->
                         <div id="modal-action-container" class="mt-3.5 hidden">
                             <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-white hover:text-[#64d2ff] transition-colors underline decoration-white/30 underline-offset-4">
                                 <span id="modal-project-link-text">VISIT LIVE PROJECT ↗</span>
@@ -306,32 +304,126 @@
                         </div>
                     </div>
 
-                    <!-- Right Block: Dynamic Category Pills + Metadata Credits -->
-                    <div class="flex flex-col items-start md:items-end gap-3 flex-shrink-0">
-                        <!-- Category Badges / Pills (Dynamic Vault Color for Primary) -->
+                    <!-- Right Block: Category Pills + Metadata Credits -->
+                    <div class="flex flex-col items-end gap-3 flex-shrink-0">
                         <div id="modal-category-badges" class="flex flex-wrap items-center gap-2">
                             <span id="modal-category-pill" class="px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black bg-[#ff375f] shadow-sm">
                                 VIDEO EDITING
                             </span>
                         </div>
 
-                        <!-- Credits Block (STARS / ROLE / CLIENT / TOOLS) -->
-                        <div class="flex flex-col items-start md:items-end text-[11px] text-white/50 space-y-1 font-sans">
-                            <p class="leading-tight text-left md:text-right">
+                        <div class="flex flex-col items-end text-[11px] text-white/50 space-y-1 font-sans">
+                            <p class="leading-tight text-right">
                                 <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">ROLE:</span>
                                 <span id="modal-role" class="text-white/80 font-medium">Lead Creator</span>
                             </p>
-                            <p class="leading-tight text-left md:text-right">
+                            <p class="leading-tight text-right">
                                 <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">CLIENT:</span>
                                 <span id="modal-client" class="text-white/80 font-medium">Private Client</span>
                             </p>
-                            <p id="modal-tools-row" class="leading-tight text-left md:text-right hidden">
+                            <p id="modal-tools-row" class="leading-tight text-right hidden">
                                 <span class="text-white/30 font-bold uppercase tracking-wider text-[9px] mr-1">TOOLS:</span>
                                 <span id="modal-tools-text" class="text-white/80 font-medium">Premiere, After Effects</span>
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
 
+            <!-- MOBILE NATIVE MUSIC/MEDIA APP SHEET (Exact replica of user reference) -->
+            <div class="md:hidden flex flex-col w-full z-30">
+                <!-- Floating Translucent Now-Playing Track Pill -->
+                <div class="mx-4 mb-3 p-4 rounded-2xl bg-[#1b1e28]/85 backdrop-blur-xl border border-white/10 flex items-center justify-between shadow-2xl">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <!-- Mini Avatar/Icon -->
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-white/10 flex-shrink-0 border border-white/10">
+                            <img id="mobile-track-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div class="min-w-0">
+                            <h3 id="mobile-track-title" class="text-white text-sm font-bold tracking-tight truncate">Through the Struggle</h3>
+                            <p class="text-white/50 text-[11px] font-medium truncate">by <span id="mobile-track-author" class="text-white/80">Peter Rodriguez</span></p>
+                        </div>
+                    </div>
+                    <!-- Heart / Like Button -->
+                    <button id="mobile-track-heart" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:text-red-400 active:scale-90 transition-transform">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                </div>
+
+                <!-- Bottom Light Frosted Audio Player Card -->
+                <div class="mobile-player-bottom-sheet p-6 pb-8 flex flex-col gap-4">
+                    <!-- Audio Scrubber & Timestamps -->
+                    <div class="w-full">
+                        <div id="mobile-scrubber" class="relative w-full h-1.5 bg-black/15 rounded-full cursor-pointer">
+                            <div id="mobile-progress" class="absolute left-0 top-0 bottom-0 rounded-full bg-black/80" style="width: 25%;">
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 rounded-full bg-black shadow-sm"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-mono font-medium text-black/50 mt-2">
+                            <span id="mobile-time-current">00:30</span>
+                            <span id="mobile-time-duration">02:30</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar: Download | Primary Pill Button | Share -->
+                    <div class="flex items-center justify-between pt-1">
+                        <!-- Action / Link Button -->
+                        <a id="mobile-download-btn" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-xs font-semibold text-black/75 hover:text-black">
+                            <span>Open Link</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+
+                        <!-- Glowing Pill Badge (Category) -->
+                        <div id="mobile-category-pill" class="px-4 py-1.5 rounded-full text-[11px] font-bold text-white shadow-md flex items-center gap-1 bg-gradient-to-r from-[#ff5e3a] to-[#ff2a68]">
+                            <span id="mobile-category-text">Video Editing</span>
+                            <span class="text-[10px]">✦</span>
+                        </div>
+
+                        <!-- Share Button -->
+                        <button id="mobile-share-btn" class="flex items-center gap-1.5 text-xs font-semibold text-black/75 hover:text-black">
+                            <span>Share</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Main Player Control Icons Row (Shuffle, Prev, Big Play, Next, Fullscreen/Repeat) -->
+                    <div class="flex items-center justify-between px-2 pt-2">
+                        <!-- Shuffle / Random Project -->
+                        <button id="mobile-shuffle-btn" class="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70 hover:text-black active:scale-95 transition-transform" title="Random Project">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h4l6 8h6m0 0l-3-3m3 3l-3 3M4 20h4l2-2.667M20 4l-3-3m3 3l-3 3m0 0h-6l-2 2.667"/></svg>
+                        </button>
+
+                        <!-- Prev Button -->
+                        <button id="mobile-prev-btn" class="text-black/80 hover:text-black active:scale-90 transition-transform">
+                            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        </button>
+
+                        <!-- Big Elevated Center Play/Pause Button -->
+                        <button id="mobile-play-btn" class="mobile-play-main-btn" aria-label="Play/Pause">
+                            <svg id="mobile-play-icon" class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </button>
+
+                        <!-- Next Button -->
+                        <button id="mobile-next-btn" class="text-black/80 hover:text-black active:scale-90 transition-transform">
+                            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                        </button>
+
+                        <!-- Fullscreen / Rotate Toggle -->
+                        <button id="mobile-fs-btn" class="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center text-black/70 hover:text-black active:scale-95 transition-transform" title="Fullscreen">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Bottom Details Accordion / Brief Card -->
+                    <div class="mt-2 p-3.5 rounded-2xl bg-white/70 border border-black/5 flex flex-col gap-1">
+                        <div class="flex items-center justify-between text-xs font-bold text-black/80">
+                            <span>Project Brief</span>
+                            <span id="mobile-brief-year" class="text-[10px] font-mono text-black/40">2025</span>
+                        </div>
+                        <p id="mobile-brief-desc" class="text-[11px] font-medium text-black/60 line-clamp-2 leading-relaxed">
+                            Creative production showcasing high-impact visual design.
+                        </p>
+                    </div>
                 </div>
             </div>
 
