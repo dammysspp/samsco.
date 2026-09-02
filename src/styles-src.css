@@ -2994,53 +2994,83 @@ button:focus-visible,
     scrollbar-width: none;
 }
 
+/* Hardware-accelerated smooth rendering */
+.gallery-item, #project-modal, .modal-content {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
 /* ==========================================
    CINEMATIC STREAMING MODAL (DESKTOP & MOBILE)
    ========================================== */
 
-/* Mobile Native Player App UI */
+/* Mobile Native Player App UI (Portrait Optimized) */
 @media (max-width: 767px) {
     #project-modal {
         padding: 0 !important;
-        align-items: flex-end !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        background: #000000 !important;
+        backdrop-filter: none !important; /* Save GPU on mobile */
+        -webkit-backdrop-filter: none !important;
     }
 
     #project-modal .modal-content {
         max-width: 100% !important;
         width: 100% !important;
         height: 100vh !important;
-        max-height: 100vh !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
         border-radius: 0 !important;
         border: none !important;
         background: #000000 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
+        overflow: hidden !important;
+    }
+
+    #cinematic-stage {
+        flex: 1 1 0% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: 52vh !important;
+        background: #000000 !important;
+    }
+
+    #modal-img, #modal-video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center 25% !important;
     }
 
     .mobile-player-bottom-sheet {
-        background: rgba(220, 222, 228, 0.95);
+        background: #eef0f4;
         color: #111827;
-        border-radius: 2rem 2rem 0 0;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(30px) saturate(200%);
-        -webkit-backdrop-filter: blur(30px) saturate(200%);
+        border-radius: 1.75rem 1.75rem 0 0;
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.7);
+        flex-shrink: 0;
+        padding-top: 1.25rem !important;
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 20px)) !important;
     }
 
     .mobile-play-main-btn {
-        width: 4.25rem;
-        height: 4.25rem;
+        width: 3.75rem;
+        height: 3.75rem;
         background: #ffffff;
         border-radius: 9999px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), 0 2px 5px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #000000;
-        transition: transform 0.15s ease;
+        transition: transform 0.1s ease;
     }
     .mobile-play-main-btn:active {
         transform: scale(0.92);
     }
 }
+
 

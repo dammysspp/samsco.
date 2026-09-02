@@ -532,8 +532,14 @@ const galleryObserver = new IntersectionObserver((e, t) => {
                     </div>
                 </div>`;
         } else if (isVideo) {
+            let posterAttr = "";
+            if (work.thumbnailUrl) {
+                posterAttr = `poster="${formatAssetUrl(work.thumbnailUrl)}"`;
+            } else if (workUrl.includes("imgix.net") || workUrl.includes("r2.dev")) {
+                // If there's an image equivalent or video URL, avoid aggressive auto-buffering
+            }
             mediaHtml = `
-                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover" onerror="window.handleGridVideoError(this)"></video>
+                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="${isEager ? 'metadata' : 'none'}" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover will-change-transform" onerror="window.handleGridVideoError(this)"></video>
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">
                     <span class="text-2xl mb-2">⚠️</span>
                     <span class="text-white/50 text-xs font-mono">Video Unavailable</span>
@@ -543,7 +549,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
             if (workUrl.includes("imgix.net")) {
                 thumbUrl = thumbUrl + "?w=400&q=40&auto=format";
             }
-            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" alt="${work.title}" class="w-full h-full object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
+            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full object-cover will-change-transform" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
         }
         
         // Tags overlay details (Role and Tools)
