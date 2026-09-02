@@ -95,17 +95,22 @@
                 <!-- Advanced Cloudflare R2 Configuration (Optional) -->
                 <details class="group border border-white/5 bg-white/[0.01] rounded-2xl p-4">
                     <summary class="flex justify-between items-center cursor-pointer list-none text-xs font-semibold text-white/50 hover:text-white select-none">
-                        <span>ADVANCED: CLOUDFLARE R2 MEDIA</span>
+                        <span>ADVANCED: CLOUDFLARE R2 MEDIA (UP TO 900MB)</span>
                         <svg class="w-4 h-4 text-white/40 group-open:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </summary>
                     <div class="mt-4 space-y-4">
                         <div>
                             <label for="setup-r2-worker" class="block text-[10px] font-semibold text-white/40 tracking-wider mb-2 uppercase">Worker URL (Optional)</label>
-                            <input type="url" id="setup-r2-worker" placeholder="https://xxxx.workers.dev" class="w-full px-4 py-3 rounded-xl admin-input text-xs">
+                            <input type="url" id="setup-r2-worker" placeholder="https://r2-upload-worker.xxxx.workers.dev" class="w-full px-4 py-3 rounded-xl admin-input text-xs">
                         </div>
                         <div>
                             <label for="setup-r2-key" class="block text-[10px] font-semibold text-white/40 tracking-wider mb-2 uppercase">Upload Key (Secret)</label>
                             <input type="password" id="setup-r2-key" placeholder="Your secret worker token" class="w-full px-4 py-3 rounded-xl admin-input text-xs">
+                        </div>
+                        <div class="p-3 bg-black/40 rounded-xl border border-white/5 text-[10px] text-white/40 space-y-1.5 leading-relaxed">
+                            <span class="text-blue-400 font-bold block uppercase">Cloudflare R2 Bucket Checklist:</span>
+                            <p>1. <strong>Public Access / Custom Domain:</strong> Under Bucket &gt; Settings &gt; Public Access, enable R2.dev domain or connect a custom domain so uploaded files can be viewed publicly.</p>
+                            <p>2. <strong>CORS Policy:</strong> Under Bucket &gt; Settings &gt; CORS Policy, add <code class="text-white/70">["PUT", "GET", "HEAD"]</code> with AllowedOrigins <code class="text-white/70">["*"]</code> and AllowedHeaders <code class="text-white/70">["*"]</code> so browser uploads can PUT directly to presigned URLs.</p>
                         </div>
                     </div>
                 </details>
@@ -2880,7 +2885,9 @@ Provide the response in structured JSON matching this schema:
                             }
                         });
                         
-                        xhr.addEventListener("error", () => reject(new Error("Network error during upload")));
+                        xhr.addEventListener("error", () => {
+                            reject(new Error("Network / CORS error during direct upload to R2. Ensure R2 bucket has CORS policy allowing PUT and Content-Type from your domain."));
+                        });
                         xhr.addEventListener("abort", () => reject(new Error("Upload aborted")));
                     });
                     
@@ -2909,7 +2916,14 @@ Provide the response in structured JSON matching this schema:
                 } catch (e) {
                     console.error("R2 upload failed:", e);
                     uploadProgress.classList.add("hidden");
-                    showToast(e.message || "R2 upload failed. Check worker credentials.", "error");
+                    const errMsg = e.message || String(e);
+                    if (errMsg.includes("CORS") || errMsg.includes("Network")) {
+                        showToast("R2 CORS Error: Direct PUT blocked. Check R2 bucket CORS settings.", "error");
+                    } else if (errMsg.includes("upload link") || errMsg.includes("401") || errMsg.includes("403")) {
+                        showToast("R2 Worker Auth Error: Invalid secret upload key.", "error");
+                    } else {
+                        showToast(errMsg, "error");
+                    }
                 }
             }
 
