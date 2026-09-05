@@ -626,17 +626,17 @@ function initGallery(force = false) {
         i.className = "gallery-item relative aspect-[4/5] sm:aspect-square bg-[#12151c] rounded-2xl overflow-hidden group cursor-pointer border border-white/5 shadow-lg transition-transform active:scale-[0.98]";
         i.innerHTML = `
             ${mediaHtml}
-            <!-- Category Tag Badge (Top-Left) -->
-            <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-                <span class="px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-md shadow-md border" style="background-color: ${outcomeColor}35; border-color: ${outcomeColor}60;">
-                    ${mappedCat}
-                </span>
-            </div>
             
-            <!-- Bottom Metadata Overlay (Always visible on mobile & desktop) -->
+            <!-- Bottom Metadata Overlay (Single unified card footer) -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex flex-col justify-end p-3 md:p-3.5 z-10 pointer-events-none">
+                <!-- Category Badge (Shown once per card) -->
+                <div class="mb-1">
+                    <span class="px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white shadow-sm border" style="background-color: ${outcomeColor}40; border-color: ${outcomeColor}80;">
+                        ${mappedCat}
+                    </span>
+                </div>
                 <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
-                <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">Role: <span class="text-white/90 font-semibold">${work.role || 'Creative Lead'}</span></p>
+                <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">${work.role || 'Creative Lead'}</p>
                 <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-white/10">
                     <div class="flex items-center gap-1 text-white/50 text-[9px] font-medium">
                         <svg class="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -1304,7 +1304,7 @@ function renderMobileReelsFeed(targetIndex) {
             mediaHtml = `<iframe src="${workUrl}?embed" class="w-full h-full border-none pointer-events-auto" allowfullscreen></iframe>`;
         } else if (isVideo) {
             mediaHtml = `
-                <video class="reel-video w-full h-full object-cover" 
+                <video class="reel-video w-full h-full object-contain" 
                     src="${workUrl}" 
                     loop 
                     playsinline 
@@ -1313,24 +1313,22 @@ function renderMobileReelsFeed(targetIndex) {
                     ${reelsGlobalMuted ? 'muted' : ''}></video>
             `;
         } else {
-            let cleanUrl = workUrl.split("?")[0];
-            if (cleanUrl.includes("imgix.net")) {
-                cleanUrl += "?w=1080&q=75&auto=format";
-            }
-            mediaHtml = `<img class="reel-img w-full h-full object-cover" src="${cleanUrl}" alt="${work.title}" onerror="window.handleGridImageError(this)">`;
+            // Keep asset in original high resolution without downscaling
+            const rawUrl = workUrl.split("?")[0];
+            mediaHtml = `<img class="reel-img w-full h-full object-contain" src="${rawUrl}" alt="${work.title}" onerror="window.handleGridImageError(this)">`;
         }
 
         const slide = document.createElement("div");
-        slide.className = "reel-slide relative w-full h-[100dvh] h-screen snap-start snap-always flex items-center justify-center bg-black overflow-hidden select-none";
+        slide.className = "reel-slide relative w-full h-[100dvh] h-screen snap-start snap-always flex items-center justify-center bg-[#07090e] overflow-hidden select-none";
         slide.setAttribute("data-slide-index", slideIdx);
         slide.setAttribute("data-config-index", configIndex);
 
         slide.innerHTML = `
-            <!-- Media Layer -->
+            <!-- Media Layer (Original Resolution Contain) -->
             <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
                 ${mediaHtml}
-                <!-- Cinematic dark gradients for legibility -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/60 pointer-events-none"></div>
+                <!-- Adaptive gradient overlay to guarantee text legibility on all backgrounds (white, colored, dark) -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none"></div>
             </div>
 
             <!-- Tap to Play / Like Overlay Animation Container -->
@@ -1346,7 +1344,7 @@ function renderMobileReelsFeed(targetIndex) {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 
-                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/15 shadow-lg">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-lg">
                     <span class="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style="background-color: ${catColor}; color: ${catColor}"></span>
                     <span class="text-[10px] font-extrabold tracking-widest text-white uppercase font-display">${mappedCat}</span>
                 </div>
@@ -1368,10 +1366,9 @@ function renderMobileReelsFeed(targetIndex) {
                     </div>
                 </div>
 
-                <!-- Like Button -->
-                <button class="reel-action-btn reel-like-btn ${isLiked ? 'text-red-500' : 'text-white'}" data-likes="${baseLikes}" data-liked="${isLiked}">
+                <!-- Like Button (Without number) -->
+                <button class="reel-action-btn reel-like-btn ${isLiked ? 'text-red-500' : 'text-white'}" data-liked="${isLiked}" title="Like">
                     <svg class="w-5 h-5 fill-current transition-transform active:scale-125" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    <span class="reel-like-count text-[10px] font-bold mt-0.5">${baseLikes}</span>
                 </button>
 
                 <!-- Project Link Button (if link exists) -->
@@ -1386,47 +1383,43 @@ function renderMobileReelsFeed(targetIndex) {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                     <span class="text-[9px] font-bold mt-0.5">Share</span>
                 </button>
-
-                <!-- Category Tag Pill Icon -->
-                <div class="reel-action-btn" style="border-color: ${catColor}60; background: rgba(0,0,0,0.55)">
-                    <svg class="w-4 h-4" style="color: ${catColor}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
-                    <span class="text-[8px] font-bold uppercase mt-0.5" style="color: ${catColor}">${mappedCat.slice(0,4)}</span>
-                </div>
             </div>
 
-            <!-- Bottom Content Metadata Overlay -->
-            <div class="absolute bottom-0 left-0 right-16 p-5 pb-7 flex flex-col gap-2 z-30 pointer-events-auto">
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-black shadow-md font-display" style="background-color: ${catColor}">
-                        ${mappedCat}
-                    </span>
-                    <span class="text-white/60 text-[10px] font-mono font-medium">${work.year || '2025'}</span>
+            <!-- Bottom Content Metadata Overlay with Adaptive Frosted Scrim -->
+            <div class="absolute bottom-0 left-0 right-16 p-4 pb-6 flex flex-col gap-2 z-30 pointer-events-auto">
+                <div class="p-3 rounded-2xl bg-black/50 backdrop-blur-md border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.85)] flex flex-col gap-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-black shadow-md font-display" style="background-color: ${catColor}">
+                            ${mappedCat}
+                        </span>
+                        <span class="text-white/70 text-[10px] font-mono font-semibold">${work.year || '2025'}</span>
+                    </div>
+
+                    <h2 class="text-base md:text-lg font-black text-white tracking-tight leading-snug drop-shadow-md uppercase font-display">
+                        ${work.title}
+                    </h2>
+
+                    <p class="text-white/90 text-[11px] font-medium flex items-center gap-1.5 truncate">
+                        <span>Role: <strong class="text-white">${work.role || 'Creative Lead'}</strong></span>
+                        <span>•</span>
+                        <span class="text-white/70">${work.client || 'Samsco'}</span>
+                    </p>
+
+                    <p class="reel-desc-text text-white/80 text-xs font-light leading-relaxed line-clamp-2 transition-all duration-200">
+                        ${descText}
+                    </p>
+                    <button class="reel-desc-more-btn text-[10px] font-bold text-[#64d2ff] hover:underline text-left -mt-0.5 w-fit">more</button>
+
+                    ${keyToolsHtml ? `<div class="flex flex-wrap gap-1.5 mt-0.5">${keyToolsHtml}</div>` : ''}
+
+                    ${targetLink ? `
+                    <div class="pt-1.5">
+                        <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#0071e3] to-[#64d2ff] text-white text-[11px] font-bold shadow-lg active:scale-95 transition-transform">
+                            <span>VISIT LIVE PROJECT</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>` : ''}
                 </div>
-
-                <h2 class="text-lg font-black text-white tracking-tight leading-snug drop-shadow-md uppercase font-display">
-                    ${work.title}
-                </h2>
-
-                <p class="text-white/80 text-[11px] font-medium flex items-center gap-1.5 truncate">
-                    <span>Role: <strong class="text-white">${work.role || 'Creative Lead'}</strong></span>
-                    <span>•</span>
-                    <span class="text-white/60">${work.client || 'Samsco'}</span>
-                </p>
-
-                <p class="reel-desc-text text-white/70 text-xs font-light leading-relaxed line-clamp-2 transition-all duration-200">
-                    ${descText}
-                </p>
-                <button class="reel-desc-more-btn text-[10px] font-bold text-white/40 hover:text-white text-left -mt-1 w-fit">more</button>
-
-                ${keyToolsHtml ? `<div class="flex flex-wrap gap-1.5 mt-0.5">${keyToolsHtml}</div>` : ''}
-
-                ${targetLink ? `
-                <div class="pt-2">
-                    <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#0071e3] to-[#64d2ff] text-white text-xs font-bold shadow-lg active:scale-95 transition-transform">
-                        <span>VISIT LIVE PROJECT</span>
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </a>
-                </div>` : ''}
             </div>
         `;
 
@@ -1448,19 +1441,14 @@ function renderMobileReelsFeed(targetIndex) {
             };
         }
 
-        // Like Button Handler
+        // Like Button Handler (Heart toggle)
         const likeBtn = slide.querySelector(".reel-like-btn");
-        const likeCount = slide.querySelector(".reel-like-count");
-        if (likeBtn && likeCount) {
+        if (likeBtn) {
             likeBtn.onclick = (e) => {
                 e.stopPropagation();
                 let liked = likeBtn.getAttribute("data-liked") === "true";
-                let count = parseInt(likeBtn.getAttribute("data-likes")) || 0;
                 liked = !liked;
-                count = liked ? count + 1 : count - 1;
                 likeBtn.setAttribute("data-liked", liked ? "true" : "false");
-                likeBtn.setAttribute("data-likes", count);
-                likeCount.innerText = count;
                 likeBtn.classList.toggle("text-red-500", liked);
                 likeBtn.classList.toggle("text-white", !liked);
                 localStorage.setItem(likesKey, liked ? "true" : "false");
