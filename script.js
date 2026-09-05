@@ -1389,7 +1389,7 @@ function renderMobileReelsFeed(targetIndex) {
 
                 <!-- Category Tag Pill Icon -->
                 <div class="reel-action-btn" style="border-color: ${catColor}60; background: rgba(0,0,0,0.55)">
-                    <span class="text-sm">✦</span>
+                    <svg class="w-4 h-4" style="color: ${catColor}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
                     <span class="text-[8px] font-bold uppercase mt-0.5" style="color: ${catColor}">${mappedCat.slice(0,4)}</span>
                 </div>
             </div>
