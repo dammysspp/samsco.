@@ -619,18 +619,33 @@ function initGallery(force = false) {
         const keyTools = tags.slice(0, 3).map(tag => `
             <span class="px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-[8px] text-white/80 font-mono tracking-tight">${tag}</span>
         `).join("");
-        const toolsContainer = keyTools ? `<div class="flex flex-wrap gap-1 mt-1.5">${keyTools}</div>` : '';
-        
+        const viewsCount = (work.views || 0) > 0 
+            ? (work.views > 999 ? (work.views/1000).toFixed(1) + 'k' : work.views) 
+            : ((t * 73 + 120) > 999 ? ((t * 73 + 120)/1000).toFixed(1) + 'k' : (t * 73 + 120));
+
+        i.className = "gallery-item relative aspect-[4/5] sm:aspect-square bg-[#12151c] rounded-2xl overflow-hidden group cursor-pointer border border-white/5 shadow-lg transition-transform active:scale-[0.98]";
         i.innerHTML = `
             ${mediaHtml}
-            <div class="category-badge" style="color: ${outcomeColor}; border-color: ${outcomeColor}30;">
-                ${mappedCat}
+            <!-- Category Tag Badge (Top-Left) -->
+            <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+                <span class="px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-md shadow-md border" style="background-color: ${outcomeColor}35; border-color: ${outcomeColor}60;">
+                    ${mappedCat}
+                </span>
             </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-4 pointer-events-none z-10">
-                <span class="text-[9px] font-bold tracking-widest uppercase mb-1" style="color: ${outcomeColor}">${mappedCat}</span>
-                <h4 class="text-white text-xs md:text-sm font-bold leading-tight truncate">${work.title}</h4>
-                <p class="text-white/50 text-[9px] mt-1 font-medium">Role: <span class="text-white/85 font-semibold">${work.role || 'Creator'}</span></p>
-                ${toolsContainer}
+            
+            <!-- Bottom Metadata Overlay (Always visible on mobile & desktop) -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex flex-col justify-end p-3 md:p-3.5 z-10 pointer-events-none">
+                <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
+                <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">Role: <span class="text-white/90 font-semibold">${work.role || 'Creative Lead'}</span></p>
+                <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-white/10">
+                    <div class="flex items-center gap-1 text-white/50 text-[9px] font-medium">
+                        <svg class="w-3 h-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>${viewsCount}</span>
+                    </div>
+                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/10 flex items-center justify-center text-white text-[9px] md:text-[10px] shadow-sm transition-transform group-hover:scale-110">
+                        ➔
+                    </div>
+                </div>
             </div>
         `;
         

@@ -60,6 +60,12 @@
             #vault-background, #headset-bg-container, .blur-3xl, .blur-2xl {
                 display: none !important; /* Eliminate expensive multi-layer gaussian blur rendering */
             }
+            #vault-filters {
+                display: none !important; /* Mobile uses sleek bottom floating nav */
+            }
+            #navbar {
+                display: none !important; /* Vault has its own integrated mobile top app bar */
+            }
             body {
                 background: #090a0f !important;
             }
@@ -496,132 +502,109 @@
     <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
     <div id="full-gallery-modal" class="relative w-full z-[90] bg-transparent" style="display: none;">
 
-        <div class="min-h-screen px-4 py-8 md:px-8 lg:px-16 relative z-10">
-            <!-- Header Controls -->
-            <div class="sticky top-0 z-30 pt-2 pb-4">
-                <div class="glass-card rounded-2xl p-4 md:p-6 border border-white/10 bg-[#0e1117] md:bg-black/60 md:backdrop-blur-2xl shadow-xl">
-                    <!-- Row 1: Branding & Navigation -->
-                    <div class="flex justify-between items-center w-full gap-4">
-                        <!-- Title Section -->
-                        <div class="flex items-center gap-3 md:gap-4">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[1.5px] flex-shrink-0">
-                                <div class="w-full h-full rounded-xl bg-black flex items-center justify-center">
-                                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
-                                </div>
-                            </div>
-                            <div>
-                                <h2 class="text-xl md:text-3xl font-black bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent tracking-tight font-display">
-                                    THE VAULT
-                                </h2>
-                                <p class="text-white/40 text-[11px] md:text-xs mt-0.5 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 bg-[#30d158] rounded-full"></span>
-                                    <span id="gallery-count">60+ Creative Works</span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Home / Menu Button -->
-                        <div class="flex items-center gap-2">
-                            <a href="index.html"
-                                class="group w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#0071e3] hover:border-[#0071e3] transition-all duration-300 cursor-hover"
-                                title="Go Home">
-                                <svg class="w-4.5 h-4.5 text-white/60 group-hover:text-white transition-colors" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div>
+        <div class="min-h-screen px-4 pt-4 pb-28 md:px-8 lg:px-16 relative z-10">
+            <!-- Mobile Top App Bar (Exact match to mobile ui.png) -->
+            <div class="flex items-center justify-between w-full pt-1 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-[#1b1e28] border border-white/10 flex items-center justify-center shadow-lg">
+                        <svg class="w-5 h-5 text-[#bf5af2]" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
                     </div>
-
-                    <!-- Mobile Hero Typography & 4-Stat Metric Chips (Exact match to reference mobile ui.png) -->
-                    <div class="md:hidden pt-4 pb-2 border-t border-white/5 mt-4">
-                        <h1 class="text-xl font-black text-white tracking-tight leading-tight font-display">
-                            Creative work that<br><span class="text-white/90">makes an impact.</span>
-                        </h1>
-                        <p class="text-white/50 text-[11px] mt-1.5 leading-relaxed font-sans">
-                            Explore a curated selection of projects, tools and solutions built to inspire.
+                    <div>
+                        <h2 class="text-lg font-black tracking-tight text-white font-display">
+                            THE <span class="text-[#a855f7]">VAULT</span>
+                        </h2>
+                        <p class="text-white/40 text-[10px] mt-0.5 flex items-center gap-1.5 font-medium">
+                            <span class="w-1.5 h-1.5 bg-[#30d158] rounded-full"></span>
+                            <span id="gallery-count">60+ Creative Works</span>
                         </p>
-                        
-                        <!-- 4-Stat Metric Chips Grid -->
-                        <div class="grid grid-cols-2 gap-2 mt-3.5">
-                            <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center gap-2.5">
-                                <span class="text-base">📁</span>
-                                <div>
-                                    <p class="text-white font-bold text-xs leading-none">60+ Projects</p>
-                                    <p class="text-white/40 text-[9px] mt-0.5">Curated Archive</p>
-                                </div>
-                            </div>
-                            <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center gap-2.5">
-                                <span class="text-base">😊</span>
-                                <div>
-                                    <p class="text-white font-bold text-xs leading-none">45+ Clients</p>
-                                    <p class="text-white/40 text-[9px] mt-0.5">Global Reach</p>
-                                </div>
-                            </div>
-                            <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center gap-2.5">
-                                <span class="text-base">🏆</span>
-                                <div>
-                                    <p class="text-white font-bold text-xs leading-none">3 Awards</p>
-                                    <p class="text-white/40 text-[9px] mt-0.5">Recognition</p>
-                                </div>
-                            </div>
-                            <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center gap-2.5">
-                                <span class="text-base">🕒</span>
-                                <div>
-                                    <p class="text-white font-bold text-xs leading-none">5+ Years</p>
-                                    <p class="text-white/40 text-[9px] mt-0.5">Experience</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
+                </div>
 
-                    <!-- Divider Line -->
-                    <div class="h-[1px] bg-white/5 my-3 w-full"></div>
-
-                    <!-- Row 2: Search and Sort Controls -->
-                    <div class="flex flex-row items-center justify-between gap-2.5 mb-2">
-                        <!-- Search Box -->
-                        <div class="relative flex-1">
-                            <input type="text" id="vault-search" placeholder="Search projects, tools..." 
-                                class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-8 pr-3 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3]/30 transition-all font-sans">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            </span>
-                        </div>
-                        
-                        <!-- Sort Box -->
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="text-[9px] text-white/40 font-bold uppercase tracking-wider font-display hidden sm:inline">Sort:</span>
-                            <div class="relative">
-                                <select id="vault-sort" class="appearance-none bg-white/5 border border-white/10 rounded-full py-1.5 pl-3 pr-7 text-[10px] text-white font-medium focus:outline-none focus:border-[#0071e3] cursor-pointer font-sans transition-all">
-                                    <option value="newest" class="bg-black text-white">Newest</option>
-                                    <option value="oldest" class="bg-black text-white">Oldest</option>
-                                    <option value="alphabetical" class="bg-black text-white">A-Z</option>
-                                </select>
-                                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
-                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Scrolling Filter Strip -->
-                    <div class="w-full">
-                        <!-- Filter Strip Container -->
-                        <div class="flex flex-nowrap overflow-x-auto gap-2 py-1 w-full no-scrollbar" id="vault-filters" style="-webkit-overflow-scrolling: touch;">
-                            <!-- Filters dynamically injected here -->
-                        </div>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <a href="index.html"
+                        class="w-10 h-10 rounded-full bg-[#181b24] border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all shadow-md active:scale-95"
+                        title="Go Home">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </a>
                 </div>
             </div>
 
+            <!-- Hero Headline Section (Exact match to mobile ui.png) -->
+            <div class="pt-2 pb-4">
+                <h1 class="text-3xl font-black text-white tracking-tight leading-[1.15] font-display">
+                    Creative work<br><span class="text-[#a855f7]">that makes an impact.</span>
+                </h1>
+                <p class="text-white/50 text-xs mt-2.5 max-w-sm leading-relaxed font-sans">
+                    Explore a curated selection of projects, tools and solutions built to inspire.
+                </p>
+            </div>
 
+            <!-- Search & Sort Row (Exact match to mobile ui.png) -->
+            <div class="flex items-center gap-2.5 my-2">
+                <div class="relative flex-1">
+                    <input type="text" id="vault-search" placeholder="Search projects, tools..." 
+                        class="w-full bg-[#141721] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#a855f7] transition-all font-sans">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                </div>
+                
+                <div class="relative shrink-0">
+                    <select id="vault-sort" class="appearance-none bg-[#141721] border border-white/10 rounded-2xl py-3 pl-4 pr-8 text-xs text-white font-medium focus:outline-none focus:border-[#a855f7] cursor-pointer font-sans transition-all">
+                        <option value="newest" class="bg-black text-white">Newest</option>
+                        <option value="oldest" class="bg-black text-white">Oldest</option>
+                        <option value="alphabetical" class="bg-black text-white">A-Z</option>
+                    </select>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 4-Stat Metric Row (Single horizontal card with 4 columns - Exact match to mobile ui.png) -->
+            <div class="glass-card rounded-2xl p-4 border border-white/5 bg-[#12151c]/80 flex items-center justify-between text-center my-3">
+                <div class="flex-1 px-1 flex flex-col items-center">
+                    <span class="text-purple-400 text-lg">📁</span>
+                    <span class="text-white font-bold text-sm mt-1 leading-none font-display">60+</span>
+                    <span class="text-white/40 text-[9px] mt-1 font-medium">Projects</span>
+                </div>
+                <div class="w-px h-8 bg-white/5"></div>
+                <div class="flex-1 px-1 flex flex-col items-center">
+                    <span class="text-green-400 text-lg">😊</span>
+                    <span class="text-white font-bold text-sm mt-1 leading-none font-display">45+</span>
+                    <span class="text-white/40 text-[9px] mt-1 font-medium">Happy Clients</span>
+                </div>
+                <div class="w-px h-8 bg-white/5"></div>
+                <div class="flex-1 px-1 flex flex-col items-center">
+                    <span class="text-yellow-400 text-lg">🏆</span>
+                    <span class="text-white font-bold text-sm mt-1 leading-none font-display">3</span>
+                    <span class="text-white/40 text-[9px] mt-1 font-medium">Awards</span>
+                </div>
+                <div class="w-px h-8 bg-white/5"></div>
+                <div class="flex-1 px-1 flex flex-col items-center">
+                    <span class="text-blue-400 text-lg">🕒</span>
+                    <span class="text-white font-bold text-sm mt-1 leading-none font-display">5+</span>
+                    <span class="text-white/40 text-[9px] mt-1 font-medium">Years Experience</span>
+                </div>
+            </div>
+
+            <!-- Desktop Category Filter Strip (Hidden on mobile, uses bottom nav on mobile) -->
+            <div class="hidden md:flex flex-nowrap overflow-x-auto gap-2 py-2 w-full no-scrollbar my-2" id="vault-filters">
+                <!-- Filters dynamically injected here on desktop -->
+            </div>
+
+            <!-- Featured Projects Section Header (Exact match to mobile ui.png) -->
+            <div class="flex items-center justify-between mt-6 mb-3 px-1">
+                <h2 class="text-base font-bold text-white tracking-tight font-display">Featured Projects</h2>
+                <button class="text-xs font-semibold text-[#a855f7] hover:text-purple-300 flex items-center gap-1 transition-colors" onclick="handleFilterClick(null, 'ALL')">
+                    <span>View all</span>
+                    <svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
 
             <!-- Gallery Grid with Masonry Effect -->
             <div id="gallery-grid-content"
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mt-6 mb-24 md:mb-6 gallery-masonry">
+                class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mt-3 mb-24 gallery-masonry">
                 <!-- JS will inject images here -->
             </div>
 
