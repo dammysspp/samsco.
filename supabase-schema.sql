@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS public.works (
     client TEXT,
     year TEXT,
     role TEXT,
-    desc TEXT,
+    "desc" TEXT,
     tags TEXT,
     problem TEXT,
     process TEXT,
