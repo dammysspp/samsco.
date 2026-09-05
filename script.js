@@ -402,7 +402,8 @@ function initVaultFilters(force = false) {
         }
         ), filterContainer.appendChild(t)
     }
-    ), filtersInitialized = !0
+    ), filtersInitialized = !0;
+    initMobileBottomNav();
 }
 function applyFilterButtonStyles(e, t, a) {
     e.style.setProperty('--category-color', a);
@@ -416,9 +417,35 @@ function handleFilterClick(e, t) {
     document.querySelectorAll("#vault-filters .vault-filter-btn").forEach(btn => {
         btn.classList.remove("active");
     });
-    e.classList.add("active");
+    if (e && e.classList) e.classList.add("active");
+
+    // Sync mobile bottom nav bar
+    document.querySelectorAll("#mobile-bottom-nav .mobile-nav-item").forEach(item => {
+        const itemCat = item.getAttribute("data-cat");
+        if (itemCat && (itemCat.toLowerCase() === t.toLowerCase() || (t === "ALL" && itemCat === "ALL"))) {
+            item.classList.add("active");
+            item.classList.remove("text-white/50");
+            item.classList.add("text-white");
+        } else {
+            item.classList.remove("active");
+            item.classList.add("text-white/50");
+            item.classList.remove("text-white");
+        }
+    });
+
     currentFilter = t;
     filterAndSortVault();
+}
+
+function initMobileBottomNav() {
+    const navItems = document.querySelectorAll("#mobile-bottom-nav .mobile-nav-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const cat = item.getAttribute("data-cat") || "ALL";
+            const topBtn = document.querySelector(`#vault-filters .vault-filter-btn[data-filter="${cat}"]`);
+            handleFilterClick(topBtn, cat);
+        });
+    });
 }
 
 // Typographic fallback HTML generator
@@ -1210,6 +1237,347 @@ function checkAndOpenDeepLink() {
     }
 }
 
+let mobileReelsObserver = null;
+let reelsGlobalMuted = false;
+
+function renderMobileReelsFeed(targetIndex) {
+    const reelsContainer = document.getElementById("mobile-reels-container");
+    if (!reelsContainer) return;
+
+    if (mobileReelsObserver) {
+        mobileReelsObserver.disconnect();
+        mobileReelsObserver = null;
+    }
+
+    reelsContainer.innerHTML = "";
+    
+    visibleGalleryItems.forEach((galleryItem, slideIdx) => {
+        const configIndex = parseInt(galleryItem.getAttribute("data-index"));
+        const work = galleryConfig[configIndex];
+        if (!work) return;
+
+        const workUrl = formatAssetUrl(work.url);
+        const mappedCat = mapCategoryToOutcome(work.cat);
+        const catColor = getOutcomeColor(mappedCat);
+        const isVideo = isVideoUrl(workUrl, work.type);
+        const isIframe = work.type === "iframe";
+
+        let targetLink = (work.projectUrl || work.demoUrl || "").trim();
+        if (!targetLink && work.url && /^https?:\/\//i.test(work.url.trim())) {
+            const u = work.url.trim();
+            if (!u.includes("r2.dev") && !u.includes("imgix.net") && !/\.(mp4|webm|ogg|mov|m4v|jpg|jpeg|png|gif|avif|webp)$/i.test(u.split('?')[0])) {
+                targetLink = u;
+            }
+        }
+
+        const rawDesc = work.desc ? work.desc.trim() : "";
+        const descText = (!rawDesc || rawDesc === "Description goes here..." || rawDesc === "--")
+            ? "Creative production showcasing high-impact visual design, dynamic composition, and refined craft."
+            : rawDesc;
+
+        const tags = Array.isArray(work.tags) ? work.tags : (work.tags ? work.tags.split(",").map(t => t.trim()) : []);
+        const keyToolsHtml = tags.slice(0, 3).map(tag => `
+            <span class="px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-[9px] font-mono text-white/80">#${tag}</span>
+        `).join("");
+
+        const likesKey = `samsco_likes_${work.id || configIndex}`;
+        const isLiked = localStorage.getItem(likesKey) === "true";
+        const baseLikes = 42 + (configIndex * 7) % 89 + (isLiked ? 1 : 0);
+
+        let mediaHtml = "";
+        if (isIframe) {
+            mediaHtml = `<iframe src="${workUrl}?embed" class="w-full h-full border-none pointer-events-auto" allowfullscreen></iframe>`;
+        } else if (isVideo) {
+            mediaHtml = `
+                <video class="reel-video w-full h-full object-cover" 
+                    src="${workUrl}" 
+                    loop 
+                    playsinline 
+                    preload="metadata"
+                    ${work.thumbnailUrl ? `poster="${formatAssetUrl(work.thumbnailUrl)}"` : ''}
+                    ${reelsGlobalMuted ? 'muted' : ''}></video>
+            `;
+        } else {
+            let cleanUrl = workUrl.split("?")[0];
+            if (cleanUrl.includes("imgix.net")) {
+                cleanUrl += "?w=1080&q=75&auto=format";
+            }
+            mediaHtml = `<img class="reel-img w-full h-full object-cover" src="${cleanUrl}" alt="${work.title}" onerror="window.handleGridImageError(this)">`;
+        }
+
+        const slide = document.createElement("div");
+        slide.className = "reel-slide relative w-full h-[100dvh] h-screen snap-start snap-always flex items-center justify-center bg-black overflow-hidden select-none";
+        slide.setAttribute("data-slide-index", slideIdx);
+        slide.setAttribute("data-config-index", configIndex);
+
+        slide.innerHTML = `
+            <!-- Media Layer -->
+            <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+                ${mediaHtml}
+                <!-- Cinematic dark gradients for legibility -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/60 pointer-events-none"></div>
+            </div>
+
+            <!-- Tap to Play / Like Overlay Animation Container -->
+            <div class="reel-tap-overlay absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                <div class="reel-heart-anim opacity-0 scale-50 transition-all duration-300 text-red-500">
+                    <svg class="w-24 h-24 fill-current drop-shadow-[0_0_25px_rgba(255,0,80,0.8)]" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+            </div>
+
+            <!-- Top Header Bar -->
+            <div class="absolute top-0 left-0 right-0 p-4 pt-6 flex items-center justify-between z-30 pointer-events-auto">
+                <button class="reel-close-btn w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer" aria-label="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/15 shadow-lg">
+                    <span class="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style="background-color: ${catColor}; color: ${catColor}"></span>
+                    <span class="text-[10px] font-extrabold tracking-widest text-white uppercase font-display">${mappedCat}</span>
+                </div>
+
+                <button class="reel-sound-btn w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer" aria-label="Toggle Sound">
+                    ${reelsGlobalMuted 
+                        ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>'
+                        : '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>'
+                    }
+                </button>
+            </div>
+
+            <!-- Right Action Rail (TikTok / Reels Style) -->
+            <div class="absolute right-3.5 bottom-24 flex flex-col items-center gap-4 z-30 pointer-events-auto">
+                <!-- Creator Avatar -->
+                <div class="relative mb-1">
+                    <div class="w-11 h-11 rounded-full p-[1.5px] bg-gradient-to-tr from-[#0071e3] via-[#bf5af2] to-[#ff375f] shadow-lg">
+                        <img src="/me_3.jpg" alt="Samsco" class="w-full h-full object-cover rounded-full border border-black">
+                    </div>
+                </div>
+
+                <!-- Like Button -->
+                <button class="reel-action-btn reel-like-btn ${isLiked ? 'text-red-500' : 'text-white'}" data-likes="${baseLikes}" data-liked="${isLiked}">
+                    <svg class="w-5 h-5 fill-current transition-transform active:scale-125" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span class="reel-like-count text-[10px] font-bold mt-0.5">${baseLikes}</span>
+                </button>
+
+                <!-- Project Link Button (if link exists) -->
+                ${targetLink ? `
+                <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="reel-action-btn text-white hover:text-[#64d2ff]" title="Visit Project">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <span class="text-[9px] font-bold mt-0.5">Visit</span>
+                </a>` : ''}
+
+                <!-- Share Button -->
+                <button class="reel-action-btn reel-share-btn text-white" title="Share Project">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    <span class="text-[9px] font-bold mt-0.5">Share</span>
+                </button>
+
+                <!-- Category Tag Pill Icon -->
+                <div class="reel-action-btn" style="border-color: ${catColor}60; background: rgba(0,0,0,0.55)">
+                    <span class="text-sm">✦</span>
+                    <span class="text-[8px] font-bold uppercase mt-0.5" style="color: ${catColor}">${mappedCat.slice(0,4)}</span>
+                </div>
+            </div>
+
+            <!-- Bottom Content Metadata Overlay -->
+            <div class="absolute bottom-0 left-0 right-16 p-5 pb-7 flex flex-col gap-2 z-30 pointer-events-auto">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-black shadow-md font-display" style="background-color: ${catColor}">
+                        ${mappedCat}
+                    </span>
+                    <span class="text-white/60 text-[10px] font-mono font-medium">${work.year || '2025'}</span>
+                </div>
+
+                <h2 class="text-lg font-black text-white tracking-tight leading-snug drop-shadow-md uppercase font-display">
+                    ${work.title}
+                </h2>
+
+                <p class="text-white/80 text-[11px] font-medium flex items-center gap-1.5 truncate">
+                    <span>Role: <strong class="text-white">${work.role || 'Creative Lead'}</strong></span>
+                    <span>•</span>
+                    <span class="text-white/60">${work.client || 'Samsco'}</span>
+                </p>
+
+                <p class="reel-desc-text text-white/70 text-xs font-light leading-relaxed line-clamp-2 transition-all duration-200">
+                    ${descText}
+                </p>
+                <button class="reel-desc-more-btn text-[10px] font-bold text-white/40 hover:text-white text-left -mt-1 w-fit">more</button>
+
+                ${keyToolsHtml ? `<div class="flex flex-wrap gap-1.5 mt-0.5">${keyToolsHtml}</div>` : ''}
+
+                ${targetLink ? `
+                <div class="pt-2">
+                    <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#0071e3] to-[#64d2ff] text-white text-xs font-bold shadow-lg active:scale-95 transition-transform">
+                        <span>VISIT LIVE PROJECT</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>` : ''}
+            </div>
+        `;
+
+        reelsContainer.appendChild(slide);
+
+        // Click on description to expand/collapse
+        const descEl = slide.querySelector(".reel-desc-text");
+        const moreBtn = slide.querySelector(".reel-desc-more-btn");
+        if (moreBtn && descEl) {
+            moreBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (descEl.classList.contains("line-clamp-2")) {
+                    descEl.classList.remove("line-clamp-2");
+                    moreBtn.innerText = "less";
+                } else {
+                    descEl.classList.add("line-clamp-2");
+                    moreBtn.innerText = "more";
+                }
+            };
+        }
+
+        // Like Button Handler
+        const likeBtn = slide.querySelector(".reel-like-btn");
+        const likeCount = slide.querySelector(".reel-like-count");
+        if (likeBtn && likeCount) {
+            likeBtn.onclick = (e) => {
+                e.stopPropagation();
+                let liked = likeBtn.getAttribute("data-liked") === "true";
+                let count = parseInt(likeBtn.getAttribute("data-likes")) || 0;
+                liked = !liked;
+                count = liked ? count + 1 : count - 1;
+                likeBtn.setAttribute("data-liked", liked ? "true" : "false");
+                likeBtn.setAttribute("data-likes", count);
+                likeCount.innerText = count;
+                likeBtn.classList.toggle("text-red-500", liked);
+                likeBtn.classList.toggle("text-white", !liked);
+                localStorage.setItem(likesKey, liked ? "true" : "false");
+            };
+        }
+
+        // Share Button Handler
+        const shareBtn = slide.querySelector(".reel-share-btn");
+        if (shareBtn) {
+            shareBtn.onclick = (e) => {
+                e.stopPropagation();
+                const shareData = {
+                    title: work.title,
+                    text: `Check out ${work.title} on Samsco Portfolio Vault`,
+                    url: window.location.href
+                };
+                if (navigator.share) {
+                    navigator.share(shareData).catch(() => {});
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Project link copied to clipboard!");
+                }
+            };
+        }
+
+        // Close Button Handler
+        const closeBtn = slide.querySelector(".reel-close-btn");
+        if (closeBtn) {
+            closeBtn.onclick = (e) => {
+                e.stopPropagation();
+                closeProjectModal();
+            };
+        }
+
+        // Sound Toggle Handler
+        const soundBtn = slide.querySelector(".reel-sound-btn");
+        if (soundBtn) {
+            soundBtn.onclick = (e) => {
+                e.stopPropagation();
+                reelsGlobalMuted = !reelsGlobalMuted;
+                document.querySelectorAll(".reel-video").forEach(v => {
+                    v.muted = reelsGlobalMuted;
+                });
+                document.querySelectorAll(".reel-sound-btn").forEach(btn => {
+                    btn.innerHTML = reelsGlobalMuted 
+                        ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>'
+                        : '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+                });
+            };
+        }
+
+        // Tap on media to play/pause or double-tap to like
+        let lastTap = 0;
+        slide.addEventListener("click", (e) => {
+            if (e.target.closest("button") || e.target.closest("a")) return;
+            const now = Date.now();
+            const heartAnim = slide.querySelector(".reel-heart-anim");
+            if (now - lastTap < 300) {
+                // Double tap: Like
+                if (heartAnim) {
+                    heartAnim.classList.remove("opacity-0", "scale-50");
+                    heartAnim.classList.add("opacity-100", "scale-110");
+                    setTimeout(() => {
+                        heartAnim.classList.remove("opacity-100", "scale-110");
+                        heartAnim.classList.add("opacity-0", "scale-50");
+                    }, 600);
+                }
+                if (likeBtn) likeBtn.click();
+            } else {
+                // Single tap: Play/Pause video
+                const v = slide.querySelector(".reel-video");
+                if (v) {
+                    if (v.paused) v.play().catch(() => {});
+                    else v.pause();
+                }
+            }
+            lastTap = now;
+        });
+    });
+
+    // Setup IntersectionObserver to auto-play active reel video and update history
+    mobileReelsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const slide = entry.target;
+            const video = slide.querySelector(".reel-video");
+            const slideIdx = parseInt(slide.getAttribute("data-slide-index"));
+            const configIndex = parseInt(slide.getAttribute("data-config-index"));
+            const work = galleryConfig[configIndex];
+
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+                currentLbIndex = slideIdx;
+                if (video) {
+                    video.muted = reelsGlobalMuted;
+                    video.play().catch(err => console.log("Reels autoplay note:", err));
+                }
+                if (work) {
+                    const slug = getWorkSlug(work);
+                    if (slug && history.replaceState) {
+                        const basePath = window.isVaultPage ? '/vault' : '';
+                        history.replaceState({ workSlug: slug, configIndex }, '', `${basePath}/${slug}`);
+                    }
+                    if (window.supabaseClient && work.id) {
+                        window.supabaseClient.from("works").update({ views: (work.views || 0) + 1 }).eq("id", work.id).then(() => {
+                            work.views = (work.views || 0) + 1;
+                        }).catch(() => {});
+                    }
+                }
+            } else {
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            }
+        });
+    }, {
+        root: reelsContainer,
+        threshold: [0.6]
+    });
+
+    reelsContainer.querySelectorAll(".reel-slide").forEach(slide => {
+        mobileReelsObserver.observe(slide);
+    });
+
+    // Instant scroll to selected project slide
+    setTimeout(() => {
+        const targetSlide = reelsContainer.children[targetIndex];
+        if (targetSlide) {
+            targetSlide.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+    }, 10);
+}
+
 function openProjectModal(indexOrEl, skipHistory = false) {
     let configIndex = 0;
     if (typeof indexOrEl === 'object' && indexOrEl.getAttribute) {
@@ -1231,6 +1599,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const work = galleryConfig[configIndex];
     if (!work) return;
 
+    // Check if on mobile viewport
+    const isMobile = window.innerWidth <= 768;
+
     // Update URL bar seamlessly with unique work link
     const slug = getWorkSlug(work);
     if (slug && !skipHistory && history.pushState) {
@@ -1241,6 +1612,17 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         }
     }
 
+    // Handle Mobile Experience (TikTok / IG Reels Vertical Feed)
+    if (isMobile) {
+        renderMobileReelsFeed(currentLbIndex);
+        projectModal.classList.add("active");
+        projectModal.classList.remove("opacity-0", "pointer-events-none");
+        document.body.style.overflow = "hidden";
+        if (window.lenis) window.lenis.stop();
+        return;
+    }
+
+    // Handle Desktop Experience (Cinematic Modal)
     const mappedCat = mapCategoryToOutcome(work.cat);
     const catColor = getOutcomeColor(mappedCat);
 
@@ -1294,11 +1676,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         }
     }
 
-    // Action Link Button Handling (Desktop & Mobile)
+    // Action Link Button Handling (Desktop)
     const actionContainer = document.getElementById("modal-action-container");
     const mProjectLink = document.getElementById("modal-project-link");
     const mProjectLinkText = document.getElementById("modal-project-link-text");
-    const mobileDownloadBtn = document.getElementById("mobile-download-btn");
 
     let targetLink = (work.projectUrl || work.demoUrl || "").trim();
     if (!targetLink && work.url && /^https?:\/\//i.test(work.url.trim())) {
@@ -1318,11 +1699,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     if (mProjectLink) {
         if (targetLink) {
             mProjectLink.href = targetLink;
-            if (mobileDownloadBtn) {
-                mobileDownloadBtn.href = targetLink;
-                mobileDownloadBtn.style.opacity = "1";
-                mobileDownloadBtn.style.pointerEvents = "auto";
-            }
             if (mProjectLinkText) {
                 const lower = targetLink.toLowerCase();
                 if (lower.includes("youtube.com") || lower.includes("youtu.be")) {
@@ -1339,7 +1715,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             }
             if (actionContainer) actionContainer.classList.remove("hidden");
 
-            // Analytics: Track outbound click
             const trackOutboundClick = () => {
                 if (window.supabaseClient && work.id) {
                     window.supabaseClient.from("works").update({ clicks: (work.clicks || 0) + 1 }).eq("id", work.id).then(() => {
@@ -1348,55 +1723,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 }
             };
             mProjectLink.onclick = trackOutboundClick;
-            if (mobileDownloadBtn) mobileDownloadBtn.onclick = trackOutboundClick;
         } else {
-            if (mobileDownloadBtn) {
-                mobileDownloadBtn.href = "#";
-                mobileDownloadBtn.style.opacity = "0.4";
-                mobileDownloadBtn.style.pointerEvents = "none";
-            }
             if (actionContainer) actionContainer.classList.add("hidden");
         }
-    }
-
-    // Populate Mobile Bottom Sheet Elements
-    const mobileTrackTitle = document.getElementById("mobile-track-title");
-    const mobileTrackAuthor = document.getElementById("mobile-track-author");
-    const mobileCategoryText = document.getElementById("mobile-category-text");
-    const mobileCategoryPill = document.getElementById("mobile-category-pill");
-    const mobileBriefDesc = document.getElementById("mobile-brief-desc");
-    const mobileBriefYear = document.getElementById("mobile-brief-year");
-    const mobileTimeCurrent = document.getElementById("mobile-time-current");
-    const mobileTimeDuration = document.getElementById("mobile-time-duration");
-    const mobileProgress = document.getElementById("mobile-progress");
-    const mobileScrubber = document.getElementById("mobile-scrubber");
-    const mobilePlayBtn = document.getElementById("mobile-play-btn");
-    const mobilePlayIcon = document.getElementById("mobile-play-icon");
-    const mobilePrevBtn = document.getElementById("mobile-prev-btn");
-    const mobileNextBtn = document.getElementById("mobile-next-btn");
-    const mobileShuffleBtn = document.getElementById("mobile-shuffle-btn");
-    const mobileFsBtn = document.getElementById("mobile-fs-btn");
-    const mobileShareBtn = document.getElementById("mobile-share-btn");
-    const mobileTrackHeart = document.getElementById("mobile-track-heart");
-
-    if (mobileTrackTitle) mobileTrackTitle.innerText = work.title;
-    if (mobileTrackAuthor) mobileTrackAuthor.innerText = work.client || work.role || "Samsco";
-    if (mobileCategoryText) mobileCategoryText.innerText = mappedCat;
-    if (mobileBriefDesc) mobileBriefDesc.innerText = mDesc ? mDesc.innerText : "Creative project by Samsco.";
-    if (mobileBriefYear) mobileBriefYear.innerText = work.year || "2025";
-    if (mobileProgress) mobileProgress.style.width = "0%";
-    if (mobileTimeCurrent) mobileTimeCurrent.innerText = "00:00";
-    if (mobileTimeDuration) mobileTimeDuration.innerText = "00:00";
-
-    if (mobileCategoryPill) {
-        mobileCategoryPill.style.background = `linear-gradient(135deg, ${catColor}, #ff375f)`;
-    }
-
-    function formatMobileTime(sec) {
-        if (!sec || isNaN(sec)) return "00:00";
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
     // Media & Embedded Cinematic Scrubber Controls
@@ -1419,7 +1748,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     }
 
     if (mImg && mVideo && mIframe) {
-        // Unbind previous error & load handlers to prevent blank src triggers
         mImg.onerror = null;
         mImg.onload = null;
         mVideo.onerror = null;
@@ -1428,12 +1756,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mVideo.onplay = null;
         mVideo.onpause = null;
 
-        // Reset src
         mImg.src = "";
         mVideo.src = "";
         mIframe.src = "";
 
-        // Hide all elements initially
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
@@ -1458,21 +1784,12 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 const playSvg = '<path d="M8 5v14l11-7z"/>';
                 const pauseSvg = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
                 if (playIcon) playIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
-                if (mobilePlayIcon) mobilePlayIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
             }
-
-            mVideo.onloadedmetadata = () => {
-                if (mobileTimeDuration && mVideo.duration) {
-                    mobileTimeDuration.innerText = formatMobileTime(mVideo.duration);
-                }
-            };
 
             mVideo.ontimeupdate = () => {
                 if (mVideo.duration) {
                     const percent = (mVideo.currentTime / mVideo.duration) * 100;
                     if (scrubberProgress) scrubberProgress.style.width = `${percent}%`;
-                    if (mobileProgress) mobileProgress.style.width = `${percent}%`;
-                    if (mobileTimeCurrent) mobileTimeCurrent.innerText = formatMobileTime(mVideo.currentTime);
                 }
             };
 
@@ -1481,7 +1798,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             mVideo.onended = () => {
                 updatePlayIcon(false);
                 if (scrubberProgress) scrubberProgress.style.width = "0%";
-                if (mobileProgress) mobileProgress.style.width = "0%";
             };
 
             const togglePlayback = (e) => {
@@ -1491,7 +1807,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             };
 
             if (playBtn) playBtn.onclick = togglePlayback;
-            if (mobilePlayBtn) mobilePlayBtn.onclick = togglePlayback;
 
             const handleSeek = (posFraction) => {
                 if (mVideo.duration) {
@@ -1503,14 +1818,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 scrubberTrack.onclick = (e) => {
                     e.stopPropagation();
                     const rect = scrubberTrack.getBoundingClientRect();
-                    handleSeek((e.clientX - rect.left) / rect.width);
-                };
-            }
-
-            if (mobileScrubber) {
-                mobileScrubber.onclick = (e) => {
-                    e.stopPropagation();
-                    const rect = mobileScrubber.getBoundingClientRect();
                     handleSeek((e.clientX - rect.left) / rect.width);
                 };
             }
@@ -1536,36 +1843,6 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             };
 
             if (fsBtn) fsBtn.onclick = toggleFs;
-            if (mobileFsBtn) mobileFsBtn.onclick = toggleFs;
-
-            if (mobilePrevBtn) mobilePrevBtn.onclick = (e) => { e.stopPropagation(); prevProjectFunc(); };
-            if (mobileNextBtn) mobileNextBtn.onclick = (e) => { e.stopPropagation(); nextProjectFunc(); };
-            if (mobileShuffleBtn) {
-                mobileShuffleBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (visibleGalleryItems.length > 0) {
-                        const randIdx = Math.floor(Math.random() * visibleGalleryItems.length);
-                        openProjectModal(randIdx);
-                    }
-                };
-            }
-            if (mobileShareBtn) {
-                mobileShareBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (navigator.share) {
-                        navigator.share({ title: work.title, url: window.location.href }).catch(() => {});
-                    } else if (navigator.clipboard) {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert("Link copied to clipboard!");
-                    }
-                };
-            }
-            if (mobileTrackHeart) {
-                mobileTrackHeart.onclick = (e) => {
-                    e.stopPropagation();
-                    mobileTrackHeart.classList.toggle("text-red-500");
-                };
-            }
 
             mVideo.onerror = () => {
                 if (!mVideo.src || mVideo.src.endsWith("/") || mVideo.src === window.location.href) return;
@@ -1636,6 +1913,21 @@ function closeProjectModal(skipHistory = false) {
         modalContent.classList.remove("scale-100");
         modalContent.classList.add("scale-95");
     }
+
+    // Clean up mobile reels
+    if (mobileReelsObserver) {
+        mobileReelsObserver.disconnect();
+        mobileReelsObserver = null;
+    }
+    const reelsContainer = document.getElementById("mobile-reels-container");
+    if (reelsContainer) {
+        reelsContainer.querySelectorAll("video").forEach(v => {
+            v.pause();
+            v.src = "";
+        });
+        reelsContainer.innerHTML = "";
+    }
+
     const mVideo = document.getElementById("modal-video");
     if (mVideo) {
         mVideo.pause();
