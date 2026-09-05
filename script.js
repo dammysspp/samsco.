@@ -586,11 +586,6 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         
         i.innerHTML = `
             ${mediaHtml}
-            <!-- Floating Brand Watermark Pill -->
-            <div class="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 opacity-75 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <img src="./favicon.png" class="w-3 h-3 rounded-full object-contain" alt="brand" onerror="this.style.display='none'">
-                <span class="text-[8px] font-bold tracking-wider text-white">SAMSCO.</span>
-            </div>
             <div class="category-badge" style="color: ${outcomeColor}; border-color: ${outcomeColor}30; background-color: ${outcomeColor}10;">
                 ${mappedCat}
             </div>
