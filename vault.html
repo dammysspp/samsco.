@@ -48,36 +48,76 @@
     </script>
     <link rel="stylesheet" href="/styles.css">
     <style>
+        /* Performance & Mobile Hardware Acceleration (Optimized for Low-End devices like Galaxy A06) */
+        html, body {
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scroll-behavior: auto; /* Allow native snappy touch scrolling without software thread lock */
+        }
+        
+        /* Disable heavy GPU-taxing filters on mobile / low-end viewports */
+        @media (max-width: 768px) {
+            #vault-background, #headset-bg-container, .blur-3xl, .blur-2xl {
+                display: none !important; /* Eliminate expensive multi-layer gaussian blur rendering */
+            }
+            body {
+                background: #090a0f !important;
+            }
+            .glass-card {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: rgba(18, 21, 28, 0.95) !important;
+            }
+            .mobile-player-bottom-sheet {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: #f4f5f8 !important;
+            }
+            /* Render optimization: Offscreen items don't consume layout paint */
+            .gallery-item {
+                content-visibility: auto;
+                contain-intrinsic-size: 0 200px;
+                transform: translateZ(0);
+                will-change: auto !important; /* Release GPU VRAM allocations */
+            }
+            /* Disable heavy hover transforms on touch screens */
+            .gallery-item:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+        }
+
         /* Responsive Filter Pills on Mobile */
         .vault-filter-btn {
             display: inline-flex;
             align-items: center;
-            padding: 6px 14px;
+            padding: 7px 15px;
             border-radius: 9999px;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
             white-space: nowrap;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.65);
-            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.7);
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
             cursor: pointer;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
         }
-        .vault-filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.2);
+        .vault-filter-btn:active {
+            transform: scale(0.96);
         }
         .vault-filter-btn.active {
             background: var(--category-color, #0071e3) !important;
             color: #ffffff !important;
             border-color: var(--category-color, #0071e3) !important;
-            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.35);
+            box-shadow: 0 2px 10px rgba(0, 113, 227, 0.35);
         }
+        
         /* Mobile Card Category Badge */
         .gallery-item .category-badge {
             position: absolute;
@@ -89,25 +129,25 @@
             font-weight: 800;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-width: 1px;
             z-index: 15;
             pointer-events: none;
+            background: rgba(0, 0, 0, 0.75);
         }
-        /* Hide scrollbars for filter row */
+
+        /* Hide scrollbars for filter row while keeping smooth touch panning */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+            overscroll-behavior-x: contain;
         }
+
         /* Mobile Music/Media Player Sheet */
         .mobile-player-bottom-sheet {
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            background: #f4f5f8;
             border-top-left-radius: 1.75rem;
             border-top-right-radius: 1.75rem;
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
@@ -122,8 +162,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: transform 0.15s ease;
         }
         .mobile-play-main-btn:active {
             transform: scale(0.92);
@@ -537,24 +577,24 @@
     <div id="full-gallery-modal" class="relative w-full z-[90] bg-transparent" style="display: none;">
 
         <div class="min-h-screen px-4 py-8 md:px-8 lg:px-16 relative z-10">
-            <!-- Premium Header -->
-            <div class="sticky top-0 z-30 pt-4 pb-6">
-                <div class="glass-card rounded-2xl p-5 md:p-6 border border-white/10 backdrop-blur-2xl bg-black/60 shadow-2xl">
+            <!-- Header Controls -->
+            <div class="sticky top-0 z-30 pt-2 pb-4">
+                <div class="glass-card rounded-2xl p-4 md:p-6 border border-white/10 bg-[#0e1117] md:bg-black/60 md:backdrop-blur-2xl shadow-xl">
                     <!-- Row 1: Branding & Navigation -->
                     <div class="flex justify-between items-center w-full gap-4">
                         <!-- Title Section -->
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[1.5px] flex-shrink-0">
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#0071e3] via-[#bf5af2] to-[#ff375f] p-[1.5px] flex-shrink-0">
                                 <div class="w-full h-full rounded-xl bg-black flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
+                                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
                                 </div>
                             </div>
                             <div>
-                                <h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent tracking-tight">
+                                <h2 class="text-xl md:text-3xl font-black bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent tracking-tight">
                                     THE VAULT
                                 </h2>
-                                <p class="text-white/40 text-xs mt-0.5 flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 bg-[#30d158] rounded-full animate-pulse"></span>
+                                <p class="text-white/40 text-[11px] md:text-xs mt-0.5 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 bg-[#30d158] rounded-full"></span>
                                     <span id="gallery-count">60+ Creative Works</span>
                                 </p>
                             </div>
@@ -604,14 +644,9 @@
                     </div>
 
                     <!-- Row 3: Scrolling Filter Strip -->
-                    <div class="relative w-full overflow-hidden flex items-center">
-                        <!-- Left Fade Mask -->
-                        <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/80 to-transparent pointer-events-none z-10"></div>
-                        <!-- Right Fade Mask -->
-                        <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/80 to-transparent pointer-events-none z-10"></div>
-                        
+                    <div class="w-full">
                         <!-- Filter Strip Container -->
-                        <div class="flex flex-nowrap overflow-x-auto gap-2 py-1 w-full no-scrollbar" id="vault-filters" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 py-1 w-full no-scrollbar" id="vault-filters" style="-webkit-overflow-scrolling: touch;">
                             <!-- Filters dynamically injected here -->
                         </div>
                     </div>
@@ -756,30 +791,36 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis Smooth Scrolling -->
+    <!-- Lenis Smooth Scrolling (Desktop only - Native touch scroll on mobile for 60-120fps performance) -->
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-        window.lenis = lenis;
-        lenis.stop(); // Disable scroll while preloader is active
+        const isTouchMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 768);
+        let lenis = null;
+        if (!isTouchMobile && typeof Lenis !== 'undefined') {
+            lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 1.5,
+                infinite: false,
+            });
+            window.lenis = lenis;
+            lenis.stop(); // Disable scroll while preloader is active
 
-        // Connect Lenis to GSAP ScrollTrigger
-        if (typeof ScrollTrigger !== "undefined") {
-            lenis.on('scroll', ScrollTrigger.update)
-            gsap.ticker.add((time) => {
-                lenis.raf(time * 1000)
-            })
-            gsap.ticker.lagSmoothing(0)
+            // Connect Lenis to GSAP ScrollTrigger
+            if (typeof ScrollTrigger !== "undefined") {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
+                gsap.ticker.lagSmoothing(0);
+            }
+        } else {
+            window.lenis = null;
         }
     </script>
 
@@ -855,15 +896,22 @@
                     bg.classList.add("active");
                 }
 
-                // Restore scrolling on the body and start Lenis
+                // Restore scrolling on the body and start Lenis (if on desktop)
                 document.body.style.overflow = "";
                 if (window.lenis) window.lenis.start();
 
-                if (typeof gsap !== 'undefined') {
+                const isMobile = window.innerWidth <= 768;
+                if (!isMobile && typeof gsap !== 'undefined') {
                     gsap.fromTo(".gallery-item", {
-                        y: 30, opacity: 0
+                        y: 20, opacity: 0
                     }, {
-                        y: 0, opacity: 1, duration: 0.8, stagger: 0.04, ease: "power3.out"
+                        y: 0, opacity: 1, duration: 0.5, stagger: 0.03, ease: "power2.out"
+                    });
+                } else {
+                    // Mobile: instant crisp appearance with zero CPU lock
+                    document.querySelectorAll(".gallery-item").forEach(item => {
+                        item.style.opacity = "1";
+                        item.style.transform = "none";
                     });
                 }
 

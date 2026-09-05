@@ -489,30 +489,44 @@ filterContainer && initVaultFilters(), window.handleGridImageError = function (e
         e.replaceWith(fallbackDiv);
     }
     ;
-const galleryObserver = new IntersectionObserver((e, t) => {
-    e.forEach(e => {
-        if (e.isIntersecting) {
-            const a = e.target, r = a.querySelector("video"), i = a.querySelector("img");
-            r && r.dataset.src && (r.onerror = function () {
-                window.handleGridVideoError(this)
+const galleryObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const video = el.querySelector("video");
+            const img = el.querySelector("img");
+            
+            if (video && video.dataset.src) {
+                video.onerror = function () {
+                    window.handleGridVideoError(this);
+                };
+                video.src = video.dataset.src;
+                video.removeAttribute("data-src");
             }
-                , r.src = r.dataset.src, r.load(), r.removeAttribute("data-src")), i && i.dataset.src && (i.onerror = function () {
-                    window.handleGridImageError(this)
-                }
-                    , i.src = i.dataset.src, i.removeAttribute("data-src")), t.unobserve(a)
+            if (img && img.dataset.src) {
+                img.onerror = function () {
+                    window.handleGridImageError(this);
+                };
+                img.src = img.dataset.src;
+                img.removeAttribute("data-src");
+            }
+            observer.unobserve(el);
         }
+    });
+}, {
+    root: null,
+    rootMargin: "350px 0px" // Pre-fetch slightly ahead before user scrolls into viewport
+});
 
-    }
-    )
-}
-    , {
-        root: window.isVaultPage ? null : document.getElementById("full-gallery-modal"), rootMargin: "200px"
-    }
-);function initGallery(force = false) {
+function initGallery(force = false) {
     if (galleryInitialized && !force) return;
     galleryGrid.innerHTML = "";
-    const e = galleryConfig.length;
-    for (let t = 0; t < e; t++) {
+    const totalItems = galleryConfig.length;
+    const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+    // On low-end / mobile devices, eagerly load only 6 visible hero cards; lazy-load everything else
+    const eagerThreshold = isMobile ? 6 : 12;
+
+    for (let t = 0; t < totalItems; t++) {
         const work = galleryConfig[t];
         const rawCat = work.cat;
         const mappedCat = mapCategoryToOutcome(rawCat);
@@ -520,7 +534,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         const isVideo = isVideoUrl(workUrl, work.type);
         
         const i = document.createElement("div");
-        i.className = "gallery-item relative bg-gray-900/50 rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-white/10 transition-all duration-300", 
+        i.className = "gallery-item relative bg-gray-900/50 rounded-xl overflow-hidden group cursor-pointer border border-white/5 transition-colors duration-200", 
         i.setAttribute("data-index", t), 
         i.setAttribute("data-title", work.title), 
         i.setAttribute("data-cat", mappedCat), 
@@ -530,9 +544,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         if (work.projectUrl) i.setAttribute("data-project-url", work.projectUrl);
         
         const outcomeColor = getOutcomeColor(mappedCat);
-        
-        // Eager load the first 15 items to speed up preloader and avoid pop-in
-        const isEager = t < 15;
+        const isEager = t < eagerThreshold;
         
         // Typographic fallback detection
         const isTypographic = !workUrl || workUrl.includes("placeholder") || workUrl.trim() === "" || workUrl.includes("missing");
@@ -549,9 +561,9 @@ const galleryObserver = new IntersectionObserver((e, t) => {
             const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${workUrl}`;
             mediaHtml = `
                 <div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">
-                    <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" class="w-full h-full ${focalClass} object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">
+                    <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" class="w-full h-full ${focalClass} object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-300" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         </div>
                     </div>
@@ -560,11 +572,9 @@ const galleryObserver = new IntersectionObserver((e, t) => {
             let posterAttr = "";
             if (work.thumbnailUrl) {
                 posterAttr = `poster="${formatAssetUrl(work.thumbnailUrl)}"`;
-            } else if (workUrl.includes("imgix.net") || workUrl.includes("r2.dev")) {
-                // If there's an image equivalent or video URL, avoid aggressive auto-buffering
             }
             mediaHtml = `
-                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="${isEager ? 'metadata' : 'none'}" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full ${focalClass} object-cover will-change-transform" onerror="window.handleGridVideoError(this)"></video>
+                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="none" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full ${focalClass} object-cover" onerror="window.handleGridVideoError(this)"></video>
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">
                     <span class="text-2xl mb-2">⚠️</span>
                     <span class="text-white/50 text-xs font-mono">Video Unavailable</span>
@@ -572,9 +582,9 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         } else {
             let thumbUrl = workUrl.split("?")[0];
             if (workUrl.includes("imgix.net")) {
-                thumbUrl = thumbUrl + "?w=400&q=40&auto=format";
+                thumbUrl = thumbUrl + "?w=360&q=50&auto=format";
             }
-            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full ${focalClass} object-cover will-change-transform" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
+            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full ${focalClass} object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
         }
         
         // Tags overlay details (Role and Tools)
@@ -586,10 +596,10 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         
         i.innerHTML = `
             ${mediaHtml}
-            <div class="category-badge" style="color: ${outcomeColor}; border-color: ${outcomeColor}30; background-color: ${outcomeColor}10;">
+            <div class="category-badge" style="color: ${outcomeColor}; border-color: ${outcomeColor}30;">
                 ${mappedCat}
             </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 pointer-events-none z-10">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-4 pointer-events-none z-10">
                 <span class="text-[9px] font-bold tracking-widest uppercase mb-1" style="color: ${outcomeColor}">${mappedCat}</span>
                 <h4 class="text-white text-xs md:text-sm font-bold leading-tight truncate">${work.title}</h4>
                 <p class="text-white/50 text-[9px] mt-1 font-medium">Role: <span class="text-white/85 font-semibold">${work.role || 'Creator'}</span></p>
@@ -636,6 +646,7 @@ function filterAndSortVault() {
 
     const searchVal = (document.getElementById("vault-search")?.value || "").toLowerCase().trim();
     const sortVal = document.getElementById("vault-sort")?.value || "newest";
+    const isMobile = window.innerWidth <= 768;
 
     let visibleItems = [];
     let hiddenItems = [];
@@ -660,16 +671,9 @@ function filterAndSortVault() {
         }
     });
 
+    // Instant hide without layout locking GSAP queues on low-end hardware
     hiddenItems.forEach(item => {
-        gsap.to(item, {
-            scale: 0.85, 
-            opacity: 0, 
-            duration: 0.2, 
-            ease: "power2.in", 
-            onComplete: () => {
-                item.style.display = "none";
-            }
-        });
+        item.style.display = "none";
     });
 
     visibleItems.sort((a, b) => {
@@ -689,16 +693,23 @@ function filterAndSortVault() {
     });
 
     const grid = document.getElementById("gallery-grid-content");
+    const fragment = document.createDocumentFragment();
     visibleItems.forEach(item => {
-        grid.appendChild(item);
         item.style.display = "block";
-        gsap.to(item, { 
-            scale: 1, 
-            opacity: 1, 
-            duration: 0.3, 
-            ease: "power2.out" 
-        });
+        fragment.appendChild(item);
     });
+    grid.appendChild(fragment);
+
+    // Fast CSS transition instead of massive staggered GSAP loops on mobile
+    if (!isMobile && typeof gsap !== 'undefined') {
+        gsap.to(visibleItems, { 
+            opacity: 1, 
+            duration: 0.2, 
+            ease: "power1.out" 
+        });
+    } else {
+        visibleItems.forEach(item => { item.style.opacity = "1"; });
+    }
 
     const countElement = document.getElementById("gallery-count");
     if (countElement) {
