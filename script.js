@@ -64,25 +64,45 @@ async function fetchWorksFromSupabase() {
         const { data, error } = await window.supabaseClient
             .from("works")
             .select("*")
-            .order("created_at", { ascending: false });
+            .order("order_index", { ascending: true });
             
         if (error) throw error;
         
         if (data && data.length > 0) {
             console.log(`Loaded ${data.length} works from Supabase`);
+            const now = new Date();
+            // Filter out drafts and future scheduled works for public visitors
+            const publicWorks = data.filter(item => {
+                const status = (item.status || "published").toLowerCase();
+                if (status === "draft") return false;
+                if (status === "scheduled" && item.scheduledAt) {
+                    return new Date(item.scheduledAt) <= now;
+                }
+                return true;
+            });
+
             // Format works to match galleryConfig structure
-            const formattedWorks = data.map(item => ({
+            const formattedWorks = publicWorks.map(item => ({
                 id: item.id,
                 title: item.title,
                 cat: item.cat,
                 url: formatAssetUrl(item.url),
+                thumbnailUrl: item.thumbnailUrl ? formatAssetUrl(item.thumbnailUrl) : null,
+                aspectRatio: item.aspectRatio || "16:9",
+                focalPoint: item.focalPoint || "center",
+                status: item.status || "published",
+                scheduledAt: item.scheduledAt || null,
+                order_index: item.order_index || 0,
+                views: item.views || 0,
+                plays: item.plays || 0,
+                clicks: item.clicks || 0,
                 type: item.type || (isVideoUrl(item.url, item.type) ? "video" : "image"),
                 projectUrl: item.projectUrl || "",
                 client: item.client || "Private Client",
                 year: item.year || "2024",
                 role: item.role || "Creative Lead",
                 desc: item.desc || "",
-                tags: item.tags ? item.tags.split(",").map(t => t.trim()) : [],
+                tags: item.tags ? (Array.isArray(item.tags) ? item.tags : item.tags.split(",").map(t => t.trim())) : [],
                 problem: item.problem || "",
                 process: item.process || "",
                 result: item.result || "",
@@ -517,6 +537,11 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         // Typographic fallback detection
         const isTypographic = !workUrl || workUrl.includes("placeholder") || workUrl.trim() === "" || workUrl.includes("missing");
         
+        const focalClass = work.focalPoint === 'top' ? 'object-top' :
+                           work.focalPoint === 'bottom' ? 'object-bottom' :
+                           work.focalPoint === 'left' ? 'object-left' :
+                           work.focalPoint === 'right' ? 'object-right' : 'object-center';
+
         let mediaHtml = "";
         if (isTypographic) {
             mediaHtml = getTypographicFallbackHTML(work.title, mappedCat, outcomeColor);
@@ -524,7 +549,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
             const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${workUrl}`;
             mediaHtml = `
                 <div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">
-                    <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
+                    <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" class="w-full h-full ${focalClass} object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
                     <div class="absolute inset-0 flex items-center justify-center">
                         <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -539,7 +564,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
                 // If there's an image equivalent or video URL, avoid aggressive auto-buffering
             }
             mediaHtml = `
-                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="${isEager ? 'metadata' : 'none'}" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full object-cover will-change-transform" onerror="window.handleGridVideoError(this)"></video>
+                <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="${isEager ? 'metadata' : 'none'}" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full ${focalClass} object-cover will-change-transform" onerror="window.handleGridVideoError(this)"></video>
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">
                     <span class="text-2xl mb-2">⚠️</span>
                     <span class="text-white/50 text-xs font-mono">Video Unavailable</span>
@@ -549,7 +574,7 @@ const galleryObserver = new IntersectionObserver((e, t) => {
             if (workUrl.includes("imgix.net")) {
                 thumbUrl = thumbUrl + "?w=400&q=40&auto=format";
             }
-            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full object-cover will-change-transform" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
+            mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full ${focalClass} object-cover will-change-transform" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
         }
         
         // Tags overlay details (Role and Tools)
@@ -561,6 +586,11 @@ const galleryObserver = new IntersectionObserver((e, t) => {
         
         i.innerHTML = `
             ${mediaHtml}
+            <!-- Floating Brand Watermark Pill -->
+            <div class="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10 opacity-75 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <img src="./favicon.png" class="w-3 h-3 rounded-full object-contain" alt="brand" onerror="this.style.display='none'">
+                <span class="text-[8px] font-bold tracking-wider text-white">SAMSCO.</span>
+            </div>
             <div class="category-badge" style="color: ${outcomeColor}; border-color: ${outcomeColor}30; background-color: ${outcomeColor}10;">
                 ${mappedCat}
             </div>
@@ -1272,6 +1302,13 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         }
     }
 
+    // Analytics: Record Impression / View
+    if (window.supabaseClient && work.id) {
+        window.supabaseClient.from("works").update({ views: (work.views || 0) + 1 }).eq("id", work.id).then(() => {
+            work.views = (work.views || 0) + 1;
+        }).catch(err => console.warn("View tracking failed:", err));
+    }
+
     if (mProjectLink) {
         if (targetLink) {
             mProjectLink.href = targetLink;
@@ -1295,6 +1332,17 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 }
             }
             if (actionContainer) actionContainer.classList.remove("hidden");
+
+            // Analytics: Track outbound click
+            const trackOutboundClick = () => {
+                if (window.supabaseClient && work.id) {
+                    window.supabaseClient.from("works").update({ clicks: (work.clicks || 0) + 1 }).eq("id", work.id).then(() => {
+                        work.clicks = (work.clicks || 0) + 1;
+                    }).catch(err => console.warn("Click tracking failed:", err));
+                }
+            };
+            mProjectLink.onclick = trackOutboundClick;
+            if (mobileDownloadBtn) mobileDownloadBtn.onclick = trackOutboundClick;
         } else {
             if (mobileDownloadBtn) {
                 mobileDownloadBtn.href = "#";
