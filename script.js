@@ -419,17 +419,26 @@ function handleFilterClick(e, t) {
     });
     if (e && e.classList) e.classList.add("active");
 
-    // Sync mobile bottom nav bar
+    // Sync mobile bottom nav bar with active styling and smooth centering
     document.querySelectorAll("#mobile-bottom-nav .mobile-nav-item").forEach(item => {
         const itemCat = item.getAttribute("data-cat");
-        if (itemCat && (itemCat.toLowerCase() === t.toLowerCase() || (t === "ALL" && itemCat === "ALL"))) {
-            item.classList.add("active");
-            item.classList.remove("text-white/50");
-            item.classList.add("text-white");
+        const isMatch = itemCat && (
+            itemCat.toLowerCase() === t.toLowerCase() || 
+            (t === "ALL" && itemCat === "ALL") ||
+            mapCategoryToOutcome(itemCat).toLowerCase() === mapCategoryToOutcome(t).toLowerCase()
+        );
+
+        if (isMatch) {
+            item.classList.add("active", "bg-white/10", "text-white", "border-white/10");
+            item.classList.remove("bg-transparent", "text-white/50", "border-transparent");
+            try {
+                item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } catch (err) {
+                // Fallback for older engines
+            }
         } else {
-            item.classList.remove("active");
-            item.classList.add("text-white/50");
-            item.classList.remove("text-white");
+            item.classList.remove("active", "bg-white/10", "text-white", "border-white/10");
+            item.classList.add("bg-transparent", "text-white/50", "border-transparent");
         }
     });
 
@@ -437,8 +446,12 @@ function handleFilterClick(e, t) {
     filterAndSortVault();
 }
 
+let mobileBottomNavBound = false;
 function initMobileBottomNav() {
+    if (mobileBottomNavBound) return;
     const navItems = document.querySelectorAll("#mobile-bottom-nav .mobile-nav-item");
+    if (navItems.length === 0) return;
+    
     navItems.forEach(item => {
         item.addEventListener("click", () => {
             const cat = item.getAttribute("data-cat") || "ALL";
@@ -446,6 +459,7 @@ function initMobileBottomNav() {
             handleFilterClick(topBtn, cat);
         });
     });
+    mobileBottomNavBound = true;
 }
 
 // Typographic fallback HTML generator

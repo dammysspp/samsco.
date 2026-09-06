@@ -211,6 +211,25 @@
             color: #0071e3 !important;
             stroke: #0071e3 !important;
         }
+        /* Horizontally scrollable mobile bottom menu */
+        #mobile-bottom-nav .bottom-nav-scroll {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            overscroll-behavior-x: contain;
+            padding: 4px 6px;
+        }
+        #mobile-bottom-nav .bottom-nav-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        #mobile-bottom-nav .mobile-nav-item {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -640,39 +659,61 @@
                 <!-- JS will inject images here -->
             </div>
 
-            <!-- Floating Bottom Category Navigation Bar for Mobile (Exact match to reference mobile ui.png) -->
-            <nav id="mobile-bottom-nav" class="fixed bottom-4 left-4 right-4 z-40 md:hidden pointer-events-auto">
-                <div class="glass-card rounded-full px-3 py-2 border border-white/10 bg-[#0e1117]/95 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.9)] flex items-center justify-around">
-                    <!-- All -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white active px-2 py-1" data-cat="ALL">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">All</span>
-                    </button>
-                    <!-- 3D & VFX -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white/50 px-2 py-1" data-cat="3D & VFX">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">3D</span>
-                    </button>
-                    <!-- Acting -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white/50 px-2 py-1" data-cat="Acting">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">Acting</span>
-                    </button>
-                    <!-- AI -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white/50 px-2 py-1" data-cat="AI">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">AI</span>
-                    </button>
-                    <!-- Code -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white/50 px-2 py-1" data-cat="Coding & Data Analytics">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">Code</span>
-                    </button>
-                    <!-- Design -->
-                    <button class="mobile-nav-item flex flex-col items-center gap-0.5 text-white/50 px-2 py-1" data-cat="Graphics Design">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span class="text-[9px] font-bold tracking-tight">Design</span>
-                    </button>
+            <!-- Floating Bottom Category Navigation Bar for Mobile (Horizontally Scrollable) -->
+            <nav id="mobile-bottom-nav" class="fixed bottom-4 left-3 right-3 z-40 md:hidden pointer-events-auto">
+                <div class="glass-card rounded-full px-2 py-1.5 border border-white/10 bg-[#0e1117]/95 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.9)] overflow-hidden">
+                    <div class="bottom-nav-scroll no-scrollbar flex items-center gap-1 overflow-x-auto">
+                        <!-- All -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white active px-3 py-1.5 rounded-full bg-white/10 border border-white/10" data-cat="ALL">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">All</span>
+                        </button>
+                        <!-- 3D & VFX -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="3D & VFX">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">3D & VFX</span>
+                        </button>
+                        <!-- Acting -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Acting">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Acting</span>
+                        </button>
+                        <!-- AI -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="AI">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">AI</span>
+                        </button>
+                        <!-- Coding & Data Analytics -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Coding & Data Analytics">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Code & Data</span>
+                        </button>
+                        <!-- Graphics Design -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Graphics Design">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Design</span>
+                        </button>
+                        <!-- Video Editing -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Video Editing">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h18M3 16h18M3 12h18M3 8l3-4m0 16l-3-4m15 4l3-4m0-8l-3-4"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Video</span>
+                        </button>
+                        <!-- Website -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Website">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Website</span>
+                        </button>
+                        <!-- Social Management -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Social Management">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Social</span>
+                        </button>
+                        <!-- Presentations -->
+                        <button class="mobile-nav-item flex items-center gap-1.5 text-white/50 px-3 py-1.5 rounded-full bg-transparent border border-transparent" data-cat="Presentations">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                            <span class="text-[10px] font-bold tracking-tight">Presentations</span>
+                        </button>
+                    </div>
                 </div>
             </nav>
 
