@@ -53,6 +53,7 @@
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
             scroll-behavior: auto; /* Allow native snappy touch scrolling without software thread lock */
+            overscroll-behavior-y: auto;
         }
         
         /* Disable heavy GPU-taxing filters on mobile / low-end viewports */
@@ -82,7 +83,7 @@
             /* Render optimization: Offscreen items don't consume layout paint */
             .gallery-item {
                 content-visibility: auto;
-                contain-intrinsic-size: 0 200px;
+                contain-intrinsic-size: 0 220px;
                 transform: translateZ(0);
                 will-change: auto !important; /* Release GPU VRAM allocations */
             }
@@ -90,6 +91,13 @@
             .gallery-item:hover {
                 transform: none !important;
                 box-shadow: none !important;
+            }
+            /* Bottom nav container on mobile - clean solid dark background without expensive backdrop-filter */
+            #mobile-bottom-nav .glass-card {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: rgba(14, 17, 23, 0.96) !important;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
             }
         }
 
