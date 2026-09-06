@@ -195,6 +195,15 @@
         .animate-swipe-up {
             animation: swipeUpFloat 1.6s ease-in-out infinite;
         }
+        @keyframes reelShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .reel-video-skeleton {
+            background: linear-gradient(90deg, #0e1118 25%, #1b202c 50%, #0e1118 75%);
+            background-size: 200% 100%;
+            animation: reelShimmer 2s infinite linear;
+        }
         .mobile-nav-item.active {
             color: #0071e3 !important;
         }

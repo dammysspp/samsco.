@@ -1304,14 +1304,33 @@ function renderMobileReelsFeed(targetIndex) {
         if (isIframe) {
             mediaHtml = `<iframe src="${workUrl}?embed" class="w-full h-full border-none pointer-events-auto" allowfullscreen></iframe>`;
         } else if (isVideo) {
+            const posterUrl = work.thumbnailUrl ? formatAssetUrl(work.thumbnailUrl) : "";
             mediaHtml = `
-                <video class="reel-video w-full h-full object-contain" 
-                    src="${workUrl}" 
-                    loop 
-                    playsinline 
-                    preload="metadata"
-                    ${work.thumbnailUrl ? `poster="${formatAssetUrl(work.thumbnailUrl)}"` : ''}
-                    ${reelsGlobalMuted ? 'muted' : ''}></video>
+                <div class="relative w-full h-full flex items-center justify-center bg-[#0a0c12] overflow-hidden">
+                    ${posterUrl ? `
+                        <!-- Instant Blurred Poster Backdrop (No black screen while buffering) -->
+                        <img class="reel-video-poster absolute inset-0 w-full h-full object-cover blur-lg opacity-40 scale-105 pointer-events-none transition-opacity duration-700" src="${posterUrl}" alt="${work.title}">
+                        <img class="reel-video-poster-main absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-700" src="${posterUrl}" alt="${work.title}">
+                    ` : `
+                        <!-- Skeleton Shimmer Placeholder -->
+                        <div class="reel-video-poster absolute inset-0 w-full h-full reel-video-skeleton opacity-60"></div>
+                    `}
+
+                    <!-- Actual Video Element -->
+                    <video class="reel-video w-full h-full object-contain relative z-10 transition-opacity duration-500 opacity-0" 
+                        src="${workUrl}" 
+                        loop 
+                        playsinline 
+                        preload="auto"
+                        ${posterUrl ? `poster="${posterUrl}"` : ''}
+                        ${reelsGlobalMuted ? 'muted' : ''}></video>
+
+                    <!-- Loading / Buffering Spinner -->
+                    <div class="reel-loading-spinner absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-300">
+                        <div class="w-12 h-12 rounded-full border-2 border-white/20 border-t-[#64d2ff] animate-spin shadow-lg"></div>
+                        <span class="text-[10px] font-mono text-white/60 mt-3 tracking-widest uppercase">Loading Video...</span>
+                    </div>
+                </div>
             `;
         } else {
             // Keep asset in original high resolution without downscaling
@@ -1329,7 +1348,7 @@ function renderMobileReelsFeed(targetIndex) {
             <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
                 ${mediaHtml}
                 <!-- Adaptive gradient overlay to guarantee text legibility on all backgrounds (white, colored, dark) -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none z-10"></div>
             </div>
 
             <!-- Tap to Play / Like Overlay Animation Container -->
@@ -1499,6 +1518,33 @@ function renderMobileReelsFeed(targetIndex) {
                         : '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
                 });
             };
+        }
+
+        // Video Buffering and Loaded Transition Handler
+        const videoEl = slide.querySelector(".reel-video");
+        const spinnerEl = slide.querySelector(".reel-loading-spinner");
+        const posterEl = slide.querySelector(".reel-video-poster");
+        const posterMainEl = slide.querySelector(".reel-video-poster-main");
+
+        if (videoEl) {
+            const handleVideoReady = () => {
+                videoEl.classList.remove("opacity-0");
+                videoEl.classList.add("opacity-100");
+                if (spinnerEl) {
+                    spinnerEl.style.opacity = "0";
+                    setTimeout(() => spinnerEl.remove(), 300);
+                }
+                if (posterEl) posterEl.style.opacity = "0";
+                if (posterMainEl) posterMainEl.style.opacity = "0";
+            };
+
+            videoEl.addEventListener("playing", handleVideoReady, { passive: true });
+            videoEl.addEventListener("timeupdate", () => {
+                if (videoEl.currentTime > 0) handleVideoReady();
+            }, { once: true, passive: true });
+            videoEl.addEventListener("waiting", () => {
+                if (spinnerEl && spinnerEl.parentNode) spinnerEl.style.opacity = "1";
+            }, { passive: true });
         }
 
         // Tap on media to play/pause or double-tap to like
