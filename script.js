@@ -1573,27 +1573,16 @@ function renderMobileReelsFeed(targetIndex) {
         mobileReelsObserver.observe(slide);
     });
 
-    // Swipe Up Tutorial Indicator Guide (Triggers whenever user opens a work)
+    // Swipe Up Tutorial Indicator Guide (Delayed by 1.8s, then shows for 1.8s)
     const existingGuide = document.getElementById("reels-swipe-guide");
     if (existingGuide) existingGuide.remove();
 
-    const guideOverlay = document.createElement("div");
-    guideOverlay.id = "reels-swipe-guide";
-    guideOverlay.className = "fixed inset-0 z-[300] pointer-events-none flex flex-col items-center justify-center bg-black/35 backdrop-blur-[1px] transition-opacity duration-500";
-    guideOverlay.innerHTML = `
-        <div class="flex flex-col items-center gap-3.5 p-6 rounded-3xl bg-black/90 border border-white/20 text-white shadow-[0_20px_50px_rgba(0,0,0,0.95)] animate-swipe-up pointer-events-none">
-            <div class="w-14 h-14 rounded-full bg-gradient-to-t from-white/15 to-white/5 flex items-center justify-center border border-white/30 shadow-inner">
-                <svg class="w-7 h-7 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-            </div>
-            <div class="text-center">
-                <p class="text-base font-black tracking-wide uppercase font-display text-white">Swipe Up</p>
-                <p class="text-xs text-white/70 font-medium mt-0.5">To explore next creative work</p>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(guideOverlay);
+    let guideOverlay = null;
+    let guideDismissTimer = null;
+    let userHasInteracted = false;
 
     const dismissGuide = () => {
+        userHasInteracted = true;
         if (guideOverlay && guideOverlay.parentNode) {
             guideOverlay.style.opacity = "0";
             setTimeout(() => {
@@ -1612,7 +1601,37 @@ function renderMobileReelsFeed(targetIndex) {
         reelsContainer.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
     }
     window.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
-    setTimeout(dismissGuide, 2500);
+
+    // Wait 1.8 seconds before showing guide
+    setTimeout(() => {
+        if (userHasInteracted || !projectModal || !projectModal.classList.contains("active")) return;
+
+        guideOverlay = document.createElement("div");
+        guideOverlay.id = "reels-swipe-guide";
+        guideOverlay.className = "fixed inset-0 z-[300] pointer-events-none flex flex-col items-center justify-center bg-black/35 backdrop-blur-[1px] opacity-0 transition-opacity duration-500";
+        guideOverlay.innerHTML = `
+            <div class="flex flex-col items-center gap-3.5 p-6 rounded-3xl bg-black/90 border border-white/20 text-white shadow-[0_20px_50px_rgba(0,0,0,0.95)] animate-swipe-up pointer-events-none">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-t from-white/15 to-white/5 flex items-center justify-center border border-white/30 shadow-inner">
+                    <svg class="w-7 h-7 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                </div>
+                <div class="text-center">
+                    <p class="text-base font-black tracking-wide uppercase font-display text-white">Swipe Up</p>
+                    <p class="text-xs text-white/70 font-medium mt-0.5">To explore next creative work</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(guideOverlay);
+
+        // Fade in
+        requestAnimationFrame(() => {
+            if (guideOverlay) guideOverlay.style.opacity = "1";
+        });
+
+        // Show for ~1.8 seconds, then fade out
+        guideDismissTimer = setTimeout(() => {
+            dismissGuide();
+        }, 1800);
+    }, 1800);
 
     // Instant scroll to selected project slide
     setTimeout(() => {
