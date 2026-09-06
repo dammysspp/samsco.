@@ -1573,48 +1573,46 @@ function renderMobileReelsFeed(targetIndex) {
         mobileReelsObserver.observe(slide);
     });
 
-    // First-time Swipe Up Tutorial Indicator Guide
-    const hasSeenSwipeGuide = localStorage.getItem("samsco_reels_swipe_guided") === "true";
-    if (!hasSeenSwipeGuide) {
-        const existing = document.getElementById("reels-swipe-guide");
-        if (existing) existing.remove();
+    // Swipe Up Tutorial Indicator Guide (Triggers whenever user opens a work)
+    const existingGuide = document.getElementById("reels-swipe-guide");
+    if (existingGuide) existingGuide.remove();
 
-        const guideOverlay = document.createElement("div");
-        guideOverlay.id = "reels-swipe-guide";
-        guideOverlay.className = "fixed inset-0 z-[300] pointer-events-none flex flex-col items-center justify-center bg-black/40 backdrop-blur-[1px] transition-opacity duration-500";
-        guideOverlay.innerHTML = `
-            <div class="flex flex-col items-center gap-3.5 p-6 rounded-3xl bg-black/90 border border-white/20 text-white shadow-[0_20px_50px_rgba(0,0,0,0.95)] animate-swipe-up pointer-events-none">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-t from-white/15 to-white/5 flex items-center justify-center border border-white/30 shadow-inner">
-                    <svg class="w-7 h-7 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                </div>
-                <div class="text-center">
-                    <p class="text-base font-black tracking-wide uppercase font-display text-white">Swipe Up</p>
-                    <p class="text-xs text-white/70 font-medium mt-0.5">To explore next creative work</p>
-                </div>
+    const guideOverlay = document.createElement("div");
+    guideOverlay.id = "reels-swipe-guide";
+    guideOverlay.className = "fixed inset-0 z-[300] pointer-events-none flex flex-col items-center justify-center bg-black/35 backdrop-blur-[1px] transition-opacity duration-500";
+    guideOverlay.innerHTML = `
+        <div class="flex flex-col items-center gap-3.5 p-6 rounded-3xl bg-black/90 border border-white/20 text-white shadow-[0_20px_50px_rgba(0,0,0,0.95)] animate-swipe-up pointer-events-none">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-t from-white/15 to-white/5 flex items-center justify-center border border-white/30 shadow-inner">
+                <svg class="w-7 h-7 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
             </div>
-        `;
-        document.body.appendChild(guideOverlay);
+            <div class="text-center">
+                <p class="text-base font-black tracking-wide uppercase font-display text-white">Swipe Up</p>
+                <p class="text-xs text-white/70 font-medium mt-0.5">To explore next creative work</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(guideOverlay);
 
-        const dismissGuide = () => {
-            if (guideOverlay && guideOverlay.parentNode) {
-                guideOverlay.style.opacity = "0";
-                setTimeout(() => guideOverlay.remove(), 500);
-            }
-            localStorage.setItem("samsco_reels_swipe_guided", "true");
-            window.removeEventListener("touchstart", dismissGuide);
-            if (reelsContainer) {
-                reelsContainer.removeEventListener("scroll", dismissGuide);
-                reelsContainer.removeEventListener("touchstart", dismissGuide);
-            }
-        };
-
-        if (reelsContainer) {
-            reelsContainer.addEventListener("scroll", dismissGuide, { once: true, passive: true });
-            reelsContainer.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
+    const dismissGuide = () => {
+        if (guideOverlay && guideOverlay.parentNode) {
+            guideOverlay.style.opacity = "0";
+            setTimeout(() => {
+                if (guideOverlay && guideOverlay.parentNode) guideOverlay.remove();
+            }, 500);
         }
-        window.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
-        setTimeout(dismissGuide, 3500);
+        window.removeEventListener("touchstart", dismissGuide);
+        if (reelsContainer) {
+            reelsContainer.removeEventListener("scroll", dismissGuide);
+            reelsContainer.removeEventListener("touchstart", dismissGuide);
+        }
+    };
+
+    if (reelsContainer) {
+        reelsContainer.addEventListener("scroll", dismissGuide, { once: true, passive: true });
+        reelsContainer.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
     }
+    window.addEventListener("touchstart", dismissGuide, { once: true, passive: true });
+    setTimeout(dismissGuide, 2500);
 
     // Instant scroll to selected project slide
     setTimeout(() => {
