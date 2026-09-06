@@ -49,9 +49,47 @@ try {
     if (cachedWorks) {
         galleryConfig = JSON.parse(cachedWorks);
     }
-} catch (e) {
-    console.error("Failed to parse cached works:", e);
+// Interaction & Analytics Tracking System
+const recentInteractions = new Map();
+
+function trackWorkInteraction(work, metric) {
+    if (!work) return;
+    const workId = typeof work === 'object' ? work.id : work;
+    if (!workId) return;
+
+    // Deduplicate rapid repeat events (within 3 seconds for same work + metric)
+    const dedupKey = `${workId}_${metric}`;
+    const now = Date.now();
+    if (recentInteractions.has(dedupKey) && (now - recentInteractions.get(dedupKey)) < 3000) {
+        return;
+    }
+    recentInteractions.set(dedupKey, now);
+
+    // Update in-memory work object
+    let workObj = typeof work === 'object' ? work : galleryConfig.find(w => w.id === workId);
+    if (workObj) {
+        workObj[metric] = (Number(workObj[metric]) || 0) + 1;
+        try {
+            localStorage.setItem("samsco_works_cache", JSON.stringify(galleryConfig));
+        } catch (e) {}
+    }
+
+    if (!window.supabaseClient) return;
+
+    // Attempt RPC first (Security Definer function avoids RLS blocking anon visitors)
+    window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
+        .then(({ data, error }) => {
+            if (error) {
+                // Fallback direct table update if RPC function hasn't been added yet
+                const newVal = workObj ? workObj[metric] : undefined;
+                if (newVal !== undefined) {
+                    window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
+                }
+            }
+        })
+        .catch(() => {});
 }
+window.trackWorkInteraction = trackWorkInteraction;
 
 // Fetch works from Supabase dynamically
 async function fetchWorksFromSupabase() {
@@ -1542,6 +1580,9 @@ function renderMobileReelsFeed(targetIndex) {
             };
 
             videoEl.addEventListener("playing", handleVideoReady, { passive: true });
+            videoEl.addEventListener("play", () => {
+                trackWorkInteraction(work, "plays");
+            }, { passive: true });
             videoEl.addEventListener("timeupdate", () => {
                 if (videoEl.currentTime > 0) handleVideoReady();
             }, { once: true, passive: true });
@@ -1549,6 +1590,13 @@ function renderMobileReelsFeed(targetIndex) {
                 if (spinnerEl && spinnerEl.parentNode) spinnerEl.style.opacity = "1";
             }, { passive: true });
         }
+
+        // Action links click tracking (Visit project buttons)
+        slide.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                trackWorkInteraction(work, "clicks");
+            });
+        });
 
         // Tap on media to play/pause or double-tap to like
         let lastTap = 0;
@@ -1614,11 +1662,7 @@ function renderMobileReelsFeed(targetIndex) {
                         const basePath = window.isVaultPage ? '/vault' : '';
                         history.replaceState({ workSlug: slug, configIndex }, '', `${basePath}/${slug}`);
                     }
-                    if (window.supabaseClient && work.id) {
-                        window.supabaseClient.from("works").update({ views: (work.views || 0) + 1 }).eq("id", work.id).then(() => {
-                            work.views = (work.views || 0) + 1;
-                        }).catch(() => {});
-                    }
+                    trackWorkInteraction(work, "views");
                 }
 
                 // Preload adjacent video slides for zero lag when swiping to them
@@ -1837,11 +1881,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     }
 
     // Analytics: Record Impression / View
-    if (window.supabaseClient && work.id) {
-        window.supabaseClient.from("works").update({ views: (work.views || 0) + 1 }).eq("id", work.id).then(() => {
-            work.views = (work.views || 0) + 1;
-        }).catch(err => console.warn("View tracking failed:", err));
-    }
+    trackWorkInteraction(work, "views");
 
     if (mProjectLink) {
         if (targetLink) {
@@ -1863,11 +1903,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             if (actionContainer) actionContainer.classList.remove("hidden");
 
             const trackOutboundClick = () => {
-                if (window.supabaseClient && work.id) {
-                    window.supabaseClient.from("works").update({ clicks: (work.clicks || 0) + 1 }).eq("id", work.id).then(() => {
-                        work.clicks = (work.clicks || 0) + 1;
-                    }).catch(err => console.warn("Click tracking failed:", err));
-                }
+                trackWorkInteraction(work, "clicks");
             };
             mProjectLink.onclick = trackOutboundClick;
         } else {
@@ -1940,7 +1976,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 }
             };
 
-            mVideo.onplay = () => updatePlayIcon(true);
+            mVideo.onplay = () => {
+                updatePlayIcon(true);
+                trackWorkInteraction(work, "plays");
+            };
             mVideo.onpause = () => updatePlayIcon(false);
             mVideo.onended = () => {
                 updatePlayIcon(false);

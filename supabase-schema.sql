@@ -145,3 +145,23 @@ CREATE POLICY "Allow authenticated changes on works" ON public.works FOR ALL USI
 
 CREATE POLICY "Allow public insert on inquiries" ON public.inquiries FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow authenticated read/manage on inquiries" ON public.inquiries FOR ALL USING (auth.role() = 'authenticated');
+
+-- 12. Public Interaction RPC for Analytics (Views, Plays, Clicks)
+CREATE OR REPLACE FUNCTION public.increment_work_metric(work_id BIGINT, metric TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF metric = 'views' THEN
+    UPDATE public.works SET views = COALESCE(views, 0) + 1 WHERE id = work_id;
+  ELSIF metric = 'plays' THEN
+    UPDATE public.works SET plays = COALESCE(plays, 0) + 1 WHERE id = work_id;
+  ELSIF metric = 'clicks' THEN
+    UPDATE public.works SET clicks = COALESCE(clicks, 0) + 1 WHERE id = work_id;
+  END IF;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, authenticated;
+
