@@ -49,6 +49,10 @@ try {
     if (cachedWorks) {
         galleryConfig = JSON.parse(cachedWorks);
     }
+} catch (e) {
+    console.error("Failed to parse cached works:", e);
+}
+
 // Interaction & Analytics Tracking System
 const recentInteractions = new Map();
 
