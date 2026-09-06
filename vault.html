@@ -159,26 +159,28 @@
             overscroll-behavior-x: contain;
         }
 
-        /* Mobile Reels Feed (TikTok / IG Style) */
+        /* Mobile Reels Feed (TikTok / IG Style) - 60fps High Performance */
         #mobile-reels-container {
             scroll-snap-type: y mandatory;
             overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
+            contain: strict;
         }
         .reel-slide {
             scroll-snap-align: start;
             scroll-snap-stop: always;
             height: 100dvh;
             height: 100vh;
+            content-visibility: auto;
+            contain-intrinsic-size: 100vw 100vh;
+            transform: translateZ(0);
         }
         .reel-action-btn {
             width: 44px;
             height: 44px;
             border-radius: 9999px;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(14, 17, 24, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.15);
             display: flex;
             flex-direction: column;
@@ -186,6 +188,7 @@
             justify-content: center;
             color: #ffffff;
             transition: transform 0.15s ease, background 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         .reel-action-btn:active {
             transform: scale(0.9);
@@ -202,6 +205,7 @@
         }
         .animate-swipe-up {
             animation: swipeUpFloat 1.6s ease-in-out infinite;
+            will-change: transform, opacity;
         }
         @keyframes reelShimmer {
             0% { background-position: -200% 0; }

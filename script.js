@@ -1310,37 +1310,37 @@ function renderMobileReelsFeed(targetIndex) {
             mediaHtml = `<iframe src="${workUrl}?embed" class="w-full h-full border-none pointer-events-auto" allowfullscreen></iframe>`;
         } else if (isVideo) {
             const posterUrl = work.thumbnailUrl ? formatAssetUrl(work.thumbnailUrl) : "";
+            const isNearInitial = Math.abs(slideIdx - targetIndex) <= 1;
             mediaHtml = `
                 <div class="relative w-full h-full flex items-center justify-center bg-[#0a0c12] overflow-hidden">
                     ${posterUrl ? `
-                        <!-- Instant Blurred Poster Backdrop (No black screen while buffering) -->
-                        <img class="reel-video-poster absolute inset-0 w-full h-full object-cover blur-lg opacity-40 scale-105 pointer-events-none transition-opacity duration-700" src="${posterUrl}" alt="${work.title}">
-                        <img class="reel-video-poster-main absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-700" src="${posterUrl}" alt="${work.title}">
+                        <!-- Sharp Instant Poster (No expensive runtime blur on mobile) -->
+                        <img class="reel-video-poster absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-300" src="${posterUrl}" alt="${work.title}">
                     ` : `
                         <!-- Skeleton Shimmer Placeholder -->
                         <div class="reel-video-poster absolute inset-0 w-full h-full reel-video-skeleton opacity-60"></div>
                     `}
 
-                    <!-- Actual Video Element -->
-                    <video class="reel-video w-full h-full object-contain relative z-10 transition-opacity duration-500 opacity-0" 
-                        src="${workUrl}" 
+                    <!-- Actual Video Element (Lazy source attachment for smooth swipe physics) -->
+                    <video class="reel-video w-full h-full object-contain relative z-10 transition-opacity duration-300 opacity-0" 
+                        ${isNearInitial ? `src="${workUrl}" preload="metadata"` : `data-src="${workUrl}" preload="none"`}
                         loop 
                         playsinline 
-                        preload="auto"
                         ${posterUrl ? `poster="${posterUrl}"` : ''}
                         ${reelsGlobalMuted ? 'muted' : ''}></video>
 
                     <!-- Loading / Buffering Spinner -->
                     <div class="reel-loading-spinner absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-300">
-                        <div class="w-12 h-12 rounded-full border-2 border-white/20 border-t-[#64d2ff] animate-spin shadow-lg"></div>
-                        <span class="text-[10px] font-mono text-white/60 mt-3 tracking-widest uppercase">Loading Video...</span>
+                        <div class="w-10 h-10 rounded-full border-2 border-white/20 border-t-[#64d2ff] animate-spin shadow-lg"></div>
+                        <span class="text-[9px] font-mono text-white/60 mt-2.5 tracking-widest uppercase">Loading Video...</span>
                     </div>
                 </div>
             `;
         } else {
             // Keep asset in original high resolution without downscaling
             const rawUrl = workUrl.split("?")[0];
-            mediaHtml = `<img class="reel-img w-full h-full object-contain" src="${rawUrl}" alt="${work.title}" onerror="window.handleGridImageError(this)">`;
+            const isNearInitial = Math.abs(slideIdx - targetIndex) <= 2;
+            mediaHtml = `<img class="reel-img w-full h-full object-contain" ${isNearInitial ? `src="${rawUrl}"` : `data-src="${rawUrl}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"`} loading="${isNearInitial ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" onerror="window.handleGridImageError(this)">`;
         }
 
         const slide = document.createElement("div");
@@ -1350,10 +1350,10 @@ function renderMobileReelsFeed(targetIndex) {
 
         slide.innerHTML = `
             <!-- Media Layer (Original Resolution Contain) -->
-            <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+            <div class="absolute inset-0 w-full h-full flex items-center justify-center bg-black pointer-events-none">
                 ${mediaHtml}
-                <!-- Adaptive gradient overlay to guarantee text legibility on all backgrounds (white, colored, dark) -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 pointer-events-none z-10"></div>
+                <!-- Clean Dark Gradient Scrim (No CPU-expensive filters) -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/25 to-black/50 pointer-events-none z-10"></div>
             </div>
 
             <!-- Tap to Play / Like Overlay Animation Container -->
@@ -1365,16 +1365,16 @@ function renderMobileReelsFeed(targetIndex) {
 
             <!-- Top Header Bar -->
             <div class="absolute top-0 left-0 right-0 p-4 pt-6 flex items-center justify-between z-30 pointer-events-auto">
-                <button class="reel-close-btn w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer" aria-label="Close">
+                <button class="reel-close-btn w-10 h-10 rounded-full bg-[#12151c]/90 border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shadow-lg" aria-label="Close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 
-                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-lg">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#12151c]/90 border border-white/15 shadow-lg">
                     <span class="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style="background-color: ${catColor}; color: ${catColor}"></span>
                     <span class="text-[10px] font-extrabold tracking-widest text-white uppercase font-display">${mappedCat}</span>
                 </div>
 
-                <button class="reel-sound-btn w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer" aria-label="Toggle Sound">
+                <button class="reel-sound-btn w-10 h-10 rounded-full bg-[#12151c]/90 border border-white/10 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shadow-lg" aria-label="Toggle Sound">
                     ${reelsGlobalMuted 
                         ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>'
                         : '<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>'
@@ -1410,9 +1410,9 @@ function renderMobileReelsFeed(targetIndex) {
                 </button>
             </div>
 
-            <!-- Bottom Content Metadata Overlay with Adaptive Frosted Scrim -->
+            <!-- Bottom Content Metadata Overlay with Solid High-Perf Composite -->
             <div class="absolute bottom-0 left-0 right-16 p-4 pb-6 flex flex-col gap-2 z-30 pointer-events-auto">
-                <div class="p-3 rounded-2xl bg-black/50 backdrop-blur-md border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.85)] flex flex-col gap-1.5">
+                <div class="p-3 rounded-2xl bg-[#0e1118]/95 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.85)] flex flex-col gap-1.5">
                     <div class="flex items-center gap-2">
                         <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-black shadow-md font-display" style="background-color: ${catColor}">
                             ${mappedCat}
@@ -1529,7 +1529,6 @@ function renderMobileReelsFeed(targetIndex) {
         const videoEl = slide.querySelector(".reel-video");
         const spinnerEl = slide.querySelector(".reel-loading-spinner");
         const posterEl = slide.querySelector(".reel-video-poster");
-        const posterMainEl = slide.querySelector(".reel-video-poster-main");
 
         if (videoEl) {
             const handleVideoReady = () => {
@@ -1537,10 +1536,9 @@ function renderMobileReelsFeed(targetIndex) {
                 videoEl.classList.add("opacity-100");
                 if (spinnerEl) {
                     spinnerEl.style.opacity = "0";
-                    setTimeout(() => spinnerEl.remove(), 300);
+                    setTimeout(() => spinnerEl.remove(), 200);
                 }
                 if (posterEl) posterEl.style.opacity = "0";
-                if (posterMainEl) posterMainEl.style.opacity = "0";
             };
 
             videoEl.addEventListener("playing", handleVideoReady, { passive: true });
@@ -1581,18 +1579,32 @@ function renderMobileReelsFeed(targetIndex) {
         });
     });
 
-    // Setup IntersectionObserver to auto-play active reel video and update history
+    // Setup IntersectionObserver with virtual pre-buffering of next/prev slide
     mobileReelsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const slide = entry.target;
             const video = slide.querySelector(".reel-video");
+            const img = slide.querySelector(".reel-img");
             const slideIdx = parseInt(slide.getAttribute("data-slide-index"));
             const configIndex = parseInt(slide.getAttribute("data-config-index"));
             const work = galleryConfig[configIndex];
 
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            // When slide enters viewport or is adjacent, attach media src
+            if (entry.isIntersecting) {
+                if (video && !video.src && video.dataset.src) {
+                    video.src = video.dataset.src;
+                    video.preload = "auto";
+                }
+                if (img && img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute("data-src");
+                }
+            }
+
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
                 currentLbIndex = slideIdx;
                 if (video) {
+                    if (!video.src && video.dataset.src) video.src = video.dataset.src;
                     video.muted = reelsGlobalMuted;
                     video.play().catch(err => console.log("Reels autoplay note:", err));
                 }
@@ -1608,8 +1620,27 @@ function renderMobileReelsFeed(targetIndex) {
                         }).catch(() => {});
                     }
                 }
+
+                // Preload adjacent video slides for zero lag when swiping to them
+                const allSlides = reelsContainer.querySelectorAll(".reel-slide");
+                const nextSlide = allSlides[slideIdx + 1];
+                const prevSlide = allSlides[slideIdx - 1];
+                [nextSlide, prevSlide].forEach(adjSlide => {
+                    if (adjSlide) {
+                        const adjVideo = adjSlide.querySelector(".reel-video");
+                        if (adjVideo && !adjVideo.src && adjVideo.dataset.src) {
+                            adjVideo.src = adjVideo.dataset.src;
+                            adjVideo.preload = "auto";
+                        }
+                        const adjImg = adjSlide.querySelector(".reel-img");
+                        if (adjImg && adjImg.dataset.src) {
+                            adjImg.src = adjImg.dataset.src;
+                            adjImg.removeAttribute("data-src");
+                        }
+                    }
+                });
             } else {
-                if (video) {
+                if (video && entry.intersectionRatio < 0.2) {
                     video.pause();
                     video.currentTime = 0;
                 }
@@ -1617,7 +1648,7 @@ function renderMobileReelsFeed(targetIndex) {
         });
     }, {
         root: reelsContainer,
-        threshold: [0.6]
+        threshold: [0, 0.5]
     });
 
     reelsContainer.querySelectorAll(".reel-slide").forEach(slide => {
