@@ -48,12 +48,73 @@
     </script>
     <link rel="stylesheet" href="/styles.css">
     <style>
-        /* Performance & Mobile Hardware Acceleration (Optimized for Low-End devices like Galaxy A06) */
+        /* Performance & Hardware Acceleration (Optimized for Low-End PCs & Mobile) */
         html, body {
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
-            scroll-behavior: auto; /* Allow native snappy touch scrolling without software thread lock */
+            scroll-behavior: auto;
             overscroll-behavior-y: auto;
+        }
+
+        /* Pure CSS Cinematic Preloader */
+        #preloader {
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
+            will-change: opacity;
+        }
+        #preloader.exit {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        .loader-phrases {
+            height: 36px;
+            overflow: hidden;
+            position: relative;
+            width: 320px;
+            text-align: center;
+            mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+        }
+        .loader-phrases-track {
+            display: flex;
+            flex-direction: column;
+            animation: scrollPhrases 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .loader-phrases-track span {
+            height: 36px;
+            line-height: 36px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.85);
+            text-transform: uppercase;
+            font-family: var(--font-display, "Space Grotesk", sans-serif);
+        }
+        @keyframes scrollPhrases {
+            0%, 10% { transform: translateY(0); }
+            12.5%, 22.5% { transform: translateY(-36px); }
+            25%, 35% { transform: translateY(-72px); }
+            37.5%, 47.5% { transform: translateY(-108px); }
+            50%, 60% { transform: translateY(-144px); }
+            62.5%, 72.5% { transform: translateY(-180px); }
+            75%, 85% { transform: translateY(-216px); }
+            87.5%, 97.5% { transform: translateY(-252px); }
+            100% { transform: translateY(-288px); }
+        }
+
+        /* Desktop Virtual Grid Containment (Instant 60fps on Budget Hardware) */
+        .gallery-item {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 300px;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px) translateZ(0);
+            border-color: rgba(0, 113, 227, 0.5) !important;
+            box-shadow: 0 16px 40px -10px rgba(0, 113, 227, 0.35), 0 0 0 1px rgba(0, 113, 227, 0.3) !important;
         }
         
         /* Disable heavy GPU-taxing filters on mobile / low-end viewports */
@@ -729,9 +790,9 @@
                 </div>
             </nav>
 
-            <!-- Floating Stats -->
-            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex">
-                <div class="glass-card px-6 py-3 rounded-full border border-white/10 flex items-center gap-6 text-sm">
+            <!-- Floating Stats (Desktop) -->
+            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden md:flex pointer-events-none">
+                <div class="glass-card px-6 py-3 rounded-full border border-white/10 flex items-center gap-6 text-sm pointer-events-auto bg-[#0e1118]/90 backdrop-blur-md shadow-2xl">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="text-white/60">Graphics</span>
@@ -956,8 +1017,9 @@
                 const gm = document.getElementById("full-gallery-modal");
                 if (gm) {
                     gm.style.display = "block";
-                    gm.offsetHeight; // force browser layout reflow to trigger CSS transition
-                    gm.classList.add("active");
+                    requestAnimationFrame(() => {
+                        gm.classList.add("active");
+                    });
                 }
                 const bg = document.getElementById("vault-background");
                 if (bg) {
@@ -970,13 +1032,22 @@
 
                 const isMobile = window.innerWidth <= 768;
                 if (!isMobile && typeof gsap !== 'undefined') {
-                    gsap.fromTo(".gallery-item", {
-                        y: 20, opacity: 0
+                    // Only stagger the first 8 visible items on desktop for 60fps responsiveness on low-end hardware
+                    const initialBatch = document.querySelectorAll(".gallery-item:nth-child(-n+8)");
+                    const rest = document.querySelectorAll(".gallery-item:nth-child(n+9)");
+                    
+                    rest.forEach(item => {
+                        item.style.opacity = "1";
+                        item.style.transform = "none";
+                    });
+
+                    gsap.fromTo(initialBatch, {
+                        y: 15, opacity: 0
                     }, {
-                        y: 0, opacity: 1, duration: 0.5, stagger: 0.03, ease: "power2.out"
+                        y: 0, opacity: 1, duration: 0.4, stagger: 0.04, ease: "power2.out"
                     });
                 } else {
-                    // Mobile: instant crisp appearance with zero CPU lock
+                    // Mobile & low-end fallback: instant crisp appearance with zero CPU lock
                     document.querySelectorAll(".gallery-item").forEach(item => {
                         item.style.opacity = "1";
                         item.style.transform = "none";
@@ -991,11 +1062,19 @@
                     if (percentElement) percentElement.textContent = "100";
                     if (barElement) barElement.style.width = "100%";
 
+                    preloader.classList.add('exit');
                     setTimeout(() => {
-                        preloader.classList.add('exit');
-                        setTimeout(() => preloader.style.display = 'none', 1000);
-                    }, 500);
+                        preloader.style.display = 'none';
+                    }, 400);
                 }
+            }
+
+            const preloaderEl = document.getElementById('preloader');
+            if (preloaderEl) {
+                preloaderEl.addEventListener("click", () => {
+                    loaderFinished = true;
+                    revealVault();
+                });
             }
 
             checkReady();

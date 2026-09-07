@@ -507,31 +507,33 @@ function initMobileBottomNav() {
 // Typographic fallback HTML generator
 function getTypographicFallbackHTML(title, mappedCat, catColor) {
     return `
-        <div class="w-full h-full relative flex flex-col justify-between p-4 bg-gradient-to-br from-gray-900 via-gray-950 to-black overflow-hidden select-none">
-            <!-- Grid overlay -->
-            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none"></div>
-            <!-- Glow -->
-            <div class="absolute -top-10 -right-10 w-28 h-28 opacity-20 blur-2xl rounded-full pointer-events-none" style="background-image: radial-gradient(circle, ${catColor} 0%, transparent 70%)"></div>
+        <div class="w-full h-full relative flex flex-col justify-between p-4 bg-gradient-to-br from-[#111520] via-[#161c2c] to-[#0a0c12] overflow-hidden select-none border border-white/5 group-hover:border-white/20 transition-colors">
+            <!-- Tech Grid overlay -->
+            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none"></div>
+            <!-- Radial Category Glow -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 opacity-25 blur-2xl rounded-full pointer-events-none" style="background-color: ${catColor}"></div>
             
             <!-- Category and Icon -->
             <div class="flex justify-between items-center z-10">
-                <span class="text-[7px] font-black tracking-[0.2em] uppercase font-display" style="color: ${catColor}">${mappedCat}</span>
-                <svg class="w-3 h-3 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <span class="px-2 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase font-display border" style="background-color: ${catColor}25; border-color: ${catColor}50; color: ${catColor}">${mappedCat}</span>
+                <div class="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
             </div>
             
             <!-- Big Bold Stylized Title -->
-            <div class="my-auto py-2 z-10">
-                <h4 class="text-white text-[10px] font-black tracking-wider uppercase leading-snug line-clamp-3 font-display">
+            <div class="my-auto py-3 z-10">
+                <h4 class="text-white text-xs md:text-sm font-black tracking-wide uppercase leading-snug line-clamp-3 font-display drop-shadow-md group-hover:text-[#64d2ff] transition-colors">
                     ${title}
                 </h4>
             </div>
             
-            <!-- Secure / Vault code -->
-            <div class="flex items-center justify-between text-[6px] text-white/30 font-mono tracking-widest z-10 border-t border-white/5 pt-1.5">
-                <span>INDEX // VAULT</span>
-                <span class="flex items-center gap-0.5">
-                    <span class="w-1 h-1 rounded-full animate-pulse" style="background-color: ${catColor}"></span>
-                    SECURED
+            <!-- Status & Meta footer -->
+            <div class="flex items-center justify-between text-[8px] text-white/40 font-mono tracking-wider z-10 border-t border-white/10 pt-2">
+                <span class="uppercase">ARCHIVE VAULT</span>
+                <span class="flex items-center gap-1 font-semibold text-white/70">
+                    <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: ${catColor}"></span>
+                    READY
                 </span>
             </div>
         </div>
@@ -546,11 +548,7 @@ filterContainer && initVaultFilters(), window.handleGridImageError = function (e
     const cat = item.getAttribute('data-cat') || 'Graphics Design';
     const mappedCat = mapCategoryToOutcome(cat);
     const color = getOutcomeColor(mappedCat);
-    
-    const fallbackDiv = document.createElement('div');
-    fallbackDiv.className = "w-full h-full absolute inset-0 z-0";
-    fallbackDiv.innerHTML = getTypographicFallbackHTML(title, mappedCat, color);
-    e.replaceWith(fallbackDiv);
+    item.innerHTML = getTypographicFallbackHTML(title, mappedCat, color);
 }
     , window.handleGridVideoError = function (e) {
         if (!e) return;
@@ -560,16 +558,7 @@ filterContainer && initVaultFilters(), window.handleGridImageError = function (e
         const cat = item.getAttribute('data-cat') || 'Video Editing';
         const mappedCat = mapCategoryToOutcome(cat);
         const color = getOutcomeColor(mappedCat);
-        
-        const fallbackDiv = document.createElement('div');
-        fallbackDiv.className = "w-full h-full absolute inset-0 z-0";
-        fallbackDiv.innerHTML = getTypographicFallbackHTML(title, mappedCat, color);
-        
-        const siblingError = e.nextElementSibling;
-        if (siblingError) {
-            siblingError.remove();
-        }
-        e.replaceWith(fallbackDiv);
+        item.innerHTML = getTypographicFallbackHTML(title, mappedCat, color);
     }
     ;
 const galleryObserver = new IntersectionObserver((entries, observer) => {
@@ -680,7 +669,7 @@ function initGallery(force = false) {
             : ((t * 73 + 120) > 999 ? ((t * 73 + 120)/1000).toFixed(1) + 'k' : (t * 73 + 120));
 
         i.className = "gallery-item relative aspect-[4/5] sm:aspect-square bg-[#12151c] rounded-2xl overflow-hidden group cursor-pointer border border-white/5 shadow-lg transition-transform active:scale-[0.98]";
-        i.innerHTML = `
+        i.innerHTML = isTypographic ? mediaHtml : `
             ${mediaHtml}
             
             <!-- Category Badge (Top of grid card) -->
