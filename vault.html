@@ -518,6 +518,27 @@
                 <!-- Iframe Embed -->
                 <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full hidden border-none"></iframe>
                 
+                <!-- Before & After 2-in-1 Comparison Stage -->
+                <div id="modal-before-after" class="relative w-full h-full hidden select-none overflow-hidden bg-black" style="touch-action: pan-y;">
+                    <!-- Base (After) Layer -->
+                    <img id="modal-after-img" src="" alt="After Visual" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                    <span id="modal-after-label" class="absolute bottom-5 right-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md text-white border border-white/20 shadow-lg pointer-events-none font-display">After</span>
+
+                    <!-- Clipped (Before) Layer -->
+                    <div id="modal-before-clip" class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                        <img id="modal-before-img" src="" alt="Before Visual" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                        <span id="modal-before-label" class="absolute bottom-5 left-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/50 shadow-lg pointer-events-none font-display">Before</span>
+                    </div>
+
+                    <!-- Interactive Slider Divider & Handle -->
+                    <div id="modal-ba-handle" class="absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize group/handle" style="left: 50%; transform: translateX(-50%); width: 44px;">
+                        <div class="w-0.5 h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] pointer-events-none"></div>
+                        <div class="absolute w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shadow-[0_4px_25px_rgba(0,0,0,0.8)] border-2 border-[#12151c] pointer-events-none group-hover/handle:scale-110 transition-transform">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Error state -->
                 <div id="modal-media-error" class="hidden flex flex-col items-center justify-center p-8 text-center z-10">
                     <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-[#ffd60a] mb-2">
@@ -957,9 +978,9 @@
     <script>window.isVaultPage = true;</script>
     <!-- Supabase Client CDN & Configuration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/supabase-config.js"></script>
-    <script src="/script.js"></script>
-    <script src="/email-handler.js"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./script.js"></script>
+    <script src="./email-handler.js"></script>
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {

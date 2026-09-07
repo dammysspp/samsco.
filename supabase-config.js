@@ -37,9 +37,25 @@ function initSupabase() {
 window.supabaseClient = initSupabase();
 
 // Pre-configured list of default portfolio works to allow easy migration/fallback
-window.localGalleryConfig = [{
-    "title": "Graphic Art 01", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(1).jpg"
-}
+window.localGalleryConfig = [
+    {
+        "id": "sample-ba-1",
+        "title": "Cyberpunk Mech - Retouch & Color Grade",
+        "cat": "3D & VFX",
+        "type": "before_after",
+        "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=80",
+        "beforeUrl": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1400&q=80",
+        "beforeLabel": "Raw Wireframe / Render",
+        "afterLabel": "Final Cinematic Grade",
+        "client": "Apex Interactive",
+        "year": "2025",
+        "role": "Lead VFX Artist",
+        "desc": "Interactive 2-in-1 slider showcasing the raw multi-pass 3D asset and lighting pass against the final cinematic color-graded composition.",
+        "tags": ["Blender", "Unreal Engine", "DaVinci Resolve", "Color Grading"]
+    },
+    {
+        "title": "Graphic Art 01", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(1).jpg"
+    }
     , {
     "title": "Graphic Art 02", "cat": "Graphics Design", "url": "./assets/Graphics%20Design/Graphics%20(2).jpg"
 }

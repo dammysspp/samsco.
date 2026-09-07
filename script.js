@@ -129,6 +129,9 @@ async function fetchWorksFromSupabase() {
                 title: item.title,
                 cat: item.cat,
                 url: formatAssetUrl(item.url),
+                beforeUrl: item.beforeUrl ? formatAssetUrl(item.beforeUrl) : null,
+                beforeLabel: item.beforeLabel || "Before",
+                afterLabel: item.afterLabel || "After",
                 thumbnailUrl: item.thumbnailUrl ? formatAssetUrl(item.thumbnailUrl) : null,
                 aspectRatio: item.aspectRatio || "16:9",
                 focalPoint: item.focalPoint || "center",
@@ -648,7 +651,7 @@ function initGallery(force = false) {
             mediaHtml = `
                 <video ${isEager ? `src="${workUrl}"` : `data-src="${workUrl}"`} ${posterAttr} muted loop playsinline preload="none" onmouseover="this.play()" onmouseout="this.pause()" onloadeddata="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" class="w-full h-full ${focalClass} object-cover" onerror="window.handleGridVideoError(this)"></video>
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 hidden pointer-events-none">
-                    <span class="text-2xl mb-2">⚠️</span>
+                    <svg class="w-6 h-6 text-amber-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     <span class="text-white/50 text-xs font-mono">Video Unavailable</span>
                 </div>`;
         } else {
@@ -659,6 +662,8 @@ function initGallery(force = false) {
             mediaHtml = `<img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" alt="${work.title}" class="w-full h-full ${focalClass} object-cover" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">`;
         }
         
+        const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
+
         // Tags overlay details (Role and Tools)
         const tags = Array.isArray(work.tags) ? work.tags : (work.tags ? work.tags.split(",").map(t => t.trim()) : []);
         const keyTools = tags.slice(0, 3).map(tag => `
@@ -672,12 +677,21 @@ function initGallery(force = false) {
         i.innerHTML = isTypographic ? mediaHtml : `
             ${mediaHtml}
             
-            <!-- Category Badge (Top of grid card) -->
+            <!-- Category Badge (Top left of grid card) -->
             <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
                 <span class="px-2.5 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-md shadow-md border" style="background-color: ${outcomeColor}40; border-color: ${outcomeColor}80;">
                     ${mappedCat}
                 </span>
             </div>
+
+            <!-- Before & After Compare Badge (Top right of grid card) -->
+            ${isBeforeAfter ? `
+            <div class="absolute top-2.5 right-2.5 z-20 pointer-events-none">
+                <span class="px-2.5 py-1 rounded-full text-[8px] md:text-[9px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-[#64d2ff] border border-[#64d2ff]/40 shadow-md flex items-center gap-1">
+                    <svg class="w-3 h-3 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                    <span>COMPARE</span>
+                </span>
+            </div>` : ''}
             
             <!-- Bottom Metadata Overlay (Title, Role) -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex flex-col justify-end p-3 md:p-3.5 z-10 pointer-events-none">
@@ -1367,6 +1381,32 @@ function renderMobileReelsFeed(targetIndex) {
                     </div>
                 </div>
             `;
+        } else if (work.type === "before_after" || work.beforeUrl) {
+            const rawAfter = workUrl.split("?")[0];
+            const rawBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
+            const beforeLabel = work.beforeLabel || "Before";
+            const afterLabel = work.afterLabel || "After";
+            mediaHtml = `
+                <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden reel-ba-container pointer-events-auto" style="touch-action: pan-y;">
+                    <!-- After Image Base -->
+                    <img class="reel-img w-full h-full object-contain pointer-events-none" src="${rawAfter}" alt="${work.title}" onerror="window.handleGridImageError(this)">
+                    <span class="absolute top-20 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/20 shadow-md pointer-events-none font-display">${afterLabel}</span>
+
+                    <!-- Before Image Clipped -->
+                    <div class="reel-ba-clip absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                        <img class="w-full h-full object-contain pointer-events-none" src="${rawBefore}" alt="${work.title} - Before" onerror="window.handleGridImageError(this)">
+                        <span class="absolute top-20 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 shadow-md pointer-events-none font-display">${beforeLabel}</span>
+                    </div>
+
+                    <!-- Draggable Handle Bar -->
+                    <div class="reel-ba-handle absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize pointer-events-auto" style="left: 50%; transform: translateX(-50%); width: 44px;">
+                        <div class="w-0.5 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] pointer-events-none"></div>
+                        <div class="absolute w-9 h-9 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shadow-2xl border-2 border-[#12151c] pointer-events-none">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                        </div>
+                    </div>
+                </div>
+            `;
         } else {
             // Keep asset in original high resolution without downscaling
             const rawUrl = workUrl.split("?")[0];
@@ -1591,10 +1631,52 @@ function renderMobileReelsFeed(targetIndex) {
             });
         });
 
+        // Before & After Interactive Touch Drag Handler
+        const baContainer = slide.querySelector(".reel-ba-container");
+        if (baContainer) {
+            const baClip = baContainer.querySelector(".reel-ba-clip");
+            const baHandle = baContainer.querySelector(".reel-ba-handle");
+            if (baClip && baHandle) {
+                let isDragging = false;
+                const updateReelSlider = (clientX) => {
+                    const rect = baContainer.getBoundingClientRect();
+                    if (!rect.width) return;
+                    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                    const percent = (x / rect.width) * 100;
+                    baClip.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                    baHandle.style.left = `${percent}%`;
+                };
+
+                const onPointerDown = (e) => {
+                    isDragging = true;
+                    e.stopPropagation();
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                    updateReelSlider(clientX);
+                };
+                const onPointerMove = (e) => {
+                    if (!isDragging) return;
+                    e.stopPropagation();
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                    updateReelSlider(clientX);
+                };
+                const onPointerUp = (e) => {
+                    if (isDragging) {
+                        isDragging = false;
+                        e.stopPropagation();
+                    }
+                };
+
+                baHandle.addEventListener("pointerdown", onPointerDown);
+                baContainer.addEventListener("pointermove", onPointerMove);
+                baContainer.addEventListener("pointerup", onPointerUp);
+                baContainer.addEventListener("pointercancel", onPointerUp);
+            }
+        }
+
         // Tap on media to play/pause or double-tap to like
         let lastTap = 0;
         slide.addEventListener("click", (e) => {
-            if (e.target.closest("button") || e.target.closest("a")) return;
+            if (e.target.closest("button") || e.target.closest("a") || e.target.closest(".reel-ba-container")) return;
             const now = Date.now();
             const heartAnim = slide.querySelector(".reel-heart-anim");
             if (now - lastTap < 300) {
@@ -1651,9 +1733,11 @@ function renderMobileReelsFeed(targetIndex) {
                 }
                 if (work) {
                     const slug = getWorkSlug(work);
-                    if (slug && history.replaceState) {
-                        const basePath = window.isVaultPage ? '/vault' : '';
-                        history.replaceState({ workSlug: slug, configIndex }, '', `${basePath}/${slug}`);
+                    if (slug && history.replaceState && window.location.protocol !== 'file:') {
+                        try {
+                            const basePath = window.isVaultPage ? '/vault' : '';
+                            history.replaceState({ workSlug: slug, configIndex }, '', `${basePath}/${slug}`);
+                        } catch (err) {}
                     }
                     trackWorkInteraction(work, "views");
                 }
@@ -1788,12 +1872,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
     // Update URL bar seamlessly with unique work link
     const slug = getWorkSlug(work);
-    if (slug && !skipHistory && history.pushState) {
-        const basePath = window.isVaultPage ? '/vault' : '';
-        const targetPath = `${basePath}/${slug}`;
-        if (window.location.pathname !== targetPath) {
-            history.pushState({ workSlug: slug, configIndex }, '', targetPath);
-        }
+    if (slug && !skipHistory && history.pushState && window.location.protocol !== 'file:') {
+        try {
+            const basePath = window.isVaultPage ? '/vault' : '';
+            const targetPath = `${basePath}/${slug}`;
+            if (window.location.pathname !== targetPath) {
+                history.pushState({ workSlug: slug, configIndex }, '', targetPath);
+            }
+        } catch (err) {}
     }
 
     // Handle Mobile Experience (TikTok / IG Reels Vertical Feed)
@@ -1908,6 +1994,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const mImg = document.getElementById("modal-img");
     const mVideo = document.getElementById("modal-video");
     const mIframe = document.getElementById("modal-iframe");
+    const mBA = document.getElementById("modal-before-after");
+    const mBeforeImg = document.getElementById("modal-before-img");
+    const mAfterImg = document.getElementById("modal-after-img");
+    const mBeforeClip = document.getElementById("modal-before-clip");
+    const mBAHandle = document.getElementById("modal-ba-handle");
+    const mBeforeLabel = document.getElementById("modal-before-label");
+    const mAfterLabel = document.getElementById("modal-after-label");
+
     const mError = document.getElementById("modal-media-error");
     const overlayBar = document.getElementById("cinematic-overlay-bar");
     const playBtn = document.getElementById("cinematic-play-btn");
@@ -1935,23 +2029,102 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mImg.src = "";
         mVideo.src = "";
         mIframe.src = "";
+        if (mBeforeImg) mBeforeImg.src = "";
+        if (mAfterImg) mAfterImg.src = "";
 
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
         mIframe.classList.add("hidden");
+        if (mBA) mBA.classList.add("hidden");
         if (overlayBar) overlayBar.classList.add("hidden");
         if (mError) {
             mError.classList.add("hidden");
             mError.style.display = "none";
         }
 
+        // Clean up previous slider listeners if any
+        if (window._baCleanup) {
+            window._baCleanup();
+        }
+
         const workUrl = formatAssetUrl(work.url);
         const isVideo = isVideoUrl(workUrl, work.type);
-        const mediaType = work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
+        const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
+        const mediaType = isBeforeAfter ? "before_after" : work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
 
         if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
             mIframe.src = workUrl + "?embed";
+        } else if (mediaType === "before_after") {
+            if (mBA && mBeforeImg && mAfterImg && mBeforeClip && mBAHandle) {
+                mBA.classList.remove("hidden");
+                const cleanAfter = workUrl.split("?")[0];
+                const cleanBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
+                
+                mAfterImg.src = cleanAfter;
+                mBeforeImg.src = cleanBefore;
+                if (mBeforeLabel) mBeforeLabel.innerText = work.beforeLabel || "Before";
+                if (mAfterLabel) mAfterLabel.innerText = work.afterLabel || "After";
+
+                // Initialize at 50%
+                let sliderPercent = 50;
+                mBeforeClip.style.clipPath = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
+                mBAHandle.style.left = `50%`;
+
+                const updateSliderPosition = (clientX) => {
+                    const rect = mBA.getBoundingClientRect();
+                    if (!rect.width) return;
+                    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                    sliderPercent = (x / rect.width) * 100;
+                    mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                    mBAHandle.style.left = `${sliderPercent}%`;
+                };
+
+                let isDragging = false;
+                const onPointerDown = (e) => {
+                    isDragging = true;
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                    updateSliderPosition(clientX);
+                    window.addEventListener("pointermove", onPointerMove);
+                    window.addEventListener("pointerup", onPointerUp);
+                };
+                const onPointerMove = (e) => {
+                    if (!isDragging) return;
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                    updateSliderPosition(clientX);
+                };
+                const onPointerUp = () => {
+                    isDragging = false;
+                    window.removeEventListener("pointermove", onPointerMove);
+                    window.removeEventListener("pointerup", onPointerUp);
+                };
+
+                const onKeyDown = (e) => {
+                    if (!projectModal.classList.contains("active")) return;
+                    if (e.key === "ArrowLeft") {
+                        e.preventDefault();
+                        sliderPercent = Math.max(0, sliderPercent - 5);
+                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                        mBAHandle.style.left = `${sliderPercent}%`;
+                    } else if (e.key === "ArrowRight") {
+                        e.preventDefault();
+                        sliderPercent = Math.min(100, sliderPercent + 5);
+                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                        mBAHandle.style.left = `${sliderPercent}%`;
+                    }
+                };
+
+                mBA.addEventListener("pointerdown", onPointerDown);
+                window.addEventListener("keydown", onKeyDown);
+
+                window._baCleanup = () => {
+                    mBA.removeEventListener("pointerdown", onPointerDown);
+                    window.removeEventListener("pointermove", onPointerMove);
+                    window.removeEventListener("pointerup", onPointerUp);
+                    window.removeEventListener("keydown", onKeyDown);
+                    window._baCleanup = null;
+                };
+            }
         } else if (mediaType === "video") {
             mVideo.classList.remove("hidden");
             if (overlayBar) overlayBar.classList.remove("hidden");
@@ -2093,6 +2266,11 @@ function closeProjectModal(skipHistory = false) {
         modalContent.classList.add("scale-95");
     }
 
+    // Clean up Before & After slider listeners
+    if (window._baCleanup) {
+        window._baCleanup();
+    }
+
     // Clean up mobile reels
     if (mobileReelsObserver) {
         mobileReelsObserver.disconnect();
@@ -2116,16 +2294,22 @@ function closeProjectModal(skipHistory = false) {
     if (mIframe) mIframe.src = "";
     const mImg = document.getElementById("modal-img");
     if (mImg) mImg.src = "";
+    const mBeforeImg = document.getElementById("modal-before-img");
+    if (mBeforeImg) mBeforeImg.src = "";
+    const mAfterImg = document.getElementById("modal-after-img");
+    if (mAfterImg) mAfterImg.src = "";
 
     document.body.style.overflow = "";
     if (window.lenis) window.lenis.start();
 
     // Revert URL bar back to base page
-    if (!skipHistory && history.pushState) {
-        const basePath = window.isVaultPage ? '/vault' : '/';
-        if (window.location.pathname !== basePath) {
-            history.pushState({}, '', basePath);
-        }
+    if (!skipHistory && history.pushState && window.location.protocol !== 'file:') {
+        try {
+            const basePath = window.isVaultPage ? '/vault' : '/';
+            if (window.location.pathname !== basePath) {
+                history.pushState({}, '', basePath);
+            }
+        } catch (err) {}
     }
 }
 

@@ -234,6 +234,9 @@ CREATE TABLE IF NOT EXISTS public.works (
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "thumbnailUrl" TEXT;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "aspectRatio" TEXT DEFAULT '16:9';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "focalPoint" TEXT DEFAULT 'center';
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "beforeUrl" TEXT;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "beforeLabel" TEXT DEFAULT 'Before';
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "afterLabel" TEXT DEFAULT 'After';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'published';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "scheduledAt" TIMESTAMPTZ;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
@@ -363,8 +366,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     <button id="logout-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300">
                         LOGOUT
                     </button>
-                    <button id="change-db-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300" title="Config Database Settings">
-                        ⚙️
+                    <button id="change-db-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-3.5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300 flex items-center justify-center" title="Config Database Settings">
+                        <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </button>
                 </div>
             </div>
@@ -372,9 +375,9 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
             <!-- Navigation Tabs -->
             <div class="flex flex-wrap bg-white/[0.02] border border-white/5 p-1.5 rounded-2xl md:max-w-5xl select-none gap-1">
                 <button id="tab-works" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300">Portfolio Works</button>
-                <button id="tab-analytics" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">📊 Analytics</button>
-                <button id="tab-inquiries" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">📬 Inquiries <span id="inquiry-badge-count" class="hidden ml-1 px-1.5 py-0.2 bg-blue-500 text-white rounded-full text-[9px]">0</span></button>
-                <button id="tab-activity" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">📜 Audit Log</button>
+                <button id="tab-analytics" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Analytics</button>
+                <button id="tab-inquiries" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Inquiries <span id="inquiry-badge-count" class="hidden ml-1 px-1.5 py-0.2 bg-blue-500 text-white rounded-full text-[9px]">0</span></button>
+                <button id="tab-activity" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Audit Log</button>
                 <button id="tab-skills" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Skills & Tools</button>
                 <button id="tab-experience" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Experience</button>
                 <button id="tab-profile" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Profile</button>
@@ -992,19 +995,20 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <select id="work-type" required class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                             <option value="image">Image (jpg, png, webp, gif)</option>
                             <option value="video">Video (mp4, webm)</option>
+                            <option value="before_after">Before &amp; After Comparison</option>
                             <option value="iframe">External Embed (Canva, YouTube, Figma)</option>
                         </select>
                     </div>
                     
                     <!-- Client -->
                     <div>
-                        <label for="work-client" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Client / Org (Optional)</option>
+                        <label for="work-client" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Client / Org (Optional)</label>
                         <input type="text" id="work-client" placeholder="e.g. Modion Communications" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                     </div>
 
                     <!-- Year -->
                     <div>
-                        <label for="work-year" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Project Year (Optional)</option>
+                        <label for="work-year" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Project Year (Optional)</label>
                         <input type="text" id="work-year" placeholder="e.g. 2025" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                     </div>
                 </div>
@@ -1028,13 +1032,13 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     <div>
                         <label for="work-status" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Publishing Status</label>
                         <select id="work-status" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
-                            <option value="published">🚀 Published (Live on Vault & Homepage)</option>
-                            <option value="draft">📝 Draft (Visible only in Admin)</option>
-                            <option value="scheduled">⏱️ Scheduled Release</option>
+                            <option value="published">Published (Live on Vault &amp; Homepage)</option>
+                            <option value="draft">Draft (Visible only in Admin)</option>
+                            <option value="scheduled">Scheduled Release</option>
                         </select>
                     </div>
                     <div id="scheduled-date-container" class="hidden">
-                        <label for="work-scheduledAt" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Scheduled Go-Live Date & Time</label>
+                        <label for="work-scheduledAt" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Scheduled Go-Live Date &amp; Time</label>
                         <input type="datetime-local" id="work-scheduledAt" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                     </div>
                 </div>
@@ -1063,6 +1067,46 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     </div>
                 </div>
 
+                <!-- Dedicated Before & After Configuration (Visible when Media Type is before_after) -->
+                <div id="before-after-config-container" class="hidden border-t border-white/5 pt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[10px] font-bold text-[#64d2ff] tracking-wider uppercase flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                            <span>Before &amp; After Comparison Settings</span>
+                        </label>
+                        <span class="text-[9px] text-white/40">Interactive 2-in-1 drag slider</span>
+                    </div>
+
+                    <!-- Custom Labels Row -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="work-beforeLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1.5 uppercase">Before Tag Label</label>
+                            <input type="text" id="work-beforeLabel" placeholder="e.g. Before or Raw or Wireframe" value="Before" class="w-full px-4 py-2 rounded-xl admin-input text-xs">
+                        </div>
+                        <div>
+                            <label for="work-afterLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1.5 uppercase">After Tag Label</label>
+                            <input type="text" id="work-afterLabel" placeholder="e.g. After or Retouched or Final Render" value="After" class="w-full px-4 py-2 rounded-xl admin-input text-xs">
+                        </div>
+                    </div>
+
+                    <!-- Before Asset Direct URL + Upload Box -->
+                    <div class="grid md:grid-cols-2 gap-5 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div>
+                            <span class="block text-[10px] font-semibold text-amber-400 uppercase tracking-wider mb-1.5">1. BEFORE Asset (Raw / Original):</span>
+                            <input type="text" id="work-beforeUrl" placeholder="https://... (Before image URL)" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                            <span class="block text-[9px] text-white/30 mt-1 leading-relaxed">Direct link or upload the unedited / raw original file on the right.</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-white/40 font-medium mb-1.5">Upload Before File:</span>
+                            <div id="drop-zone-before" class="border-2 border-dashed border-white/10 hover:border-amber-400/50 bg-white/[0.01] hover:bg-white/[0.02] p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                <svg class="w-6 h-6 text-amber-400/60 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <span class="text-[9px] font-semibold text-white/70">UPLOAD BEFORE FILE</span>
+                                <input type="file" id="file-input-before" class="hidden" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Media Link & Drag/Drop Uploader -->
                 <div class="border-t border-white/5 pt-6">
                     <div class="flex items-center justify-between mb-2">
@@ -1080,7 +1124,10 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                             <div class="mt-4">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="block text-[10px] text-white/40 font-semibold uppercase">Poster / Grid Thumbnail (Auto-extracted for video):</span>
-                                    <button type="button" id="extract-poster-btn" class="hidden text-[9px] font-bold text-[#64d2ff] hover:underline uppercase">📸 Extract 00:02 Frame</button>
+                                    <button type="button" id="extract-poster-btn" class="hidden text-[9px] font-bold text-[#64d2ff] hover:underline uppercase inline-flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>Extract 00:02 Frame</span>
+                                    </button>
                                 </div>
                                 <input type="text" id="work-thumbnailUrl" placeholder="https://... (Poster URL)" class="w-full px-4 py-2 rounded-xl admin-input text-xs">
                             </div>
@@ -1136,7 +1183,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     <div class="flex items-center justify-between gap-4">
                         <span class="block text-[10px] font-semibold text-white/40 tracking-wider uppercase">Case Study (Problem, Process, Result)</span>
                         <button type="button" id="ai-generate-btn" class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 text-[#64d2ff] hover:text-white rounded-lg text-[10px] font-bold tracking-wide uppercase transition-all duration-300">
-                            <span id="ai-generate-icon">✦</span>
+                            <svg id="ai-generate-icon" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             <span id="ai-generate-text">Generate with AI</span>
                         </button>
                     </div>
@@ -1939,9 +1986,9 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     loadAnalyticsData();
                 } catch (e) {
                     console.error("Fetch works failed:", e);
-                    tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Make sure table 'works' exists and RLS allows reading."}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-red-400 font-light font-mono">Error: ${e.message || "Make sure table 'works' exists and RLS allows reading."}</td></tr>`;
                     if (gridBody) {
-                        gridBody.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Make sure table 'works' exists."}</div>`;
+                        gridBody.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 font-light font-mono">Error: ${e.message || "Make sure table 'works' exists."}</div>`;
                     }
                     showToast("Failed to fetch works. Check your database setup.", "error");
                 }
@@ -1973,7 +2020,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     renderSkillsTable(skillsData);
                 } catch (e) {
                     console.error("Fetch skills failed:", e);
-                    tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Table 'skills' not found. Run the SQL script!"}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-red-400 font-light font-mono">Error: ${e.message || "Table 'skills' not found. Run the SQL script!"}</td></tr>`;
                 }
             }
 
@@ -2044,7 +2091,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     renderExperienceTable(experienceData);
                 } catch (e) {
                     console.error("Fetch experience failed:", e);
-                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-red-400 font-light font-mono">⚠️ Error: ${e.message || "Table 'experience' not found. Run the SQL script!"}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-red-400 font-light font-mono">Error: ${e.message || "Table 'experience' not found. Run the SQL script!"}</td></tr>`;
                 }
             }
 
@@ -2063,33 +2110,34 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                             </td>
                         </tr>
                     `;
-                    const emptyImportBtn = document.getElementById("empty-exp-import-btn");
-                    if (emptyImportBtn) emptyImportBtn.addEventListener("click", importDefaultExperience);
+                    const btn = document.getElementById("empty-exp-import-btn");
+                    if (btn) btn.addEventListener("click", importDefaultExperience);
                     return;
                 }
-                data.forEach(exp => {
+                
+                data.forEach(item => {
                     const tr = document.createElement("tr");
                     tr.className = "hover:bg-white/[0.02] transition-colors";
                     tr.innerHTML = `
-                        <td class="py-4 px-6 font-semibold text-[#bf5af2]">${exp.year}</td>
-                        <td class="py-4 px-6 font-bold text-white">${exp.title}</td>
-                        <td class="py-4 px-6 text-white/70">${exp.subtitle}</td>
-                        <td class="py-4 px-6 font-mono text-xs text-white/50">${exp.order_index}</td>
-                        <td class="py-4 px-6 text-right">
+                        <td class="py-4 px-4 font-bold text-white">${escapeHtml(item.year || '')}</td>
+                        <td class="py-4 px-4 font-semibold text-white">${escapeHtml(item.role || '')}</td>
+                        <td class="py-4 px-4 text-white/70">${escapeHtml(item.company || '')}</td>
+                        <td class="py-4 px-4 text-xs text-white/50 max-w-xs truncate">${escapeHtml(item.desc || '')}</td>
+                        <td class="py-4 px-4 text-right">
                             <div class="flex justify-end gap-2">
-                                <button class="edit-exp-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-xs transition-colors" data-id="${exp.id}">Edit</button>
-                                <button class="delete-exp-btn bg-red-950/30 border border-red-500/10 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-full text-xs text-red-400 transition-colors" data-id="${exp.id}">Delete</button>
+                                <button class="edit-exp-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-xs transition-colors" data-id="${item.id}">Edit</button>
+                                <button class="delete-exp-btn bg-red-950/30 border border-red-500/10 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-full text-xs text-red-400 transition-colors" data-id="${item.id}">Delete</button>
                             </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
-                
-                document.querySelectorAll(".edit-exp-btn").forEach(btn => {
-                    btn.addEventListener("click", () => openEditExpModal(btn.dataset.id));
+
+                tbody.querySelectorAll(".edit-exp-btn").forEach(b => {
+                    b.addEventListener("click", () => openEditExperienceModal(b.dataset.id));
                 });
-                document.querySelectorAll(".delete-exp-btn").forEach(btn => {
-                    btn.addEventListener("click", () => deleteExpItem(btn.dataset.id));
+                tbody.querySelectorAll(".delete-exp-btn").forEach(b => {
+                    b.addEventListener("click", () => deleteExperienceItem(b.dataset.id));
                 });
             }
 
@@ -2640,7 +2688,16 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     
                     // Thumbnail/media column
                     let preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-white/20">SVG</div>`;
-                    if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
+                    if (work.type === "before_after" || work.beforeUrl) {
+                        preview = `
+                            <div class="relative w-12 h-12 rounded-lg overflow-hidden border border-white/10 bg-gray-900">
+                                <img src="${work.thumbnailUrl || work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                                </div>
+                            </div>
+                        `;
+                    } else if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
                         preview = `<img src="${work.thumbnailUrl || work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-12 h-12 object-cover rounded-lg border border-white/5">`;
                     } else if (work.type === "video" || work.url.endsWith(".mp4")) {
                         if (work.thumbnailUrl) {
@@ -2662,7 +2719,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">Draft</span>`;
                     } else if (statusVal === 'scheduled') {
                         const schedDate = work.scheduledAt ? new Date(work.scheduledAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Scheduled';
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" title="${work.scheduledAt || ''}">⏱️ ${schedDate}</span>`;
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" title="${work.scheduledAt || ''}">${schedDate}</span>`;
                     }
 
                     tr.innerHTML = `
@@ -2687,8 +2744,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <td class="py-4 px-4">${statusBadge}</td>
                         <td class="py-4 px-4 text-xs font-mono text-white/60">
                             <div class="flex flex-col gap-0.5">
-                                <span>👁️ ${work.views || 0}</span>
-                                <span>▶️ ${work.plays || 0}</span>
+                                <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> ${work.views || 0}</span>
+                                <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-white/40" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> ${work.plays || 0}</span>
                             </div>
                         </td>
                         <td class="py-4 px-6 text-right">
@@ -2708,7 +2765,18 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     card.dataset.index = index;
 
                     let cardPreview = `<div class="aspect-video w-full bg-gray-900 flex items-center justify-center text-xs text-white/20 border-b border-white/5">SVG</div>`;
-                    if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
+                    if (work.type === "before_after" || work.beforeUrl) {
+                        cardPreview = `
+                            <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
+                                <img src="${work.thumbnailUrl || work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                    <div class="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                                        <svg class="w-3.5 h-3.5 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                                        <span>Compare</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                    } else if (work.type === "image" || (!work.type && !work.url.endsWith(".mp4"))) {
                         cardPreview = `
                             <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
                                 <img src="${work.thumbnailUrl || work.url}" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -2761,8 +2829,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                             </div>
                             <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
                                 <div class="text-[9px] font-mono text-white/40 flex items-center gap-2">
-                                    <span>👁️ ${work.views || 0}</span>
-                                    <span>▶️ ${work.plays || 0}</span>
+                                    <span class="flex items-center gap-1"><svg class="w-3 h-3 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> ${work.views || 0}</span>
+                                    <span class="flex items-center gap-1"><svg class="w-3 h-3 text-white/40" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> ${work.plays || 0}</span>
                                 </div>
                                 <div class="flex gap-2">
                                     <button class="edit-btn bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-semibold transition-colors" data-id="${work.id}">Edit</button>
@@ -3062,12 +3130,20 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 modalContent.classList.add("scale-95");
                 workForm.reset();
                 document.getElementById("work-id").value = "";
+                document.getElementById("work-beforeUrl").value = "";
+                document.getElementById("work-beforeLabel").value = "Before";
+                document.getElementById("work-afterLabel").value = "After";
+                if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
             }
 
             document.getElementById("new-work-btn").addEventListener("click", () => {
                 workForm.reset();
                 document.getElementById("work-id").value = "";
+                document.getElementById("work-beforeUrl").value = "";
+                document.getElementById("work-beforeLabel").value = "Before";
+                document.getElementById("work-afterLabel").value = "After";
+                if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
                 document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
                 showModal("Create New Portfolio Work");
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
@@ -3244,7 +3320,7 @@ Provide the response in structured JSON matching this schema:
                         }
                     } finally {
                         aiBtn.disabled = false;
-                        if (aiIcon) aiIcon.textContent = "✦";
+                        if (aiIcon) aiIcon.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>';
                         if (aiText) aiText.textContent = "Generate with AI";
                     }
                 });
@@ -3608,7 +3684,7 @@ Provide the response in structured JSON matching this schema:
                         }
                         if (posterUrl) {
                             document.getElementById("work-thumbnailUrl").value = posterUrl;
-                            showToast("📸 Auto-extracted poster thumbnail at 00:02!", "success");
+                            showToast("Auto-extracted poster thumbnail at 00:02!", "success");
                         }
                     }).catch(err => console.log("Auto-poster generation skipped:", err));
                 }
@@ -3617,6 +3693,91 @@ Provide the response in structured JSON matching this schema:
                     await uploadToCloudflareR2(file, r2Worker, r2Key);
                 } else {
                     await uploadToSupabaseStorage(file);
+                }
+            }
+
+            // Before & After Upload and Toggle Logic
+            function toggleBeforeAfterFields() {
+                const type = document.getElementById("work-type")?.value;
+                const container = document.getElementById("before-after-config-container");
+                if (container) {
+                    if (type === "before_after") {
+                        container.classList.remove("hidden");
+                    } else {
+                        container.classList.add("hidden");
+                    }
+                }
+            }
+            document.getElementById("work-type")?.addEventListener("change", toggleBeforeAfterFields);
+
+            const fileInputBefore = document.getElementById("file-input-before");
+            const dropZoneBefore = document.getElementById("drop-zone-before");
+
+            if (dropZoneBefore && fileInputBefore) {
+                dropZoneBefore.addEventListener("click", () => fileInputBefore.click());
+                dropZoneBefore.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                    dropZoneBefore.classList.add("border-amber-400", "bg-white/[0.04]");
+                });
+                dropZoneBefore.addEventListener("dragleave", () => {
+                    dropZoneBefore.classList.remove("border-amber-400", "bg-white/[0.04]");
+                });
+                dropZoneBefore.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    dropZoneBefore.classList.remove("border-amber-400", "bg-white/[0.04]");
+                    if (e.dataTransfer.files.length > 0) {
+                        handleBeforeFileUpload(e.dataTransfer.files[0]);
+                    }
+                });
+                fileInputBefore.addEventListener("change", () => {
+                    if (fileInputBefore.files.length > 0) {
+                        handleBeforeFileUpload(fileInputBefore.files[0]);
+                    }
+                });
+            }
+
+            async function handleBeforeFileUpload(file) {
+                const r2Worker = localStorage.getItem("samsco_r2_worker");
+                const r2Key = localStorage.getItem("samsco_r2_key");
+                uploadProgress.classList.remove("hidden");
+                uploadStatus.textContent = "Uploading Before image...";
+                uploadPercent.textContent = "0%";
+                uploadBar.style.width = "0%";
+
+                const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+                const cleanName = `before_${Date.now()}_${sanitizedBaseName}`;
+
+                try {
+                    let publicUrl = "";
+                    if (r2Worker && r2Key) {
+                        const presignUrl = `${r2Worker.replace(/\/$/, '')}/presign?name=${encodeURIComponent(cleanName)}&type=${encodeURIComponent(file.type)}`;
+                        const presignResponse = await fetch(presignUrl, {
+                            method: "POST",
+                            headers: { "Authorization": `Bearer ${r2Key}` }
+                        });
+                        if (!presignResponse.ok) throw new Error("Worker upload link failed");
+                        const res = await presignResponse.json();
+                        await fetch(res.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+                        publicUrl = res.publicUrl;
+                    } else if (window.supabaseClient) {
+                        const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, file, { cacheControl: '3600', upsert: false });
+                        if (error) throw error;
+                        const res = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
+                        publicUrl = res.data.publicUrl;
+                    }
+
+                    if (publicUrl) {
+                        document.getElementById("work-beforeUrl").value = publicUrl;
+                        uploadStatus.textContent = "Before asset uploaded successfully!";
+                        uploadPercent.textContent = "100%";
+                        uploadBar.style.width = "100%";
+                        showToast("Before asset uploaded!", "success");
+                        if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                    }
+                } catch (e) {
+                    console.error("Before file upload failed:", e);
+                    uploadProgress.classList.add("hidden");
+                    showToast(`Before asset upload failed: ${e.message || e}`, "error");
                 }
             }
 
@@ -3649,12 +3810,16 @@ Provide the response in structured JSON matching this schema:
                 }
                 document.getElementById("work-type").value = work.type || "image";
                 document.getElementById("work-url").value = work.url;
+                document.getElementById("work-beforeUrl").value = work.beforeUrl || "";
+                document.getElementById("work-beforeLabel").value = work.beforeLabel || "Before";
+                document.getElementById("work-afterLabel").value = work.afterLabel || "After";
                 document.getElementById("work-thumbnailUrl").value = work.thumbnailUrl || "";
                 document.getElementById("work-status").value = work.status || "published";
                 document.getElementById("work-scheduledAt").value = work.scheduledAt ? new Date(work.scheduledAt).toISOString().slice(0, 16) : "";
                 document.getElementById("work-aspectRatio").value = work.aspectRatio || "16:9";
                 document.getElementById("work-focalPoint").value = work.focalPoint || "center";
                 
+                toggleBeforeAfterFields();
                 toggleScheduledDate();
 
                 document.getElementById("work-projectUrl").value = work.projectUrl || "";
@@ -3744,11 +3909,18 @@ Provide the response in structured JSON matching this schema:
                 const result = document.getElementById("work-result").value.trim();
                 const demoUrl = document.getElementById("work-demoUrl").value.trim();
                 
+                const beforeUrl = document.getElementById("work-beforeUrl") ? document.getElementById("work-beforeUrl").value.trim() : "";
+                const beforeLabel = document.getElementById("work-beforeLabel") ? document.getElementById("work-beforeLabel").value.trim() : "Before";
+                const afterLabel = document.getElementById("work-afterLabel") ? document.getElementById("work-afterLabel").value.trim() : "After";
+
                 const itemData = {
                     title,
                     cat,
                     type,
                     url,
+                    beforeUrl: beforeUrl || null,
+                    beforeLabel: beforeLabel || "Before",
+                    afterLabel: afterLabel || "After",
                     thumbnailUrl: thumbnailUrl || null,
                     aspectRatio: aspectRatio || "16:9",
                     focalPoint: focalPoint || "center",
@@ -3962,7 +4134,7 @@ Provide the response in structured JSON matching this schema:
                 // Check for local file paths
                 if (/^[a-zA-Z]:\\|^file:\/\//i.test(url)) {
                     mediaPreviewContainer.classList.remove("hidden");
-                    showPreviewError("⚠️ Local file path detected! Visitors cannot view files on your computer. Please upload the file using the Drag & Drop upload box above.");
+                    showPreviewError("Local file path detected! Visitors cannot view files on your computer. Please upload the file using the Drag & Drop upload box above.");
                     return;
                 }
 
@@ -3990,6 +4162,78 @@ Provide the response in structured JSON matching this schema:
                     mediaPreviewElement.innerHTML = `
                         <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure the file URL is public and supported by browsers (.mp4, .webm).')"></video>
                     `;
+                } else if (type === "before_after") {
+                    const beforeUrl = (document.getElementById("work-beforeUrl")?.value || "").trim();
+                    const beforeLabel = (document.getElementById("work-beforeLabel")?.value || "Before").trim();
+                    const afterLabel = (document.getElementById("work-afterLabel")?.value || "After").trim();
+
+                    if (!beforeUrl) {
+                        mediaPreviewElement.innerHTML = `
+                            <div class="p-6 text-center text-xs text-amber-300 flex flex-col items-center justify-center gap-2 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span class="font-medium">Please enter or upload a "Before" image URL above to test the 2-in-1 comparison slider.</span>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    mediaPreviewElement.innerHTML = `
+                        <div class="relative w-full max-w-lg aspect-video rounded-xl overflow-hidden select-none border border-white/10 shadow-2xl bg-black group/admin-slider mx-auto" id="admin-ba-slider" style="touch-action: pan-y;">
+                            <!-- After Image (Base) -->
+                            <img src="${url}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load After image.')">
+                            <span class="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/15 pointer-events-none">${afterLabel}</span>
+
+                            <!-- Before Image (Clipped Overlay) -->
+                            <div class="absolute inset-0 w-full h-full overflow-hidden" id="admin-ba-clipped" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                                <img src="${beforeUrl}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load Before image.')">
+                                <span class="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 pointer-events-none">${beforeLabel}</span>
+                            </div>
+
+                            <!-- Draggable Splitter Handle -->
+                            <div class="absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize" id="admin-ba-handle" style="left: 50%; transform: translateX(-50%); width: 40px;">
+                                <div class="w-0.5 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] pointer-events-none"></div>
+                                <div class="absolute w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shadow-2xl border-2 border-[#12151c] pointer-events-none">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Wire slider drag
+                    const slider = document.getElementById("admin-ba-slider");
+                    const clipped = document.getElementById("admin-ba-clipped");
+                    const handle = document.getElementById("admin-ba-handle");
+
+                    if (slider && clipped && handle) {
+                        let isDragging = false;
+                        const updatePos = (clientX) => {
+                            const rect = slider.getBoundingClientRect();
+                            const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                            const percent = (x / rect.width) * 100;
+                            clipped.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                            handle.style.left = `${percent}%`;
+                        };
+
+                        const onPointerDown = (e) => {
+                            isDragging = true;
+                            const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                            updatePos(clientX);
+                            window.addEventListener("pointermove", onPointerMove);
+                            window.addEventListener("pointerup", onPointerUp);
+                        };
+                        const onPointerMove = (e) => {
+                            if (!isDragging) return;
+                            const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                            updatePos(clientX);
+                        };
+                        const onPointerUp = () => {
+                            isDragging = false;
+                            window.removeEventListener("pointermove", onPointerMove);
+                            window.removeEventListener("pointerup", onPointerUp);
+                        };
+
+                        slider.addEventListener("pointerdown", onPointerDown);
+                    }
                 } else if (type === "iframe") {
                     let embedUrl = url;
                     if (url.includes("canva.com") && url.includes("/view")) {
@@ -4011,9 +4255,13 @@ Provide the response in structured JSON matching this schema:
                     </div>
                 `;
             }
+            window.showPreviewError = showPreviewError;
 
             workUrlInput.addEventListener("input", updateMediaPreview);
             workTypeSelect.addEventListener("change", updateMediaPreview);
+            document.getElementById("work-beforeUrl")?.addEventListener("input", updateMediaPreview);
+            document.getElementById("work-beforeLabel")?.addEventListener("input", updateMediaPreview);
+            document.getElementById("work-afterLabel")?.addEventListener("input", updateMediaPreview);
 
             // Diagnostics & Status Modal Logic
             async function runSystemDiagnostics(showModal = true) {
@@ -4443,7 +4691,7 @@ Provide the response in structured JSON matching this schema:
                                 </div>
                                 <div class="text-right font-mono text-xs">
                                     <span class="text-white/80 font-bold">${score}</span>
-                                    <div class="text-[9px] text-white/30">👁️ ${w.views || 0} · ▶️ ${w.plays || 0}</div>
+                                    <div class="text-[9px] text-white/30 font-mono">${w.views || 0} views · ${w.plays || 0} plays</div>
                                 </div>
                             `;
                             topWorksEl.appendChild(item);
@@ -4480,7 +4728,7 @@ Provide the response in structured JSON matching this schema:
                     }
                 } catch (err) {
                     console.error("Fetch inquiries error:", err);
-                    tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-red-400 font-light font-mono">⚠️ ${err.message || "Make sure 'inquiries' table exists in Supabase."}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-red-400 font-light font-mono">${err.message || "Make sure 'inquiries' table exists in Supabase."}</td></tr>`;
                 }
             }
 
