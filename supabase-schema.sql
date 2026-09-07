@@ -65,6 +65,9 @@ CREATE TABLE IF NOT EXISTS public.works (
     result TEXT,
     "demoUrl" TEXT,
     "thumbnailUrl" TEXT,
+    "beforeUrl" TEXT,
+    "beforeLabel" TEXT DEFAULT 'Before',
+    "afterLabel" TEXT DEFAULT 'After',
     "aspectRatio" TEXT DEFAULT '16:9',
     "focalPoint" TEXT DEFAULT 'center',
     status TEXT DEFAULT 'published',
@@ -80,6 +83,9 @@ CREATE TABLE IF NOT EXISTS public.works (
 ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS color TEXT;
 
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "thumbnailUrl" TEXT;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "beforeUrl" TEXT;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "beforeLabel" TEXT DEFAULT 'Before';
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "afterLabel" TEXT DEFAULT 'After';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "aspectRatio" TEXT DEFAULT '16:9';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS "focalPoint" TEXT DEFAULT 'center';
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'published';
