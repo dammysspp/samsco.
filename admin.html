@@ -1068,50 +1068,86 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 </div>
 
                 <!-- Dedicated Before & After Configuration (Visible when Media Type is before_after) -->
-                <div id="before-after-config-container" class="hidden border-t border-white/5 pt-6 space-y-4">
-                    <div class="flex items-center justify-between">
+                <div id="before-after-config-container" class="hidden border-t border-white/5 pt-6 space-y-5">
+                    <div class="flex items-center justify-between pb-1 border-b border-white/5">
                         <label class="block text-[10px] font-bold text-[#64d2ff] tracking-wider uppercase flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
                             <span>Before &amp; After Comparison Settings</span>
                         </label>
-                        <span class="text-[9px] text-white/40">Interactive 2-in-1 drag slider</span>
+                        <span class="text-[9px] text-[#64d2ff]/70 font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">2-IN-1 INTERACTIVE SLIDER</span>
                     </div>
 
-                    <!-- Custom Labels Row -->
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="work-beforeLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1.5 uppercase">Before Tag Label</label>
-                            <input type="text" id="work-beforeLabel" placeholder="e.g. Before or Raw or Wireframe" value="Before" class="w-full px-4 py-2 rounded-xl admin-input text-xs">
-                        </div>
-                        <div>
-                            <label for="work-afterLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1.5 uppercase">After Tag Label</label>
-                            <input type="text" id="work-afterLabel" placeholder="e.g. After or Retouched or Final Render" value="After" class="w-full px-4 py-2 rounded-xl admin-input text-xs">
-                        </div>
-                    </div>
+                    <!-- Dual Before & After Side-by-Side Upload Cards -->
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <!-- 1. BEFORE ASSET (RAW / PREVIOUS) -->
+                        <div class="p-4 rounded-2xl bg-amber-500/[0.03] border border-amber-500/20 space-y-3.5">
+                            <div class="flex items-center justify-between">
+                                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <span>1. BEFORE Asset (Raw / Previous)</span>
+                                </span>
+                                <span class="text-[9px] text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-400/10">PREVIOUS</span>
+                            </div>
 
-                    <!-- Before Asset Direct URL + Upload Box -->
-                    <div class="grid md:grid-cols-2 gap-5 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                        <div>
-                            <span class="block text-[10px] font-semibold text-amber-400 uppercase tracking-wider mb-1.5">1. BEFORE Asset (Raw / Original):</span>
-                            <input type="text" id="work-beforeUrl" placeholder="https://... (Before image URL)" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
-                            <span class="block text-[9px] text-white/30 mt-1 leading-relaxed">Direct link or upload the unedited / raw original file on the right.</span>
+                            <div>
+                                <label for="work-beforeLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">Before Tag Label</label>
+                                <input type="text" id="work-beforeLabel" placeholder="e.g. Before or Raw Wireframe" value="Before" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                            </div>
+
+                            <div>
+                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct Before Image URL:</span>
+                                <input type="text" id="work-beforeUrl" placeholder="https://... (Before image URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                            </div>
+
+                            <div>
+                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload Before File:</span>
+                                <div id="drop-zone-before" class="border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-white/[0.01] hover:bg-amber-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                    <svg class="w-6 h-6 text-amber-400/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <span class="text-[9px] font-bold text-amber-300">UPLOAD BEFORE FILE</span>
+                                    <span class="text-[8px] text-white/40 mt-0.5">Raw / unedited version</span>
+                                    <input type="file" id="file-input-before" class="hidden" accept="image/*">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <span class="block text-[10px] text-white/40 font-medium mb-1.5">Upload Before File:</span>
-                            <div id="drop-zone-before" class="border-2 border-dashed border-white/10 hover:border-amber-400/50 bg-white/[0.01] hover:bg-white/[0.02] p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
-                                <svg class="w-6 h-6 text-amber-400/60 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <span class="text-[9px] font-semibold text-white/70">UPLOAD BEFORE FILE</span>
-                                <input type="file" id="file-input-before" class="hidden" accept="image/*">
+
+                        <!-- 2. AFTER ASSET (FINAL / GRADED) -->
+                        <div class="p-4 rounded-2xl bg-cyan-500/[0.03] border border-cyan-500/20 space-y-3.5">
+                            <div class="flex items-center justify-between">
+                                <span class="block text-[11px] font-bold text-[#64d2ff] uppercase tracking-wider flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <span>2. AFTER Asset (Final / Graded)</span>
+                                </span>
+                                <span class="text-[9px] text-[#64d2ff] font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">NEXT / FINAL</span>
+                            </div>
+
+                            <div>
+                                <label for="work-afterLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">After Tag Label</label>
+                                <input type="text" id="work-afterLabel" placeholder="e.g. After or Final Grade" value="After" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                            </div>
+
+                            <div>
+                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct After Image URL:</span>
+                                <input type="text" id="work-afterUrl-input" placeholder="https://... (After image URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                            </div>
+
+                            <div>
+                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload After File:</span>
+                                <div id="drop-zone-after" class="border-2 border-dashed border-cyan-500/30 hover:border-[#64d2ff] bg-white/[0.01] hover:bg-cyan-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                    <svg class="w-6 h-6 text-[#64d2ff]/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <span class="text-[9px] font-bold text-[#64d2ff]">UPLOAD AFTER FILE</span>
+                                    <span class="text-[8px] text-white/40 mt-0.5">Final / finished retouched version</span>
+                                    <input type="file" id="file-input-after" class="hidden" accept="image/*">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Media Link & Drag/Drop Uploader -->
-                <div class="border-t border-white/5 pt-6">
+                <!-- Standard Single Media Link & Drag/Drop Uploader (Hidden when Media Type is before_after) -->
+                <div id="standard-media-container" class="border-t border-white/5 pt-6">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-[10px] font-semibold text-white/50 tracking-wider uppercase">Project Media Asset</label>
-                        <span class="text-[9px] text-blue-400 font-medium">⚡ Automatic WebP / Canvas optimization</span>
+                        <span class="text-[9px] text-blue-400 font-medium">Automatic WebP / Canvas optimization</span>
                     </div>
                     <div class="grid md:grid-cols-2 gap-5">
                         <!-- Direct Link -->
@@ -3131,6 +3167,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 workForm.reset();
                 document.getElementById("work-id").value = "";
                 document.getElementById("work-beforeUrl").value = "";
+                if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
                 document.getElementById("work-afterLabel").value = "After";
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
@@ -3141,6 +3178,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 workForm.reset();
                 document.getElementById("work-id").value = "";
                 document.getElementById("work-beforeUrl").value = "";
+                if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
                 document.getElementById("work-afterLabel").value = "After";
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
@@ -3699,16 +3737,33 @@ Provide the response in structured JSON matching this schema:
             // Before & After Upload and Toggle Logic
             function toggleBeforeAfterFields() {
                 const type = document.getElementById("work-type")?.value;
-                const container = document.getElementById("before-after-config-container");
-                if (container) {
-                    if (type === "before_after") {
-                        container.classList.remove("hidden");
-                    } else {
-                        container.classList.add("hidden");
+                const baContainer = document.getElementById("before-after-config-container");
+                const stdContainer = document.getElementById("standard-media-container");
+                if (type === "before_after") {
+                    if (baContainer) baContainer.classList.remove("hidden");
+                    if (stdContainer) stdContainer.classList.add("hidden");
+                    const afterInput = document.getElementById("work-afterUrl-input");
+                    const workUrl = document.getElementById("work-url");
+                    if (afterInput && workUrl && !afterInput.value && workUrl.value) {
+                        afterInput.value = workUrl.value;
                     }
+                } else {
+                    if (baContainer) baContainer.classList.add("hidden");
+                    if (stdContainer) stdContainer.classList.remove("hidden");
                 }
             }
             document.getElementById("work-type")?.addEventListener("change", toggleBeforeAfterFields);
+
+            // Sync After input field with #work-url
+            const afterUrlInput = document.getElementById("work-afterUrl-input");
+            if (afterUrlInput) {
+                afterUrlInput.addEventListener("input", () => {
+                    const val = afterUrlInput.value.trim();
+                    const workUrl = document.getElementById("work-url");
+                    if (workUrl) workUrl.value = val;
+                    if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                });
+            }
 
             const fileInputBefore = document.getElementById("file-input-before");
             const dropZoneBefore = document.getElementById("drop-zone-before");
@@ -3732,6 +3787,32 @@ Provide the response in structured JSON matching this schema:
                 fileInputBefore.addEventListener("change", () => {
                     if (fileInputBefore.files.length > 0) {
                         handleBeforeFileUpload(fileInputBefore.files[0]);
+                    }
+                });
+            }
+
+            const fileInputAfter = document.getElementById("file-input-after");
+            const dropZoneAfter = document.getElementById("drop-zone-after");
+
+            if (dropZoneAfter && fileInputAfter) {
+                dropZoneAfter.addEventListener("click", () => fileInputAfter.click());
+                dropZoneAfter.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                    dropZoneAfter.classList.add("border-[#64d2ff]", "bg-white/[0.04]");
+                });
+                dropZoneAfter.addEventListener("dragleave", () => {
+                    dropZoneAfter.classList.remove("border-[#64d2ff]", "bg-white/[0.04]");
+                });
+                dropZoneAfter.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    dropZoneAfter.classList.remove("border-[#64d2ff]", "bg-white/[0.04]");
+                    if (e.dataTransfer.files.length > 0) {
+                        handleAfterFileUpload(e.dataTransfer.files[0]);
+                    }
+                });
+                fileInputAfter.addEventListener("change", () => {
+                    if (fileInputAfter.files.length > 0) {
+                        handleAfterFileUpload(fileInputAfter.files[0]);
                     }
                 });
             }
@@ -3781,6 +3862,53 @@ Provide the response in structured JSON matching this schema:
                 }
             }
 
+            async function handleAfterFileUpload(file) {
+                const r2Worker = localStorage.getItem("samsco_r2_worker");
+                const r2Key = localStorage.getItem("samsco_r2_key");
+                uploadProgress.classList.remove("hidden");
+                uploadStatus.textContent = "Uploading After image...";
+                uploadPercent.textContent = "0%";
+                uploadBar.style.width = "0%";
+
+                const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+                const cleanName = `after_${Date.now()}_${sanitizedBaseName}`;
+
+                try {
+                    let publicUrl = "";
+                    if (r2Worker && r2Key) {
+                        const presignUrl = `${r2Worker.replace(/\/$/, '')}/presign?name=${encodeURIComponent(cleanName)}&type=${encodeURIComponent(file.type)}`;
+                        const presignResponse = await fetch(presignUrl, {
+                            method: "POST",
+                            headers: { "Authorization": `Bearer ${r2Key}` }
+                        });
+                        if (!presignResponse.ok) throw new Error("Worker upload link failed");
+                        const res = await presignResponse.json();
+                        await fetch(res.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+                        publicUrl = res.publicUrl;
+                    } else if (window.supabaseClient) {
+                        const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, file, { cacheControl: '3600', upsert: false });
+                        if (error) throw error;
+                        const res = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
+                        publicUrl = res.data.publicUrl;
+                    }
+
+                    if (publicUrl) {
+                        document.getElementById("work-url").value = publicUrl;
+                        const afterInput = document.getElementById("work-afterUrl-input");
+                        if (afterInput) afterInput.value = publicUrl;
+                        uploadStatus.textContent = "After asset uploaded successfully!";
+                        uploadPercent.textContent = "100%";
+                        uploadBar.style.width = "100%";
+                        showToast("After asset uploaded!", "success");
+                        if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                    }
+                } catch (e) {
+                    console.error("After file upload failed:", e);
+                    uploadProgress.classList.add("hidden");
+                    showToast(`After asset upload failed: ${e.message || e}`, "error");
+                }
+            }
+
             function toggleScheduledDate() {
                 const status = document.getElementById("work-status")?.value;
                 const container = document.getElementById("scheduled-date-container");
@@ -3810,6 +3938,8 @@ Provide the response in structured JSON matching this schema:
                 }
                 document.getElementById("work-type").value = work.type || "image";
                 document.getElementById("work-url").value = work.url;
+                const afterInput = document.getElementById("work-afterUrl-input");
+                if (afterInput) afterInput.value = work.url || "";
                 document.getElementById("work-beforeUrl").value = work.beforeUrl || "";
                 document.getElementById("work-beforeLabel").value = work.beforeLabel || "Before";
                 document.getElementById("work-afterLabel").value = work.afterLabel || "After";
@@ -4138,17 +4268,19 @@ Provide the response in structured JSON matching this schema:
                     return;
                 }
 
-                // Auto-detect media type if matching extensions
+                // Auto-detect media type if matching extensions (only for image / video modes)
                 const cleanUrl = url.split("?")[0].toLowerCase();
-                if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) {
-                    if (type !== "video") {
-                        workTypeSelect.value = "video";
-                        type = "video";
-                    }
-                } else if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) {
-                    if (type !== "image") {
-                        workTypeSelect.value = "image";
-                        type = "image";
+                if (type !== "before_after" && type !== "iframe") {
+                    if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) {
+                        if (type !== "video") {
+                            workTypeSelect.value = "video";
+                            type = "video";
+                        }
+                    } else if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) {
+                        if (type !== "image") {
+                            workTypeSelect.value = "image";
+                            type = "image";
+                        }
                     }
                 }
 
