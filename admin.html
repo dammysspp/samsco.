@@ -50,6 +50,35 @@
             background-color: #1c1c1e !important;
             color: #ffffff !important;
         }
+        /* Hide scrollbars for clean touch swipe horizontal navigation */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Mobile Portrait UI Ergonomics */
+        @media (max-width: 640px) {
+            main {
+                padding: 0.75rem !important;
+            }
+            .admin-glass {
+                padding: 1rem !important;
+                border-radius: 1.25rem !important;
+            }
+            .modal-content, #work-modal > div > div {
+                padding: 1.25rem !important;
+                border-radius: 1.5rem !important;
+                max-height: 94vh !important;
+            }
+            .admin-input {
+                font-size: 14px !important; /* Prevents unwanted iOS Safari zoom */
+            }
+            #dashboard > .flex-col {
+                padding: 1rem !important;
+            }
+        }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen relative flex flex-col">
@@ -372,17 +401,17 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 </div>
             </div>
 
-            <!-- Navigation Tabs -->
-            <div class="flex flex-wrap bg-white/[0.02] border border-white/5 p-1.5 rounded-2xl md:max-w-5xl select-none gap-1">
-                <button id="tab-works" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300">Portfolio Works</button>
-                <button id="tab-analytics" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Analytics</button>
-                <button id="tab-inquiries" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Inquiries <span id="inquiry-badge-count" class="hidden ml-1 px-1.5 py-0.2 bg-blue-500 text-white rounded-full text-[9px]">0</span></button>
-                <button id="tab-activity" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Audit Log</button>
-                <button id="tab-skills" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Skills & Tools</button>
-                <button id="tab-experience" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Experience</button>
-                <button id="tab-profile" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Profile</button>
-                <button id="tab-testimonials" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Reviews</button>
-                <button id="tab-categories" class="tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Categories</button>
+            <!-- Navigation Tabs (Touch-Swipeable on Mobile Portrait) -->
+            <div class="flex overflow-x-auto no-scrollbar scroll-smooth bg-white/[0.02] border border-white/5 p-1.5 rounded-2xl w-full select-none gap-1.5 snap-x">
+                <button id="tab-works" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300">Portfolio Works</button>
+                <button id="tab-analytics" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Analytics</button>
+                <button id="tab-inquiries" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300 flex items-center gap-1.5">Inquiries <span id="inquiry-badge-count" class="hidden px-1.5 py-0.5 bg-blue-500 text-white rounded-full text-[9px] font-bold">0</span></button>
+                <button id="tab-activity" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Audit Log</button>
+                <button id="tab-skills" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Skills & Tools</button>
+                <button id="tab-experience" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Experience</button>
+                <button id="tab-profile" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Profile</button>
+                <button id="tab-testimonials" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Reviews</button>
+                <button id="tab-categories" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Categories</button>
             </div>
 
             <!-- Tab Section: Works -->
@@ -995,7 +1024,6 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <select id="work-type" required class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                             <option value="image">Image (jpg, png, webp, gif)</option>
                             <option value="video">Video (mp4, webm)</option>
-                            <option value="before_after">Before &amp; After Comparison</option>
                             <option value="iframe">External Embed (Canva, YouTube, Figma)</option>
                         </select>
                     </div>
@@ -1011,6 +1039,26 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <label for="work-year" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Project Year (Optional)</label>
                         <input type="text" id="work-year" placeholder="e.g. 2025" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                     </div>
+                </div>
+
+                <!-- B/A Comparison Mode Toggle Switch -->
+                <div class="p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-cyan-500/5 to-transparent border border-blue-500/20 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-[#0071e3]/20 border border-[#0071e3]/40 flex items-center justify-center text-[#64d2ff] shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                        </div>
+                        <div>
+                            <label for="work-is-ba" class="text-xs font-bold text-white tracking-wider uppercase flex items-center gap-2 cursor-pointer select-none">
+                                <span>B/A (Before &amp; After) Mode</span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#0071e3]/30 text-[#64d2ff] border border-[#0071e3]/40">2-IN-1 SLIDER</span>
+                            </label>
+                            <span class="text-[10px] text-white/50 block mt-0.5">Enable interactive 2-in-1 comparison slider for Images or Videos</span>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-3">
+                        <input type="checkbox" id="work-is-ba" class="sr-only peer">
+                        <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0071e3]"></div>
+                    </label>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-5">
@@ -1067,83 +1115,117 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     </div>
                 </div>
 
-                <!-- Dedicated Before & After Configuration (Visible when Media Type is before_after) -->
+                <!-- Dedicated Before & After Configuration (Visible when B/A mode is checked) -->
                 <div id="before-after-config-container" class="hidden border-t border-white/5 pt-6 space-y-5">
                     <div class="flex items-center justify-between pb-1 border-b border-white/5">
                         <label class="block text-[10px] font-bold text-[#64d2ff] tracking-wider uppercase flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
                             <span>Before &amp; After Comparison Settings</span>
                         </label>
-                        <span class="text-[9px] text-[#64d2ff]/70 font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">2-IN-1 INTERACTIVE SLIDER</span>
+                        <span class="text-[9px] text-[#64d2ff]/70 font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">IMAGE / VIDEO COMPARISON</span>
                     </div>
 
                     <!-- Dual Before & After Side-by-Side Upload Cards -->
                     <div class="grid md:grid-cols-2 gap-5">
                         <!-- 1. BEFORE ASSET (RAW / PREVIOUS) -->
-                        <div class="p-4 rounded-2xl bg-amber-500/[0.03] border border-amber-500/20 space-y-3.5">
-                            <div class="flex items-center justify-between">
-                                <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                    <span>1. BEFORE Asset (Raw / Previous)</span>
-                                </span>
-                                <span class="text-[9px] text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-400/10">PREVIOUS</span>
+                        <div class="p-4 rounded-2xl bg-amber-500/[0.03] border border-amber-500/20 space-y-3.5 flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="block text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                        <span>1. BEFORE Asset (Raw / Previous)</span>
+                                    </span>
+                                    <span class="text-[9px] text-amber-400 font-semibold px-2 py-0.5 rounded bg-amber-400/10">PREVIOUS</span>
+                                </div>
+
+                                <div>
+                                    <label for="work-beforeLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">Before Tag Label</label>
+                                    <input type="text" id="work-beforeLabel" placeholder="e.g. Before or Raw Wireframe" value="Before" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                                </div>
+
+                                <div>
+                                    <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct Before URL:</span>
+                                    <input type="text" id="work-beforeUrl" placeholder="https://... (Before media URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                                </div>
+
+                                <div>
+                                    <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload Before File:</span>
+                                    <div id="drop-zone-before" class="border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-white/[0.01] hover:bg-amber-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                        <svg class="w-6 h-6 text-amber-400/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <span id="drop-label-before" class="text-[9px] font-bold text-amber-300 uppercase">UPLOAD BEFORE FILE</span>
+                                        <span class="text-[8px] text-white/40 mt-0.5">Raw / unedited version (Image or Video)</span>
+                                        <input type="file" id="file-input-before" class="hidden" accept="image/*,video/*">
+                                    </div>
+                                </div>
                             </div>
 
-                            <div>
-                                <label for="work-beforeLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">Before Tag Label</label>
-                                <input type="text" id="work-beforeLabel" placeholder="e.g. Before or Raw Wireframe" value="Before" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
-                            </div>
-
-                            <div>
-                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct Before Image URL:</span>
-                                <input type="text" id="work-beforeUrl" placeholder="https://... (Before image URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
-                            </div>
-
-                            <div>
-                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload Before File:</span>
-                                <div id="drop-zone-before" class="border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-white/[0.01] hover:bg-amber-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
-                                    <svg class="w-6 h-6 text-amber-400/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                    <span class="text-[9px] font-bold text-amber-300">UPLOAD BEFORE FILE</span>
-                                    <span class="text-[8px] text-white/40 mt-0.5">Raw / unedited version</span>
-                                    <input type="file" id="file-input-before" class="hidden" accept="image/*">
+                            <!-- Upload Progress for Before Asset -->
+                            <div id="upload-progress-before" class="hidden pt-2 border-t border-amber-500/20 space-y-1">
+                                <div class="flex justify-between items-center text-[10px] font-medium text-amber-300">
+                                    <span id="upload-status-before">Uploading Before asset...</span>
+                                    <span id="upload-percent-before" class="font-mono">0%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                    <div id="upload-bar-before" class="h-full bg-gradient-to-r from-amber-500 to-amber-300 transition-all duration-150" style="width: 0%"></div>
+                                </div>
+                                <div id="upload-metrics-before" class="text-[9px] text-white/40 font-mono tracking-tight flex justify-between">
+                                    <span>--</span>
+                                    <span>--</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 2. AFTER ASSET (FINAL / GRADED) -->
-                        <div class="p-4 rounded-2xl bg-cyan-500/[0.03] border border-cyan-500/20 space-y-3.5">
-                            <div class="flex items-center justify-between">
-                                <span class="block text-[11px] font-bold text-[#64d2ff] uppercase tracking-wider flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    <span>2. AFTER Asset (Final / Graded)</span>
-                                </span>
-                                <span class="text-[9px] text-[#64d2ff] font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">NEXT / FINAL</span>
+                        <div class="p-4 rounded-2xl bg-cyan-500/[0.03] border border-cyan-500/20 space-y-3.5 flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="block text-[11px] font-bold text-[#64d2ff] uppercase tracking-wider flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        <span>2. AFTER Asset (Final / Graded)</span>
+                                    </span>
+                                    <span class="text-[9px] text-[#64d2ff] font-semibold px-2 py-0.5 rounded bg-[#0071e3]/10">NEXT / FINAL</span>
+                                </div>
+
+                                <div>
+                                    <label for="work-afterLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">After Tag Label</label>
+                                    <input type="text" id="work-afterLabel" placeholder="e.g. After or Final Grade" value="After" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                                </div>
+
+                                <div>
+                                    <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct After URL:</span>
+                                    <input type="text" id="work-afterUrl-input" placeholder="https://... (After media URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
+                                </div>
+
+                                <div>
+                                    <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload After File:</span>
+                                    <div id="drop-zone-after" class="border-2 border-dashed border-cyan-500/30 hover:border-[#64d2ff] bg-white/[0.01] hover:bg-cyan-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                                        <svg class="w-6 h-6 text-[#64d2ff]/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <span id="drop-label-after" class="text-[9px] font-bold text-[#64d2ff] uppercase">UPLOAD AFTER FILE</span>
+                                        <span class="text-[8px] text-white/40 mt-0.5">Final / finished retouched version (Image or Video)</span>
+                                        <input type="file" id="file-input-after" class="hidden" accept="image/*,video/*">
+                                    </div>
+                                </div>
                             </div>
 
-                            <div>
-                                <label for="work-afterLabel" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-1 uppercase">After Tag Label</label>
-                                <input type="text" id="work-afterLabel" placeholder="e.g. After or Final Grade" value="After" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
-                            </div>
-
-                            <div>
-                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Direct After Image URL:</span>
-                                <input type="text" id="work-afterUrl-input" placeholder="https://... (After image URL)" class="w-full px-3.5 py-2 rounded-xl admin-input text-xs">
-                            </div>
-
-                            <div>
-                                <span class="block text-[10px] text-white/40 font-semibold uppercase mb-1">Or Upload After File:</span>
-                                <div id="drop-zone-after" class="border-2 border-dashed border-cyan-500/30 hover:border-[#64d2ff] bg-white/[0.01] hover:bg-cyan-500/[0.04] p-4 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
-                                    <svg class="w-6 h-6 text-[#64d2ff]/70 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                    <span class="text-[9px] font-bold text-[#64d2ff]">UPLOAD AFTER FILE</span>
-                                    <span class="text-[8px] text-white/40 mt-0.5">Final / finished retouched version</span>
-                                    <input type="file" id="file-input-after" class="hidden" accept="image/*">
+                            <!-- Upload Progress for After Asset -->
+                            <div id="upload-progress-after" class="hidden pt-2 border-t border-cyan-500/20 space-y-1">
+                                <div class="flex justify-between items-center text-[10px] font-medium text-[#64d2ff]">
+                                    <span id="upload-status-after">Uploading After asset...</span>
+                                    <span id="upload-percent-after" class="font-mono">0%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                    <div id="upload-bar-after" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-150" style="width: 0%"></div>
+                                </div>
+                                <div id="upload-metrics-after" class="text-[9px] text-white/40 font-mono tracking-tight flex justify-between">
+                                    <span>--</span>
+                                    <span>--</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Standard Single Media Link & Drag/Drop Uploader (Hidden when Media Type is before_after) -->
+                <!-- Standard Single Media Link & Drag/Drop Uploader (Hidden when B/A mode is checked) -->
                 <div id="standard-media-container" class="border-t border-white/5 pt-6">
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-[10px] font-semibold text-white/50 tracking-wider uppercase">Project Media Asset</label>
@@ -3166,6 +3248,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 modalContent.classList.add("scale-95");
                 workForm.reset();
                 document.getElementById("work-id").value = "";
+                if (document.getElementById("work-is-ba")) document.getElementById("work-is-ba").checked = false;
                 document.getElementById("work-beforeUrl").value = "";
                 if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
@@ -3177,6 +3260,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
             document.getElementById("new-work-btn").addEventListener("click", () => {
                 workForm.reset();
                 document.getElementById("work-id").value = "";
+                if (document.getElementById("work-is-ba")) document.getElementById("work-is-ba").checked = false;
                 document.getElementById("work-beforeUrl").value = "";
                 if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
@@ -3734,12 +3818,82 @@ Provide the response in structured JSON matching this schema:
                 }
             }
 
-            // Before & After Upload and Toggle Logic
+            // Upload Progress Tracker Helper
+            function attachUploadTracker(xhr, container, statusEl, percentEl, barEl, metricsEl, assetName = "Asset") {
+                const startTime = Date.now();
+                if (container) container.classList.remove("hidden");
+                if (statusEl) statusEl.textContent = `Uploading ${assetName}...`;
+                if (percentEl) percentEl.textContent = "0%";
+                if (barEl) barEl.style.width = "0%";
+                if (metricsEl) metricsEl.innerHTML = `<span>0.0 MB / -- MB</span><span>Calculating speed...</span>`;
+
+                xhr.upload.addEventListener("progress", (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        if (barEl) barEl.style.width = `${percent}%`;
+                        if (percentEl) percentEl.textContent = `${percent}%`;
+                        
+                        const elapsedSeconds = (Date.now() - startTime) / 1000;
+                        const speedBytesPerSec = elapsedSeconds > 0 ? e.loaded / elapsedSeconds : 0;
+                        
+                        let speedText = "";
+                        if (speedBytesPerSec > 1024 * 1024) {
+                            speedText = `${(speedBytesPerSec / (1024 * 1024)).toFixed(1)} MB/s`;
+                        } else if (speedBytesPerSec > 1024) {
+                            speedText = `${(speedBytesPerSec / 1024).toFixed(1)} KB/s`;
+                        } else {
+                            speedText = `${speedBytesPerSec.toFixed(0)} B/s`;
+                        }
+                        
+                        const loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+                        const totalMB = (e.total / (1024 * 1024)).toFixed(1);
+                        
+                        let etaText = "";
+                        if (speedBytesPerSec > 0) {
+                            const remainingBytes = e.total - e.loaded;
+                            const remainingSeconds = Math.round(remainingBytes / speedBytesPerSec);
+                            if (remainingSeconds < 60) {
+                                etaText = `${remainingSeconds}s remaining`;
+                            } else {
+                                const mins = Math.floor(remainingSeconds / 60);
+                                const secs = remainingSeconds % 60;
+                                etaText = `${mins}m ${secs}s left`;
+                            }
+                        } else {
+                            etaText = "calculating...";
+                        }
+                        
+                        if (statusEl) statusEl.textContent = `Uploading: ${percent}%`;
+                        if (metricsEl) metricsEl.innerHTML = `<span>${loadedMB}MB / ${totalMB}MB</span><span>${speedText} • ${etaText}</span>`;
+                    }
+                });
+            }
+
+            // Before & After Toggle and Dynamic Labels Logic
             function toggleBeforeAfterFields() {
-                const type = document.getElementById("work-type")?.value;
+                const isBa = document.getElementById("work-is-ba")?.checked;
+                const type = document.getElementById("work-type")?.value || "image";
                 const baContainer = document.getElementById("before-after-config-container");
                 const stdContainer = document.getElementById("standard-media-container");
-                if (type === "before_after") {
+                const dropLabelBefore = document.getElementById("drop-label-before");
+                const dropLabelAfter = document.getElementById("drop-label-after");
+                const fileBefore = document.getElementById("file-input-before");
+                const fileAfter = document.getElementById("file-input-after");
+
+                // Update dropzone prompt text and file accept filters based on Media Type
+                if (type === "video") {
+                    if (dropLabelBefore) dropLabelBefore.textContent = "UPLOAD BEFORE VIDEO";
+                    if (dropLabelAfter) dropLabelAfter.textContent = "UPLOAD AFTER VIDEO";
+                    if (fileBefore) fileBefore.setAttribute("accept", "video/*,image/*");
+                    if (fileAfter) fileAfter.setAttribute("accept", "video/*,image/*");
+                } else {
+                    if (dropLabelBefore) dropLabelBefore.textContent = "UPLOAD BEFORE IMAGE";
+                    if (dropLabelAfter) dropLabelAfter.textContent = "UPLOAD AFTER IMAGE";
+                    if (fileBefore) fileBefore.setAttribute("accept", "image/*");
+                    if (fileAfter) fileAfter.setAttribute("accept", "image/*");
+                }
+
+                if (isBa) {
                     if (baContainer) baContainer.classList.remove("hidden");
                     if (stdContainer) stdContainer.classList.add("hidden");
                     const afterInput = document.getElementById("work-afterUrl-input");
@@ -3751,7 +3905,11 @@ Provide the response in structured JSON matching this schema:
                     if (baContainer) baContainer.classList.add("hidden");
                     if (stdContainer) stdContainer.classList.remove("hidden");
                 }
+
+                if (typeof updateMediaPreview === 'function') updateMediaPreview();
             }
+
+            document.getElementById("work-is-ba")?.addEventListener("change", toggleBeforeAfterFields);
             document.getElementById("work-type")?.addEventListener("change", toggleBeforeAfterFields);
 
             // Sync After input field with #work-url
@@ -3820,10 +3978,17 @@ Provide the response in structured JSON matching this schema:
             async function handleBeforeFileUpload(file) {
                 const r2Worker = localStorage.getItem("samsco_r2_worker");
                 const r2Key = localStorage.getItem("samsco_r2_key");
-                uploadProgress.classList.remove("hidden");
-                uploadStatus.textContent = "Uploading Before image...";
-                uploadPercent.textContent = "0%";
-                uploadBar.style.width = "0%";
+                const progressContainer = document.getElementById("upload-progress-before");
+                const statusEl = document.getElementById("upload-status-before");
+                const percentEl = document.getElementById("upload-percent-before");
+                const barEl = document.getElementById("upload-bar-before");
+                const metricsEl = document.getElementById("upload-metrics-before");
+
+                const isVideo = file.type.startsWith("video/");
+                if (isVideo) {
+                    document.getElementById("work-type").value = "video";
+                    toggleBeforeAfterFields();
+                }
 
                 const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
                 const cleanName = `before_${Date.now()}_${sanitizedBaseName}`;
@@ -3838,9 +4003,21 @@ Provide the response in structured JSON matching this schema:
                         });
                         if (!presignResponse.ok) throw new Error("Worker upload link failed");
                         const res = await presignResponse.json();
-                        await fetch(res.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+                        
+                        const xhr = new XMLHttpRequest();
+                        attachUploadTracker(xhr, progressContainer, statusEl, percentEl, barEl, metricsEl, "Before File");
+                        
+                        await new Promise((resolve, reject) => {
+                            xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`Upload failed (${xhr.status})`));
+                            xhr.onerror = () => reject(new Error("Network error during direct upload"));
+                            xhr.open("PUT", res.uploadUrl, true);
+                            if (file.type) xhr.setRequestHeader("Content-Type", file.type);
+                            xhr.send(file);
+                        });
                         publicUrl = res.publicUrl;
                     } else if (window.supabaseClient) {
+                        if (progressContainer) progressContainer.classList.remove("hidden");
+                        if (statusEl) statusEl.textContent = "Uploading to Supabase Storage...";
                         const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, file, { cacheControl: '3600', upsert: false });
                         if (error) throw error;
                         const res = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
@@ -3849,15 +4026,15 @@ Provide the response in structured JSON matching this schema:
 
                     if (publicUrl) {
                         document.getElementById("work-beforeUrl").value = publicUrl;
-                        uploadStatus.textContent = "Before asset uploaded successfully!";
-                        uploadPercent.textContent = "100%";
-                        uploadBar.style.width = "100%";
-                        showToast("Before asset uploaded!", "success");
+                        if (statusEl) statusEl.textContent = "Before asset uploaded!";
+                        if (percentEl) percentEl.textContent = "100%";
+                        if (barEl) barEl.style.width = "100%";
+                        showToast("Before asset uploaded successfully!", "success");
                         if (typeof updateMediaPreview === 'function') updateMediaPreview();
                     }
                 } catch (e) {
                     console.error("Before file upload failed:", e);
-                    uploadProgress.classList.add("hidden");
+                    if (progressContainer) progressContainer.classList.add("hidden");
                     showToast(`Before asset upload failed: ${e.message || e}`, "error");
                 }
             }
@@ -3865,10 +4042,42 @@ Provide the response in structured JSON matching this schema:
             async function handleAfterFileUpload(file) {
                 const r2Worker = localStorage.getItem("samsco_r2_worker");
                 const r2Key = localStorage.getItem("samsco_r2_key");
-                uploadProgress.classList.remove("hidden");
-                uploadStatus.textContent = "Uploading After image...";
-                uploadPercent.textContent = "0%";
-                uploadBar.style.width = "0%";
+                const progressContainer = document.getElementById("upload-progress-after");
+                const statusEl = document.getElementById("upload-status-after");
+                const percentEl = document.getElementById("upload-percent-after");
+                const barEl = document.getElementById("upload-bar-after");
+                const metricsEl = document.getElementById("upload-metrics-after");
+
+                const isVideo = file.type.startsWith("video/");
+                if (isVideo) {
+                    document.getElementById("work-type").value = "video";
+                    toggleBeforeAfterFields();
+                    extractFrameFromVideo(file, 2.0).then(async (blob) => {
+                        const posterFile = new File([blob], `poster_${Date.now()}.jpg`, { type: "image/jpeg" });
+                        let posterUrl = "";
+                        if (r2Worker && r2Key) {
+                            const cleanName = `poster_${Date.now()}.jpg`;
+                            const presignUrl = `${r2Worker.replace(/\/$/, '')}/presign?name=${encodeURIComponent(cleanName)}&type=image/jpeg`;
+                            const presignResponse = await fetch(presignUrl, { method: "POST", headers: { "Authorization": `Bearer ${r2Key}` } });
+                            if (presignResponse.ok) {
+                                const { uploadUrl, publicUrl } = await presignResponse.json();
+                                await fetch(uploadUrl, { method: "PUT", body: posterFile, headers: { "Content-Type": "image/jpeg" } });
+                                posterUrl = publicUrl;
+                            }
+                        } else if (window.supabaseClient) {
+                            const cleanName = `poster_${Date.now()}.jpg`;
+                            const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, posterFile, { cacheControl: '3600', upsert: false });
+                            if (!error) {
+                                const { data: { publicUrl } } = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
+                                posterUrl = publicUrl;
+                            }
+                        }
+                        if (posterUrl) {
+                            document.getElementById("work-thumbnailUrl").value = posterUrl;
+                            showToast("Auto-extracted video poster at 00:02!", "success");
+                        }
+                    }).catch(err => console.log("Poster generation skipped:", err));
+                }
 
                 const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
                 const cleanName = `after_${Date.now()}_${sanitizedBaseName}`;
@@ -3883,9 +4092,21 @@ Provide the response in structured JSON matching this schema:
                         });
                         if (!presignResponse.ok) throw new Error("Worker upload link failed");
                         const res = await presignResponse.json();
-                        await fetch(res.uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+                        
+                        const xhr = new XMLHttpRequest();
+                        attachUploadTracker(xhr, progressContainer, statusEl, percentEl, barEl, metricsEl, "After File");
+                        
+                        await new Promise((resolve, reject) => {
+                            xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`Upload failed (${xhr.status})`));
+                            xhr.onerror = () => reject(new Error("Network error during direct upload"));
+                            xhr.open("PUT", res.uploadUrl, true);
+                            if (file.type) xhr.setRequestHeader("Content-Type", file.type);
+                            xhr.send(file);
+                        });
                         publicUrl = res.publicUrl;
                     } else if (window.supabaseClient) {
+                        if (progressContainer) progressContainer.classList.remove("hidden");
+                        if (statusEl) statusEl.textContent = "Uploading to Supabase Storage...";
                         const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, file, { cacheControl: '3600', upsert: false });
                         if (error) throw error;
                         const res = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
@@ -3896,15 +4117,15 @@ Provide the response in structured JSON matching this schema:
                         document.getElementById("work-url").value = publicUrl;
                         const afterInput = document.getElementById("work-afterUrl-input");
                         if (afterInput) afterInput.value = publicUrl;
-                        uploadStatus.textContent = "After asset uploaded successfully!";
-                        uploadPercent.textContent = "100%";
-                        uploadBar.style.width = "100%";
-                        showToast("After asset uploaded!", "success");
+                        if (statusEl) statusEl.textContent = "After asset uploaded!";
+                        if (percentEl) percentEl.textContent = "100%";
+                        if (barEl) barEl.style.width = "100%";
+                        showToast("After asset uploaded successfully!", "success");
                         if (typeof updateMediaPreview === 'function') updateMediaPreview();
                     }
                 } catch (e) {
                     console.error("After file upload failed:", e);
-                    uploadProgress.classList.add("hidden");
+                    if (progressContainer) progressContainer.classList.add("hidden");
                     showToast(`After asset upload failed: ${e.message || e}`, "error");
                 }
             }
@@ -3936,7 +4157,15 @@ Provide the response in structured JSON matching this schema:
                         if (cb) cb.checked = true;
                     });
                 }
-                document.getElementById("work-type").value = work.type || "image";
+                const isBaWork = work.type === "before_after" || !!work.beforeUrl;
+                const baCheckbox = document.getElementById("work-is-ba");
+                if (baCheckbox) baCheckbox.checked = isBaWork;
+
+                const detectedType = work.type === "before_after" 
+                    ? (isVideoUrl(work.url) || isVideoUrl(work.beforeUrl) ? "video" : "image")
+                    : (work.type || "image");
+                document.getElementById("work-type").value = detectedType;
+
                 document.getElementById("work-url").value = work.url;
                 const afterInput = document.getElementById("work-afterUrl-input");
                 if (afterInput) afterInput.value = work.url || "";
@@ -3965,7 +4194,7 @@ Provide the response in structured JSON matching this schema:
                 
                 // Show or hide extract poster button if type is video
                 if (extractPosterBtn) {
-                    if (work.type === "video" || (work.url && work.url.endsWith(".mp4"))) {
+                    if (detectedType === "video" || (work.url && work.url.endsWith(".mp4"))) {
                         extractPosterBtn.classList.remove("hidden");
                     } else {
                         extractPosterBtn.classList.add("hidden");
@@ -4014,6 +4243,7 @@ Provide the response in structured JSON matching this schema:
                 }
                 const cat = selectedCats.join(', ');
                 const type = document.getElementById("work-type").value;
+                const isBa = document.getElementById("work-is-ba")?.checked;
                 const url = document.getElementById("work-url").value.trim();
 
                 if (/^[a-zA-Z]:\\|^file:\/\//i.test(url)) {
@@ -4039,9 +4269,9 @@ Provide the response in structured JSON matching this schema:
                 const result = document.getElementById("work-result").value.trim();
                 const demoUrl = document.getElementById("work-demoUrl").value.trim();
                 
-                const beforeUrl = document.getElementById("work-beforeUrl") ? document.getElementById("work-beforeUrl").value.trim() : "";
-                const beforeLabel = document.getElementById("work-beforeLabel") ? document.getElementById("work-beforeLabel").value.trim() : "Before";
-                const afterLabel = document.getElementById("work-afterLabel") ? document.getElementById("work-afterLabel").value.trim() : "After";
+                const beforeUrl = (isBa && document.getElementById("work-beforeUrl")) ? document.getElementById("work-beforeUrl").value.trim() : null;
+                const beforeLabel = (isBa && document.getElementById("work-beforeLabel")) ? document.getElementById("work-beforeLabel").value.trim() : "Before";
+                const afterLabel = (isBa && document.getElementById("work-afterLabel")) ? document.getElementById("work-afterLabel").value.trim() : "After";
 
                 const itemData = {
                     title,
@@ -4049,8 +4279,8 @@ Provide the response in structured JSON matching this schema:
                     type,
                     url,
                     beforeUrl: beforeUrl || null,
-                    beforeLabel: beforeLabel || "Before",
-                    afterLabel: afterLabel || "After",
+                    beforeLabel: beforeUrl ? (beforeLabel || "Before") : null,
+                    afterLabel: beforeUrl ? (afterLabel || "After") : null,
                     thumbnailUrl: thumbnailUrl || null,
                     aspectRatio: aspectRatio || "16:9",
                     focalPoint: focalPoint || "center",
@@ -4286,15 +4516,9 @@ Provide the response in structured JSON matching this schema:
 
                 mediaPreviewContainer.classList.remove("hidden");
 
-                if (type === "image") {
-                    mediaPreviewElement.innerHTML = `
-                        <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. If hosted on Supabase, ensure the storage bucket portfolio is set to Public!')">
-                    `;
-                } else if (type === "video") {
-                    mediaPreviewElement.innerHTML = `
-                        <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure the file URL is public and supported by browsers (.mp4, .webm).')"></video>
-                    `;
-                } else if (type === "before_after") {
+                const isBa = document.getElementById("work-is-ba")?.checked || type === "before_after";
+
+                if (isBa) {
                     const beforeUrl = (document.getElementById("work-beforeUrl")?.value || "").trim();
                     const beforeLabel = (document.getElementById("work-beforeLabel")?.value || "Before").trim();
                     const afterLabel = (document.getElementById("work-afterLabel")?.value || "After").trim();
@@ -4303,21 +4527,29 @@ Provide the response in structured JSON matching this schema:
                         mediaPreviewElement.innerHTML = `
                             <div class="p-6 text-center text-xs text-amber-300 flex flex-col items-center justify-center gap-2 bg-amber-500/10 rounded-xl border border-amber-500/20">
                                 <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                <span class="font-medium">Please enter or upload a "Before" image URL above to test the 2-in-1 comparison slider.</span>
+                                <span class="font-medium">Please enter or upload a "Before" ${type === "video" ? "video" : "image"} URL above to test the 2-in-1 comparison slider.</span>
                             </div>
                         `;
                         return;
                     }
 
+                    const isVideoBA = type === "video" || /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.split("?")[0]) || /\.(mp4|webm|ogg|mov|m4v)$/i.test(beforeUrl.split("?")[0]);
+
                     mediaPreviewElement.innerHTML = `
                         <div class="relative w-full max-w-lg aspect-video rounded-xl overflow-hidden select-none border border-white/10 shadow-2xl bg-black group/admin-slider mx-auto" id="admin-ba-slider" style="touch-action: pan-y;">
-                            <!-- After Image (Base) -->
-                            <img src="${url}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load After image.')">
+                            <!-- After Layer (Base) -->
+                            ${isVideoBA 
+                                ? `<video src="${url}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-cover" id="admin-ba-vid-after" onerror="showPreviewError('Failed to load After video.')"></video>`
+                                : `<img src="${url}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load After image.')">`
+                            }
                             <span class="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/15 pointer-events-none">${afterLabel}</span>
 
-                            <!-- Before Image (Clipped Overlay) -->
+                            <!-- Before Layer (Clipped Overlay) -->
                             <div class="absolute inset-0 w-full h-full overflow-hidden" id="admin-ba-clipped" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-                                <img src="${beforeUrl}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load Before image.')">
+                                ${isVideoBA
+                                    ? `<video src="${beforeUrl}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-cover" id="admin-ba-vid-before" onerror="showPreviewError('Failed to load Before video.')"></video>`
+                                    : `<img src="${beforeUrl}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load Before image.')">`
+                                }
                                 <span class="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 pointer-events-none">${beforeLabel}</span>
                             </div>
 
@@ -4330,6 +4562,24 @@ Provide the response in structured JSON matching this schema:
                             </div>
                         </div>
                     `;
+
+                    // Wire video synchronization if BA videos
+                    if (isVideoBA) {
+                        const vidAfter = document.getElementById("admin-ba-vid-after");
+                        const vidBefore = document.getElementById("admin-ba-vid-before");
+                        if (vidAfter && vidBefore) {
+                            vidAfter.addEventListener("play", () => vidBefore.play().catch(() => {}));
+                            vidAfter.addEventListener("pause", () => vidBefore.pause());
+                            vidAfter.addEventListener("timeupdate", () => {
+                                if (Math.abs(vidBefore.currentTime - vidAfter.currentTime) > 0.15) {
+                                    vidBefore.currentTime = vidAfter.currentTime;
+                                }
+                            });
+                            vidAfter.addEventListener("seeking", () => {
+                                vidBefore.currentTime = vidAfter.currentTime;
+                            });
+                        }
+                    }
 
                     // Wire slider drag
                     const slider = document.getElementById("admin-ba-slider");
@@ -4366,6 +4616,14 @@ Provide the response in structured JSON matching this schema:
 
                         slider.addEventListener("pointerdown", onPointerDown);
                     }
+                } else if (type === "image") {
+                    mediaPreviewElement.innerHTML = `
+                        <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. If hosted on Supabase, ensure the storage bucket portfolio is set to Public!')">
+                    `;
+                } else if (type === "video") {
+                    mediaPreviewElement.innerHTML = `
+                        <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure the file URL is public and supported by browsers (.mp4, .webm).')"></video>
+                    `;
                 } else if (type === "iframe") {
                     let embedUrl = url;
                     if (url.includes("canva.com") && url.includes("/view")) {
@@ -4391,6 +4649,7 @@ Provide the response in structured JSON matching this schema:
 
             workUrlInput.addEventListener("input", updateMediaPreview);
             workTypeSelect.addEventListener("change", updateMediaPreview);
+            document.getElementById("work-is-ba")?.addEventListener("change", updateMediaPreview);
             document.getElementById("work-beforeUrl")?.addEventListener("input", updateMediaPreview);
             document.getElementById("work-beforeLabel")?.addEventListener("input", updateMediaPreview);
             document.getElementById("work-afterLabel")?.addEventListener("input", updateMediaPreview);

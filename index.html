@@ -247,12 +247,18 @@
                 <!-- Before & After 2-in-1 Comparison Stage -->
                 <div id="modal-before-after" class="relative w-full h-full hidden select-none overflow-hidden bg-black" style="touch-action: pan-y;">
                     <!-- Base (After) Layer -->
-                    <img id="modal-after-img" src="" alt="After Visual" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                    <div id="modal-after-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none">
+                        <img id="modal-after-img" src="" alt="After Visual" class="w-full h-full object-cover">
+                        <video id="modal-after-vid" src="" playsinline loop muted autoplay class="w-full h-full object-cover hidden"></video>
+                    </div>
                     <span id="modal-after-label" class="absolute bottom-5 right-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md text-white border border-white/20 shadow-lg pointer-events-none font-display">After</span>
 
                     <!-- Clipped (Before) Layer -->
                     <div id="modal-before-clip" class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-                        <img id="modal-before-img" src="" alt="Before Visual" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                        <div id="modal-before-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none">
+                            <img id="modal-before-img" src="" alt="Before Visual" class="w-full h-full object-cover">
+                            <video id="modal-before-vid" src="" playsinline loop muted autoplay class="w-full h-full object-cover hidden"></video>
+                        </div>
                         <span id="modal-before-label" class="absolute bottom-5 left-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/50 shadow-lg pointer-events-none font-display">Before</span>
                     </div>
 

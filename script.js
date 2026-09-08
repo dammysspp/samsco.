@@ -1386,15 +1386,24 @@ function renderMobileReelsFeed(targetIndex) {
             const rawBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
             const beforeLabel = work.beforeLabel || "Before";
             const afterLabel = work.afterLabel || "After";
+            const isVideoBA = isVideo || isVideoUrl(rawBefore, "video") || isVideoUrl(rawAfter, "video");
+            const isNearInitial = Math.abs(slideIdx - targetIndex) <= 2;
+
             mediaHtml = `
                 <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden reel-ba-container pointer-events-auto" style="touch-action: pan-y;">
-                    <!-- After Image Base -->
-                    <img class="reel-img w-full h-full object-contain pointer-events-none" src="${rawAfter}" alt="${work.title}" onerror="window.handleGridImageError(this)">
+                    <!-- After Layer Base -->
+                    ${isVideoBA 
+                        ? `<video class="reel-video reel-ba-vid-after w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawAfter}"` : `data-src="${rawAfter}"`} playsinline loop muted autoplay></video>`
+                        : `<img class="reel-img w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawAfter}"` : `data-src="${rawAfter}"`} alt="${work.title}" onerror="window.handleGridImageError(this)">`
+                    }
                     <span class="absolute top-20 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/20 shadow-md pointer-events-none font-display">${afterLabel}</span>
 
-                    <!-- Before Image Clipped -->
+                    <!-- Before Layer Clipped -->
                     <div class="reel-ba-clip absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-                        <img class="w-full h-full object-contain pointer-events-none" src="${rawBefore}" alt="${work.title} - Before" onerror="window.handleGridImageError(this)">
+                        ${isVideoBA
+                            ? `<video class="reel-video reel-ba-vid-before w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} playsinline loop muted autoplay></video>`
+                            : `<img class="w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} alt="${work.title} - Before" onerror="window.handleGridImageError(this)">`
+                        }
                         <span class="absolute top-20 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 shadow-md pointer-events-none font-display">${beforeLabel}</span>
                     </div>
 
@@ -1631,11 +1640,27 @@ function renderMobileReelsFeed(targetIndex) {
             });
         });
 
-        // Before & After Interactive Touch Drag Handler
+        // Before & After Interactive Touch Drag Handler & Video Sync
         const baContainer = slide.querySelector(".reel-ba-container");
         if (baContainer) {
             const baClip = baContainer.querySelector(".reel-ba-clip");
             const baHandle = baContainer.querySelector(".reel-ba-handle");
+            const baVidAfter = baContainer.querySelector(".reel-ba-vid-after");
+            const baVidBefore = baContainer.querySelector(".reel-ba-vid-before");
+
+            if (baVidAfter && baVidBefore) {
+                baVidAfter.addEventListener("play", () => baVidBefore.play().catch(() => {}));
+                baVidAfter.addEventListener("pause", () => baVidBefore.pause());
+                baVidAfter.addEventListener("timeupdate", () => {
+                    if (Math.abs(baVidBefore.currentTime - baVidAfter.currentTime) > 0.15) {
+                        baVidBefore.currentTime = baVidAfter.currentTime;
+                    }
+                });
+                baVidAfter.addEventListener("seeking", () => {
+                    baVidBefore.currentTime = baVidAfter.currentTime;
+                });
+            }
+
             if (baClip && baHandle) {
                 let isDragging = false;
                 const updateReelSlider = (clientX) => {
@@ -1997,6 +2022,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const mBA = document.getElementById("modal-before-after");
     const mBeforeImg = document.getElementById("modal-before-img");
     const mAfterImg = document.getElementById("modal-after-img");
+    const mBeforeVid = document.getElementById("modal-before-vid");
+    const mAfterVid = document.getElementById("modal-after-vid");
     const mBeforeClip = document.getElementById("modal-before-clip");
     const mBAHandle = document.getElementById("modal-ba-handle");
     const mBeforeLabel = document.getElementById("modal-before-label");
@@ -2031,6 +2058,16 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         mIframe.src = "";
         if (mBeforeImg) mBeforeImg.src = "";
         if (mAfterImg) mAfterImg.src = "";
+        if (mBeforeVid) {
+            mBeforeVid.src = "";
+            mBeforeVid.classList.add("hidden");
+            mBeforeVid.pause();
+        }
+        if (mAfterVid) {
+            mAfterVid.src = "";
+            mAfterVid.classList.add("hidden");
+            mAfterVid.pause();
+        }
 
         mImg.classList.add("hidden");
         mVideo.classList.add("hidden");
@@ -2056,13 +2093,47 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             mIframe.classList.remove("hidden");
             mIframe.src = workUrl + "?embed";
         } else if (mediaType === "before_after") {
-            if (mBA && mBeforeImg && mAfterImg && mBeforeClip && mBAHandle) {
+            if (mBA && mBeforeClip && mBAHandle) {
                 mBA.classList.remove("hidden");
                 const cleanAfter = workUrl.split("?")[0];
                 const cleanBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
+                const isVideoBA = isVideo || isVideoUrl(cleanBefore, "video") || isVideoUrl(cleanAfter, "video");
                 
-                mAfterImg.src = cleanAfter;
-                mBeforeImg.src = cleanBefore;
+                if (isVideoBA) {
+                    if (mAfterImg) mAfterImg.classList.add("hidden");
+                    if (mBeforeImg) mBeforeImg.classList.add("hidden");
+                    if (mAfterVid && mBeforeVid) {
+                        mAfterVid.classList.remove("hidden");
+                        mBeforeVid.classList.remove("hidden");
+                        mAfterVid.src = cleanAfter;
+                        mBeforeVid.src = cleanBefore;
+                        mAfterVid.play().catch(() => {});
+                        mBeforeVid.play().catch(() => {});
+
+                        mAfterVid.onplay = () => mBeforeVid.play().catch(() => {});
+                        mAfterVid.onpause = () => mBeforeVid.pause();
+                        mAfterVid.ontimeupdate = () => {
+                            if (Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime) > 0.15) {
+                                mBeforeVid.currentTime = mAfterVid.currentTime;
+                            }
+                        };
+                        mAfterVid.onseeking = () => {
+                            mBeforeVid.currentTime = mAfterVid.currentTime;
+                        };
+                    }
+                } else {
+                    if (mAfterVid) mAfterVid.classList.add("hidden");
+                    if (mBeforeVid) mBeforeVid.classList.add("hidden");
+                    if (mAfterImg) {
+                        mAfterImg.classList.remove("hidden");
+                        mAfterImg.src = cleanAfter;
+                    }
+                    if (mBeforeImg) {
+                        mBeforeImg.classList.remove("hidden");
+                        mBeforeImg.src = cleanBefore;
+                    }
+                }
+
                 if (mBeforeLabel) mBeforeLabel.innerText = work.beforeLabel || "Before";
                 if (mAfterLabel) mAfterLabel.innerText = work.afterLabel || "After";
 
@@ -2122,6 +2193,12 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     window.removeEventListener("pointermove", onPointerMove);
                     window.removeEventListener("pointerup", onPointerUp);
                     window.removeEventListener("keydown", onKeyDown);
+                    if (mAfterVid) {
+                        mAfterVid.onplay = null;
+                        mAfterVid.onpause = null;
+                        mAfterVid.ontimeupdate = null;
+                        mAfterVid.onseeking = null;
+                    }
                     window._baCleanup = null;
                 };
             }
