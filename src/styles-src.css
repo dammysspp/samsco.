@@ -368,10 +368,13 @@ h6 {
     left: 0;
     height: 2px;
     background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
-    width: 0%;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
     z-index: 100001;
     /* Above preloader and navbar */
-    transition: width 0.1s linear;
+    transition: transform 0.05s linear;
+    will-change: transform;
 }
 
 /* ==============================================
@@ -3168,6 +3171,55 @@ button:focus-visible,
     }
     .mobile-play-main-btn:active {
         transform: scale(0.92);
+    }
+}
+
+/* ==============================================
+   LOW-END MOBILE & TOUCH PERFORMANCE OVERRIDES
+   ============================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+    /* Strip expensive real-time GPU blur shaders on mobile */
+    .glass-card,
+    .testimonial-card,
+    .vault-filter-btn,
+    .lagos-badge,
+    #identity-bubble,
+    .category-badge,
+    #navbar.scrolled .glass-card,
+    .gallery-item .backdrop-blur-md,
+    .gallery-item .backdrop-blur-sm,
+    .gallery-item [class*="backdrop-blur"] {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .glass-card {
+        background: rgba(18, 21, 28, 0.94) !important;
+    }
+
+    .testimonial-card {
+        background: rgba(18, 21, 28, 0.92) !important;
+    }
+
+    .vault-filter-btn {
+        background: rgba(26, 29, 38, 0.95) !important;
+    }
+
+    #navbar.scrolled .glass-card {
+        background: rgba(10, 12, 16, 0.96) !important;
+    }
+
+    /* Off-screen rendering containment for high-count gallery items */
+    .gallery-item {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 300px;
+    }
+
+    /* Disable heavy multi-layered box-shadows on mobile to reduce GPU fill-rate strain */
+    .gallery-item,
+    .glass-card,
+    .testimonial-card {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     }
 }
 

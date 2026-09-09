@@ -1243,30 +1243,35 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis Smooth Scrolling -->
+    <!-- Lenis Smooth Scrolling (Desktop only - Native touch scroll on mobile for 60-120fps performance) -->
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-        window.lenis = lenis;
+        const isTouchMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 768);
+        let lenis = null;
+        if (!isTouchMobile && typeof Lenis !== 'undefined') {
+            lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 1.5,
+                infinite: false,
+            });
+            window.lenis = lenis;
 
-        // Connect Lenis to GSAP ScrollTrigger
-        // Do NOT use a separate requestAnimationFrame loop when using gsap.ticker
-        if (typeof ScrollTrigger !== "undefined") {
-            lenis.on('scroll', ScrollTrigger.update)
-            gsap.ticker.add((time) => {
-                lenis.raf(time * 1000)
-            })
-            gsap.ticker.lagSmoothing(0)
+            // Connect Lenis to GSAP ScrollTrigger
+            if (typeof ScrollTrigger !== "undefined") {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
+                gsap.ticker.lagSmoothing(0);
+            }
+        } else {
+            window.lenis = null;
         }
     </script>
 
