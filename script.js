@@ -1396,26 +1396,27 @@ function renderMobileReelsFeed(targetIndex) {
                     </div>
                 </div>
             `;
-        } else if (work.type === "before_after" || work.beforeUrl) {
+        } else if (isBeforeAfter) {
             const rawAfter = workUrl.split("?")[0];
             const rawBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
             const beforeLabel = work.beforeLabel || "Before";
             const afterLabel = work.afterLabel || "After";
-            const isVideoBA = isVideo || isVideoUrl(rawBefore, "video") || isVideoUrl(rawAfter, "video");
+            const isAfterVid = isVideo || isVideoUrl(rawAfter, "video");
+            const isBeforeVid = isVideoUrl(rawBefore, "video");
             const isNearInitial = Math.abs(slideIdx - targetIndex) <= 2;
 
             mediaHtml = `
                 <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden reel-ba-container pointer-events-auto" style="touch-action: none;">
                     <!-- After Layer Base -->
-                    ${isVideoBA 
+                    ${isAfterVid 
                         ? `<video class="reel-video reel-ba-vid-after w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawAfter}"` : `data-src="${rawAfter}"`} playsinline loop muted autoplay></video>`
                         : `<img class="reel-img w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawAfter}"` : `data-src="${rawAfter}"`} alt="${work.title}" onerror="window.handleGridImageError(this)">`
                     }
                     <span class="absolute top-20 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/20 shadow-md pointer-events-none font-display">${afterLabel}</span>
 
                     <!-- Before Layer Clipped -->
-                    <div class="reel-ba-clip absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-                        ${isVideoBA
+                    <div class="reel-ba-clip absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                        ${isBeforeVid
                             ? `<video class="reel-video reel-ba-vid-before w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} playsinline loop muted autoplay></video>`
                             : `<img class="reel-img w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} alt="${work.title} - Before" onerror="window.handleGridImageError(this)">`
                         }
@@ -1664,15 +1665,31 @@ function renderMobileReelsFeed(targetIndex) {
             const baVidBefore = baContainer.querySelector(".reel-ba-vid-before");
 
             if (baVidAfter && baVidBefore) {
-                baVidAfter.addEventListener("play", () => baVidBefore.play().catch(() => {}));
-                baVidAfter.addEventListener("pause", () => baVidBefore.pause());
+                baVidAfter.addEventListener("play", () => {
+                    if (baVidBefore.paused) baVidBefore.play().catch(() => {});
+                });
+                baVidAfter.addEventListener("pause", () => {
+                    if (!baVidBefore.paused) baVidBefore.pause();
+                });
+                let isSyncingReel = false;
                 baVidAfter.addEventListener("timeupdate", () => {
-                    if (Math.abs(baVidBefore.currentTime - baVidAfter.currentTime) > 0.15) {
+                    if (isSyncingReel) return;
+                    if (baVidBefore.seeking || baVidAfter.seeking) return;
+                    if (Math.abs(baVidBefore.currentTime - baVidAfter.currentTime) > 0.75) {
+                        isSyncingReel = true;
                         baVidBefore.currentTime = baVidAfter.currentTime;
+                        setTimeout(() => { isSyncingReel = false; }, 400);
                     }
                 });
                 baVidAfter.addEventListener("seeking", () => {
-                    baVidBefore.currentTime = baVidAfter.currentTime;
+                    if (!baVidBefore.seeking && Math.abs(baVidBefore.currentTime - baVidAfter.currentTime) > 0.2) {
+                        baVidBefore.currentTime = baVidAfter.currentTime;
+                    }
+                });
+                baVidAfter.addEventListener("seeked", () => {
+                    if (baVidAfter.currentTime < 0.25 && baVidBefore.currentTime > 0.5) {
+                        baVidBefore.currentTime = baVidAfter.currentTime;
+                    }
                 });
             }
 
@@ -1683,7 +1700,9 @@ function renderMobileReelsFeed(targetIndex) {
                     if (!rect.width) return;
                     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
                     const percent = (x / rect.width) * 100;
-                    baClip.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                    const clipStr = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                    baClip.style.clipPath = clipStr;
+                    baClip.style.webkitClipPath = clipStr;
                     baHandle.style.left = `${percent}%`;
                 };
 
@@ -2148,7 +2167,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 mBA.classList.remove("hidden");
                 const cleanAfter = workUrl.split("?")[0];
                 const cleanBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
-                const isVideoBA = isVideo || isVideoUrl(cleanBefore, "video") || isVideoUrl(cleanAfter, "video");
+                const isAfterVid = isVideo || isVideoUrl(cleanAfter, "video");
+                const isBeforeVid = isVideoUrl(cleanBefore, "video");
 
                 const mBAContent = document.getElementById("modal-ba-content");
                 const mBALoader = document.getElementById("modal-ba-loader");
@@ -2182,7 +2202,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     sliderPercent = Math.max(0, Math.min(100, pct));
                     if (mBeforeClip && mBAHandle) {
                         if (animate) {
-                            mBeforeClip.style.transition = "clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+                            mBeforeClip.style.transition = "clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1), -webkit-clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
                             mBAHandle.style.transition = "left 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
                             setTimeout(() => {
                                 if (mBeforeClip) mBeforeClip.style.transition = "";
@@ -2192,7 +2212,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                             mBeforeClip.style.transition = "";
                             mBAHandle.style.transition = "";
                         }
-                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                        const clipVal = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                        mBeforeClip.style.clipPath = clipVal;
+                        mBeforeClip.style.webkitClipPath = clipVal;
                         mBAHandle.style.left = `${sliderPercent}%`;
                     }
 
@@ -2223,7 +2245,10 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 // Preloading Gatekeeper & Animated Progress Percentage
                 let beforeLoaded = false;
                 let afterLoaded = false;
-                let loadProgress = 10;
+                let bReady = false;
+                let aReady = false;
+                let isLoadedCompleted = false;
+                let loadProgress = 15;
                 let progressInterval = null;
 
                 const updateProgressUI = (pct, text) => {
@@ -2243,6 +2268,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 }, 120);
 
                 const onBothAssetsLoaded = () => {
+                    if (isLoadedCompleted) return;
+                    isLoadedCompleted = true;
                     if (progressInterval) clearInterval(progressInterval);
                     updateProgressUI(100, "Comparison Ready!");
 
@@ -2256,14 +2283,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                             mBAContent.classList.add("opacity-100");
                         }
 
-                        // Gentle introductory hint animation (50% -> 60% -> 40% -> 50%)
+                        // Gentle introductory hint animation (50% -> 62% -> 38% -> 50%)
                         if (!userHasInteracted) {
                             setTimeout(() => {
                                 if (userHasInteracted) return;
-                                setSliderPosition(60, true);
+                                setSliderPosition(62, true);
                                 setTimeout(() => {
                                     if (userHasInteracted) return;
-                                    setSliderPosition(40, true);
+                                    setSliderPosition(38, true);
                                     setTimeout(() => {
                                         if (userHasInteracted) return;
                                         setSliderPosition(50, true);
@@ -2274,134 +2301,190 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     }, 250);
                 };
 
-                if (isVideoBA) {
-                    if (mAfterImg) mAfterImg.classList.add("hidden");
-                    if (mBeforeImg) mBeforeImg.classList.add("hidden");
-                    if (mAfterVid && mBeforeVid) {
-                        mAfterVid.classList.remove("hidden");
-                        mBeforeVid.classList.remove("hidden");
-                        mAfterVid.muted = true;
-                        mBeforeVid.muted = true;
-                        mAfterVid.preload = "auto";
-                        mBeforeVid.preload = "auto";
-                        mAfterVid.src = cleanAfter;
-                        mBeforeVid.src = cleanBefore;
-
-                        let bVidReady = false, aVidReady = false;
-
-                        const checkVids = () => {
-                            if (bVidReady && aVidReady) {
-                                beforeLoaded = true;
-                                afterLoaded = true;
-                                mBeforeVid.currentTime = 0;
-                                mAfterVid.currentTime = 0;
-                                mAfterVid.play().catch(() => {});
-                                mBeforeVid.play().catch(() => {});
-                                onBothAssetsLoaded();
-                            }
-                        };
-
-                        const handleBeforeReady = () => {
-                            if (bVidReady) return;
-                            bVidReady = true;
-                            updateProgressUI(Math.max(loadProgress, 55), aVidReady ? "Syncing comparison playback..." : "Before video ready ✓ Buffering after...");
-                            checkVids();
-                        };
-
-                        const handleAfterReady = () => {
-                            if (aVidReady) return;
-                            aVidReady = true;
-                            updateProgressUI(Math.max(loadProgress, 55), bVidReady ? "Syncing comparison playback..." : "After video ready ✓ Buffering before...");
-                            checkVids();
-                        };
-
-                        if (mBeforeVid.readyState >= 2) handleBeforeReady();
-                        else {
-                            mBeforeVid.addEventListener("loadeddata", handleBeforeReady, { once: true });
-                            mBeforeVid.addEventListener("canplay", handleBeforeReady, { once: true });
+                const checkAllReady = () => {
+                    if (bReady && aReady) {
+                        beforeLoaded = true;
+                        afterLoaded = true;
+                        if (isAfterVid && mAfterVid) {
+                            mAfterVid.play().catch(() => {});
                         }
-
-                        if (mAfterVid.readyState >= 2) handleAfterReady();
-                        else {
-                            mAfterVid.addEventListener("loadeddata", handleAfterReady, { once: true });
-                            mAfterVid.addEventListener("canplay", handleAfterReady, { once: true });
+                        if (isBeforeVid && mBeforeVid) {
+                            mBeforeVid.play().catch(() => {});
                         }
-
-                        // Safety fallback in case browser throttles background buffering
-                        setTimeout(() => {
-                            if (!bVidReady || !aVidReady) {
-                                bVidReady = true;
-                                aVidReady = true;
-                                checkVids();
-                            }
-                        }, 4000);
-
-                        // Lockstep synchronized playback
-                        mAfterVid.onplay = () => mBeforeVid.play().catch(() => {});
-                        mAfterVid.onpause = () => mBeforeVid.pause();
-                        mAfterVid.ontimeupdate = () => {
-                            if (Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime) > 0.12) {
-                                mBeforeVid.currentTime = mAfterVid.currentTime;
-                            }
-                        };
-                        mAfterVid.onseeking = () => {
-                            mBeforeVid.currentTime = mAfterVid.currentTime;
-                        };
+                        onBothAssetsLoaded();
                     }
-                } else {
-                    if (mAfterVid) mAfterVid.classList.add("hidden");
-                    if (mBeforeVid) mBeforeVid.classList.add("hidden");
-                    if (mAfterImg) mAfterImg.classList.remove("hidden");
-                    if (mBeforeImg) mBeforeImg.classList.remove("hidden");
+                };
 
-                    let bImgReady = false, aImgReady = false;
+                // Safety timeout so user isn't stuck if network or cache throttles events
+                let safetyTimer = setTimeout(() => {
+                    if (!bReady || !aReady) {
+                        bReady = true;
+                        aReady = true;
+                        checkAllReady();
+                    }
+                }, 3500);
 
-                    const checkImgs = () => {
-                        if (bImgReady && aImgReady) {
-                            beforeLoaded = true;
-                            afterLoaded = true;
-                            onBothAssetsLoaded();
-                        }
+                // Setup After Visual Asset
+                if (isAfterVid && mAfterVid) {
+                    if (mAfterImg) mAfterImg.classList.add("hidden");
+                    mAfterVid.classList.remove("hidden");
+                    mAfterVid.muted = true;
+                    mAfterVid.defaultMuted = true;
+                    mAfterVid.playsInline = true;
+                    mAfterVid.loop = true;
+                    mAfterVid.preload = "auto";
+                    mAfterVid.setAttribute("playsinline", "");
+                    mAfterVid.setAttribute("webkit-playsinline", "");
+                    mAfterVid.setAttribute("muted", "");
+                    mAfterVid.setAttribute("loop", "");
+
+                    const handleAfterReady = () => {
+                        if (aReady) return;
+                        aReady = true;
+                        updateProgressUI(Math.max(loadProgress, 55), bReady ? "Syncing comparison playback..." : "After asset ready ✓ Buffering before...");
+                        checkAllReady();
                     };
 
-                    const imgB = new Image();
-                    imgB.onload = () => {
-                        bImgReady = true;
-                        updateProgressUI(Math.max(loadProgress, 50), aImgReady ? "Finalizing Comparison..." : "Before asset ready ✓ Loading after...");
-                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
-                        checkImgs();
-                    };
-                    imgB.onerror = () => {
-                        bImgReady = true;
-                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
-                        checkImgs();
-                    };
-                    imgB.src = cleanBefore;
+                    mAfterVid.addEventListener("loadeddata", handleAfterReady, { once: true });
+                    mAfterVid.addEventListener("canplay", handleAfterReady, { once: true });
+                    mAfterVid.addEventListener("error", () => {
+                        console.warn("After video load error");
+                        handleAfterReady();
+                    }, { once: true });
 
+                    mAfterVid.src = cleanAfter;
+                    mAfterVid.load();
+                    if (mAfterVid.readyState >= 2) handleAfterReady();
+                } else if (mAfterImg) {
+                    if (mAfterVid) {
+                        mAfterVid.classList.add("hidden");
+                        mAfterVid.pause();
+                        mAfterVid.src = "";
+                    }
+                    mAfterImg.classList.remove("hidden");
                     const imgA = new Image();
                     imgA.onload = () => {
-                        aImgReady = true;
-                        updateProgressUI(Math.max(loadProgress, 50), bImgReady ? "Finalizing Comparison..." : "After asset ready ✓ Loading before...");
+                        aReady = true;
                         if (mAfterImg) mAfterImg.src = cleanAfter;
-                        checkImgs();
+                        updateProgressUI(Math.max(loadProgress, 55), bReady ? "Finalizing Comparison..." : "After asset ready ✓ Loading before...");
+                        checkAllReady();
                     };
                     imgA.onerror = () => {
-                        aImgReady = true;
+                        aReady = true;
                         if (mAfterImg) mAfterImg.src = cleanAfter;
-                        checkImgs();
+                        checkAllReady();
                     };
                     imgA.src = cleanAfter;
+                }
 
-                    // Safety fallback in case cached images or slow network
-                    setTimeout(() => {
-                        if (!bImgReady || !aImgReady) {
-                            bImgReady = true;
-                            aImgReady = true;
-                            if (mBeforeImg && !mBeforeImg.src) mBeforeImg.src = cleanBefore;
-                            if (mAfterImg && !mAfterImg.src) mAfterImg.src = cleanAfter;
-                            checkImgs();
+                // Setup Before Visual Asset
+                if (isBeforeVid && mBeforeVid) {
+                    if (mBeforeImg) mBeforeImg.classList.add("hidden");
+                    mBeforeVid.classList.remove("hidden");
+                    mBeforeVid.muted = true;
+                    mBeforeVid.defaultMuted = true;
+                    mBeforeVid.playsInline = true;
+                    mBeforeVid.loop = true;
+                    mBeforeVid.preload = "auto";
+                    mBeforeVid.setAttribute("playsinline", "");
+                    mBeforeVid.setAttribute("webkit-playsinline", "");
+                    mBeforeVid.setAttribute("muted", "");
+                    mBeforeVid.setAttribute("loop", "");
+
+                    const handleBeforeReady = () => {
+                        if (bReady) return;
+                        bReady = true;
+                        updateProgressUI(Math.max(loadProgress, 55), aReady ? "Syncing comparison playback..." : "Before asset ready ✓ Buffering after...");
+                        checkAllReady();
+                    };
+
+                    mBeforeVid.addEventListener("loadeddata", handleBeforeReady, { once: true });
+                    mBeforeVid.addEventListener("canplay", handleBeforeReady, { once: true });
+                    mBeforeVid.addEventListener("error", () => {
+                        console.warn("Before video load error");
+                        handleBeforeReady();
+                    }, { once: true });
+
+                    mBeforeVid.src = cleanBefore;
+                    mBeforeVid.load();
+                    if (mBeforeVid.readyState >= 2) handleBeforeReady();
+                } else if (mBeforeImg) {
+                    if (mBeforeVid) {
+                        mBeforeVid.classList.add("hidden");
+                        mBeforeVid.pause();
+                        mBeforeVid.src = "";
+                    }
+                    mBeforeImg.classList.remove("hidden");
+                    const imgB = new Image();
+                    imgB.onload = () => {
+                        bReady = true;
+                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
+                        updateProgressUI(Math.max(loadProgress, 55), aReady ? "Finalizing Comparison..." : "Before asset ready ✓ Loading after...");
+                        checkAllReady();
+                    };
+                    imgB.onerror = () => {
+                        bReady = true;
+                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
+                        checkAllReady();
+                    };
+                    imgB.src = cleanBefore;
+                }
+
+                // Video to Video Lockstep Synchronization (Master: After, Slave: Before)
+                if (isBeforeVid && isAfterVid && mAfterVid && mBeforeVid) {
+                    mAfterVid.onplay = () => {
+                        if (mBeforeVid.paused) mBeforeVid.play().catch(() => {});
+                    };
+                    mAfterVid.onpause = () => {
+                        if (!mBeforeVid.paused) mBeforeVid.pause();
+                    };
+
+                    // Prevent master from leaving slave behind if buffering
+                    mBeforeVid.onwaiting = () => {
+                        if (!mAfterVid.paused) mAfterVid.pause();
+                    };
+                    mBeforeVid.onplaying = () => {
+                        if (mAfterVid.paused) mAfterVid.play().catch(() => {});
+                    };
+                    mAfterVid.onwaiting = () => {
+                        if (!mBeforeVid.paused) mBeforeVid.pause();
+                    };
+                    mAfterVid.onplaying = () => {
+                        if (mBeforeVid.paused) mBeforeVid.play().catch(() => {});
+                    };
+
+                    // Seamless synchronized looping
+                    mAfterVid.onseeked = () => {
+                        if (mAfterVid.currentTime < 0.25 && mBeforeVid.currentTime > 0.5) {
+                            mBeforeVid.currentTime = mAfterVid.currentTime;
                         }
-                    }, 3500);
+                    };
+                    mAfterVid.onended = () => {
+                        mAfterVid.currentTime = 0;
+                        mBeforeVid.currentTime = 0;
+                        mAfterVid.play().catch(() => {});
+                        mBeforeVid.play().catch(() => {});
+                    };
+
+                    // Manual scrub sync
+                    mAfterVid.onseeking = () => {
+                        if (!mBeforeVid.seeking && Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime) > 0.2) {
+                            mBeforeVid.currentTime = mAfterVid.currentTime;
+                        }
+                    };
+
+                    // Gentle drift correction (avoids perpetual seek-thrashing loop that causes black frames)
+                    let isSyncing = false;
+                    mAfterVid.ontimeupdate = () => {
+                        if (isSyncing) return;
+                        if (mBeforeVid.seeking || mAfterVid.seeking) return;
+                        const diff = Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime);
+                        if (diff > 0.75) {
+                            isSyncing = true;
+                            mBeforeVid.currentTime = mAfterVid.currentTime;
+                            setTimeout(() => { isSyncing = false; }, 400);
+                        }
+                    };
                 }
 
                 // Interactive Pointer Events (Mobile touch + Mouse + Trackpad)
@@ -2497,6 +2580,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
                 window._baCleanup = () => {
                     if (progressInterval) clearInterval(progressInterval);
+                    if (safetyTimer) clearTimeout(safetyTimer);
                     window.removeEventListener("pointermove", onPointerMove);
                     window.removeEventListener("pointerup", onPointerUp);
                     window.removeEventListener("pointercancel", onPointerUp);
@@ -2505,15 +2589,27 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     }
                     window.removeEventListener("keydown", onKeyDown);
                     if (mAfterVid) {
+                        mAfterVid.pause();
                         mAfterVid.onplay = null;
                         mAfterVid.onpause = null;
                         mAfterVid.ontimeupdate = null;
                         mAfterVid.onseeking = null;
+                        mAfterVid.onseeked = null;
+                        mAfterVid.onwaiting = null;
+                        mAfterVid.onplaying = null;
+                        mAfterVid.onended = null;
                         mAfterVid.src = "";
+                        try { mAfterVid.load(); } catch (err) {}
                     }
                     if (mBeforeVid) {
+                        mBeforeVid.pause();
+                        mBeforeVid.onwaiting = null;
+                        mBeforeVid.onplaying = null;
                         mBeforeVid.src = "";
+                        try { mBeforeVid.load(); } catch (err) {}
                     }
+                    if (mBeforeImg) mBeforeImg.src = "";
+                    if (mAfterImg) mAfterImg.src = "";
                     if (stage) {
                         stage.classList.remove("stage-before-after");
                         stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");

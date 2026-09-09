@@ -3065,6 +3065,21 @@ button:focus-visible,
         object-position: center !important;
         background: #000000 !important;
     }
+
+    #modal-before-clip {
+        will-change: clip-path, -webkit-clip-path;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    #modal-before-container {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
 }
 
 /* Mobile Native Player App UI (Portrait Optimized) */
