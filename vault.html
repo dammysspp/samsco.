@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <base href="/">
     <script>
         window.vaultStartTime = Date.now();
         window.vaultImagesLoaded = 0;
@@ -15,7 +16,7 @@
 
     <meta property="og:title" content="Samsco Communications | Creativity Evolved">
     <meta property="og:description" content="3D Art, VFX, and Creative Coding from Lagos, Nigeria.">
-    <meta property="og:image" content="./me_3.jpg">
+    <meta property="og:image" content="/me_3.jpg">
     <meta property="og:type" content="website">
 
     <link rel="icon" type="image/x-icon" href="/favicon.png">
@@ -26,26 +27,6 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-                        display: ['Space Grotesk', 'Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        apple: {
-                            blue: '#0071e3',
-                            cyan: '#64d2ff',
-                            gray: { 100: '#f5f5f7', 200: '#d2d2d7', 500: '#86868b', 800: '#1d1d1f' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="stylesheet" href="/styles.css">
     <style>
         /* Performance & Hardware Acceleration (Optimized for Low-End PCs & Mobile) */
@@ -885,7 +866,7 @@
 
         <div class="relative max-w-5xl w-full h-full flex flex-col justify-center items-center">
             <!-- Iframe Container for Presentations -->
-            <iframe id="lightbox-iframe" src="" allowfullscreen="allowfullscreen" allow="fullscreen"
+            <iframe id="lightbox-iframe" src="" allow="fullscreen"
                 class="w-full h-[85vh] hidden z-40 pointer-events-auto"
                 style="border:none; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));"></iframe>
 
@@ -1017,9 +998,9 @@
     <script>window.isVaultPage = true;</script>
     <!-- Supabase Client CDN & Configuration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabase-config.js"></script>
-    <script src="./script.js"></script>
-    <script src="./email-handler.js"></script>
+    <script src="/supabase-config.js"></script>
+    <script src="/script.js"></script>
+    <script src="/email-handler.js"></script>
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
@@ -1028,7 +1009,8 @@
             if (typeof initGallery !== 'undefined') initGallery();
 
             // Preloader logic
-            const minTime = 1200; // Snappy loader time
+            const hasDeepLink = typeof getSlugFromUrl === 'function' ? !!getSlugFromUrl() : false;
+            const minTime = hasDeepLink ? 350 : 1200; // Snappy transition for direct deep links
             const startTime = window.vaultStartTime || Date.now();
             let loaderFinished = false;
 

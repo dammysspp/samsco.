@@ -3,6 +3,10 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
+        { "source": "/vault/assets/:match*", "destination": "/assets/:match*" },
+        { "source": "/vault/:file(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|avif|mp4|webm|woff2?|ttf|eot))", "destination": "/:file" },
+        { "source": "/work/assets/:match*", "destination": "/assets/:match*" },
+        { "source": "/work/:file(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|avif|mp4|webm|woff2?|ttf|eot))", "destination": "/:file" },
         { "source": "/vault/:slug([^/.]+)", "destination": "/vault" },
         { "source": "/work/:slug([^/.]+)", "destination": "/vault" }
     ]
