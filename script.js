@@ -2159,6 +2159,41 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 const mBtnBefore = document.getElementById("modal-ba-btn-before");
                 const mBtnSplit = document.getElementById("modal-ba-btn-split");
                 const mBtnAfter = document.getElementById("modal-ba-btn-after");
+                const mBAPlayBtn = document.getElementById("modal-ba-play-btn");
+                const mBAPlayIcon = document.getElementById("modal-ba-play-icon");
+                const mBAPlayDivider = document.getElementById("modal-ba-play-divider");
+
+                const baPauseSvg = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                const baPlaySvg = '<path d="M8 5v14l11-7z"/>';
+
+                const updateBAPlayUI = (isPlaying) => {
+                    if (!mBAPlayIcon) return;
+                    mBAPlayIcon.innerHTML = isPlaying ? baPauseSvg : baPlaySvg;
+                    if (mBAPlayBtn) {
+                        if (isPlaying) {
+                            mBAPlayBtn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center transition-all cursor-pointer";
+                            mBAPlayBtn.setAttribute("title", "Pause comparison (Space)");
+                            mBAPlayBtn.setAttribute("aria-label", "Pause comparison");
+                        } else {
+                            mBAPlayBtn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0071e3] hover:bg-[#0077ed] active:scale-90 text-white shadow-md flex items-center justify-center transition-all cursor-pointer";
+                            mBAPlayBtn.setAttribute("title", "Play comparison (Space)");
+                            mBAPlayBtn.setAttribute("aria-label", "Play comparison");
+                        }
+                    }
+                };
+
+                const toggleBAPlayback = () => {
+                    const isPlaying = (isAfterVid && mAfterVid && !mAfterVid.paused) || (isBeforeVid && mBeforeVid && !mBeforeVid.paused);
+                    if (isPlaying) {
+                        if (isAfterVid && mAfterVid) mAfterVid.pause();
+                        if (isBeforeVid && mBeforeVid) mBeforeVid.pause();
+                        updateBAPlayUI(false);
+                    } else {
+                        if (isAfterVid && mAfterVid) mAfterVid.play().catch(() => {});
+                        if (isBeforeVid && mBeforeVid) mBeforeVid.play().catch(() => {});
+                        updateBAPlayUI(true);
+                    }
+                };
 
                 // Reset stage to loading state
                 if (mBALoader) {
@@ -2264,6 +2299,20 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                             mBAContent.classList.add("opacity-100");
                         }
 
+                        // Reveal and configure Play/Pause toggle if comparison includes video
+                        if (mBAPlayBtn && mBAPlayDivider) {
+                            if (isAfterVid || isBeforeVid) {
+                                mBAPlayBtn.classList.remove("hidden");
+                                mBAPlayBtn.classList.add("flex");
+                                mBAPlayDivider.classList.remove("hidden");
+                                updateBAPlayUI(true);
+                            } else {
+                                mBAPlayBtn.classList.add("hidden");
+                                mBAPlayBtn.classList.remove("flex");
+                                mBAPlayDivider.classList.add("hidden");
+                            }
+                        }
+
                         // Gentle introductory hint animation (50% -> 62% -> 38% -> 50%)
                         if (!userHasInteracted) {
                             setTimeout(() => {
@@ -2292,6 +2341,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         if (isBeforeVid && mBeforeVid) {
                             mBeforeVid.play().catch(() => {});
                         }
+                        updateBAPlayUI(true);
                         onBothAssetsLoaded();
                     }
                 };
@@ -2414,9 +2464,11 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 // Video to Video Lockstep Synchronization (Master: After, Slave: Before)
                 if (isBeforeVid && isAfterVid && mAfterVid && mBeforeVid) {
                     mAfterVid.onplay = () => {
+                        updateBAPlayUI(true);
                         if (mBeforeVid.paused) mBeforeVid.play().catch(() => {});
                     };
                     mAfterVid.onpause = () => {
+                        updateBAPlayUI(false);
                         if (!mBeforeVid.paused) mBeforeVid.pause();
                     };
 
@@ -2544,6 +2596,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     };
                 }
 
+                if (mBAPlayBtn) {
+                    mBAPlayBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        userHasInteracted = true;
+                        toggleBAPlayback();
+                    };
+                }
+
                 // Keyboard Accessibility
                 const onKeyDown = (e) => {
                     if (!projectModal.classList.contains("active")) return;
@@ -2555,6 +2615,12 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         e.preventDefault();
                         userHasInteracted = true;
                         setSliderPosition(sliderPercent + 5);
+                    } else if (e.key === " " || e.code === "Space") {
+                        if (isAfterVid || isBeforeVid) {
+                            e.preventDefault();
+                            userHasInteracted = true;
+                            toggleBAPlayback();
+                        }
                     }
                 };
                 window.addEventListener("keydown", onKeyDown);
@@ -2569,6 +2635,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         mBAHandle.removeEventListener("pointerdown", onPointerDown);
                     }
                     window.removeEventListener("keydown", onKeyDown);
+                    if (mBAPlayBtn) {
+                        mBAPlayBtn.onclick = null;
+                        mBAPlayBtn.classList.add("hidden");
+                        mBAPlayBtn.classList.remove("flex");
+                    }
+                    if (mBAPlayDivider) {
+                        mBAPlayDivider.classList.add("hidden");
+                    }
                     if (mAfterVid) {
                         mAfterVid.pause();
                         mAfterVid.onplay = null;
