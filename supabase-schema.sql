@@ -137,7 +137,11 @@ CREATE POLICY "Allow authenticated changes on skills" ON public.skills FOR ALL U
 CREATE POLICY "Allow public read on experience" ON public.experience FOR SELECT USING (true);
 CREATE POLICY "Allow authenticated changes on experience" ON public.experience FOR ALL USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Allow public read on site_settings" ON public.site_settings FOR SELECT USING (true);
+-- Restrict public read on site_settings so private keys (r2_key, groq_api_key) are never leaked
+CREATE POLICY "Allow public read on site_settings" ON public.site_settings FOR SELECT USING (
+    key NOT IN ('r2_key', 'r2_worker', 'groq_api_key', 'groq_model')
+);
+CREATE POLICY "Allow authenticated read on all site_settings" ON public.site_settings FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated changes on site_settings" ON public.site_settings FOR ALL USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Allow public read on categories" ON public.categories FOR SELECT USING (true);

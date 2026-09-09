@@ -4161,6 +4161,20 @@ Provide the response in structured JSON matching this schema:
                 const baCheckbox = document.getElementById("work-is-ba");
                 if (baCheckbox) baCheckbox.checked = isBaWork;
 
+                function isVideoUrl(url, type) {
+                    if (!url) return false;
+                    if (type === "video") return true;
+                    const cleanUrl = url.split("?")[0].toLowerCase();
+                    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/");
+                }
+
+                function sanitizeUrl(url) {
+                    if (!url) return "";
+                    const str = String(url).trim();
+                    if (/^(javascript|data|vbscript):/i.test(str)) return "";
+                    return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                }
+
                 const detectedType = work.type === "before_after" 
                     ? (isVideoUrl(work.url) || isVideoUrl(work.beforeUrl) ? "video" : "image")
                     : (work.type || "image");

@@ -80,14 +80,11 @@ function trackWorkInteraction(work, metric) {
 
     if (!window.supabaseClient) return;
 
-    const newVal = workObj ? workObj[metric] : undefined;
-    if (newVal !== undefined) {
-        try {
-            Promise.resolve(window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId))
-                .then(() => {})
-                .catch(() => {});
-        } catch (err) {}
-    }
+    try {
+        window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
+            .then(() => {})
+            .catch(() => {});
+    } catch (err) {}
 }
 window.trackWorkInteraction = trackWorkInteraction;
 
@@ -716,7 +713,11 @@ function initGallery(force = false) {
         const searchInput = document.getElementById("vault-search");
         const sortSelect = document.getElementById("vault-sort");
         if (searchInput) {
-            searchInput.addEventListener("input", filterAndSortVault);
+            let searchTimeout = null;
+            searchInput.addEventListener("input", () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(filterAndSortVault, 180);
+            });
         }
         if (sortSelect) {
             sortSelect.addEventListener("change", filterAndSortVault);
