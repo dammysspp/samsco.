@@ -519,28 +519,60 @@
                 <iframe id="modal-iframe" src="" allowfullscreen class="w-full h-full hidden border-none"></iframe>
                 
                 <!-- Before & After 2-in-1 Comparison Stage -->
-                <div id="modal-before-after" class="relative w-full h-full hidden select-none overflow-hidden bg-black" style="touch-action: pan-y;">
-                    <!-- Base (After) Layer -->
-                    <div id="modal-after-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none">
-                        <img id="modal-after-img" src="" alt="After Visual" class="w-full h-full object-cover">
-                        <video id="modal-after-vid" src="" playsinline loop muted autoplay class="w-full h-full object-cover hidden"></video>
-                    </div>
-                    <span id="modal-after-label" class="absolute bottom-5 right-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md text-white border border-white/20 shadow-lg pointer-events-none font-display">After</span>
-
-                    <!-- Clipped (Before) Layer -->
-                    <div id="modal-before-clip" class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
-                        <div id="modal-before-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none">
-                            <img id="modal-before-img" src="" alt="Before Visual" class="w-full h-full object-cover">
-                            <video id="modal-before-vid" src="" playsinline loop muted autoplay class="w-full h-full object-cover hidden"></video>
+                <div id="modal-before-after" class="relative w-full h-full hidden select-none overflow-hidden bg-black flex items-center justify-center" style="touch-action: none;">
+                    <!-- Loading Status & Progress Bar (Visible until BOTH assets are fully ready) -->
+                    <div id="modal-ba-loader" class="absolute inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300">
+                        <div class="relative w-14 h-14 mb-3.5 flex items-center justify-center">
+                            <div class="absolute inset-0 rounded-full border-2 border-white/10 border-t-[#64d2ff] animate-spin"></div>
+                            <svg class="w-5 h-5 text-[#64d2ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
                         </div>
-                        <span id="modal-before-label" class="absolute bottom-5 left-5 z-10 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/50 shadow-lg pointer-events-none font-display">Before</span>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs font-bold tracking-wider uppercase text-white font-display">Loading Comparison</span>
+                            <span id="modal-ba-percent" class="text-xs font-mono font-black text-[#64d2ff]">0%</span>
+                        </div>
+                        <div class="w-48 sm:w-56 h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
+                            <div id="modal-ba-progress-bar" class="h-full bg-gradient-to-r from-[#0071e3] to-[#64d2ff] rounded-full transition-all duration-150" style="width: 0%;"></div>
+                        </div>
+                        <span id="modal-ba-status" class="text-[10px] font-mono text-white/50 tracking-wide">Connecting comparison assets...</span>
                     </div>
 
-                    <!-- Interactive Slider Divider & Handle -->
-                    <div id="modal-ba-handle" class="absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize group/handle" style="left: 50%; transform: translateX(-50%); width: 44px;">
-                        <div class="w-0.5 h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] pointer-events-none"></div>
-                        <div class="absolute w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shadow-[0_4px_25px_rgba(0,0,0,0.8)] border-2 border-[#12151c] pointer-events-none group-hover/handle:scale-110 transition-transform">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                    <!-- Comparison Visual Stage (Fades in when 100% loaded) -->
+                    <div id="modal-ba-content" class="relative w-full h-full opacity-0 transition-opacity duration-500 overflow-hidden flex items-center justify-center">
+                        <!-- Top Instructions Pill Badge -->
+                        <div class="absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-white/20 shadow-xl flex items-center gap-2 pointer-events-none select-none">
+                            <svg class="w-3.5 h-3.5 text-[#64d2ff] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-white font-display">Drag Slider To Compare</span>
+                        </div>
+
+                        <!-- Base (After) Layer -->
+                        <div id="modal-after-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none overflow-hidden">
+                            <img id="modal-after-img" src="" alt="After Visual" class="w-full h-full object-contain pointer-events-none select-none">
+                            <video id="modal-after-vid" src="" playsinline loop muted autoplay class="w-full h-full object-contain pointer-events-none select-none hidden"></video>
+                        </div>
+                        <span id="modal-after-label" class="absolute bottom-4 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/25 shadow-lg pointer-events-none font-display">After</span>
+
+                        <!-- Clipped (Before) Layer -->
+                        <div id="modal-before-clip" class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
+                            <div id="modal-before-container" class="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none overflow-hidden">
+                                <img id="modal-before-img" src="" alt="Before Visual" class="w-full h-full object-contain pointer-events-none select-none">
+                                <video id="modal-before-vid" src="" playsinline loop muted autoplay class="w-full h-full object-contain pointer-events-none select-none hidden"></video>
+                            </div>
+                            <span id="modal-before-label" class="absolute bottom-4 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/95 backdrop-blur-md text-black border border-amber-400/60 shadow-lg pointer-events-none font-display">Before</span>
+                        </div>
+
+                        <!-- Interactive Slider Divider & Handle -->
+                        <div id="modal-ba-handle" class="absolute top-0 bottom-0 z-30 flex items-center justify-center cursor-ew-resize group/handle pointer-events-auto select-none" style="left: 50%; transform: translateX(-50%); width: 48px; touch-action: none;">
+                            <div class="w-0.5 h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.95)] pointer-events-none"></div>
+                            <div class="absolute w-11 h-11 md:w-10 md:h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shadow-[0_4px_25px_rgba(0,0,0,0.85)] border-2 border-[#12151c] pointer-events-none group-hover/handle:scale-110 active:scale-95 transition-transform">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+                            </div>
+                        </div>
+
+                        <!-- Quick Comparison Toggle Switch (Pill segment) -->
+                        <div id="modal-ba-quick-switch" class="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-20 p-1 rounded-full bg-black/85 backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-1 select-none pointer-events-auto">
+                            <button type="button" id="modal-ba-btn-before" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer">Before</button>
+                            <button type="button" id="modal-ba-btn-split" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-white/20 text-[#64d2ff] transition-all cursor-pointer">50/50</button>
+                            <button type="button" id="modal-ba-btn-after" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer">After</button>
                         </div>
                     </div>
                 </div>

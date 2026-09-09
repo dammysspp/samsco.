@@ -1390,7 +1390,7 @@ function renderMobileReelsFeed(targetIndex) {
             const isNearInitial = Math.abs(slideIdx - targetIndex) <= 2;
 
             mediaHtml = `
-                <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden reel-ba-container pointer-events-auto" style="touch-action: pan-y;">
+                <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden reel-ba-container pointer-events-auto" style="touch-action: none;">
                     <!-- After Layer Base -->
                     ${isVideoBA 
                         ? `<video class="reel-video reel-ba-vid-after w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawAfter}"` : `data-src="${rawAfter}"`} playsinline loop muted autoplay></video>`
@@ -1402,15 +1402,15 @@ function renderMobileReelsFeed(targetIndex) {
                     <div class="reel-ba-clip absolute inset-0 w-full h-full overflow-hidden pointer-events-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
                         ${isVideoBA
                             ? `<video class="reel-video reel-ba-vid-before w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} playsinline loop muted autoplay></video>`
-                            : `<img class="w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} alt="${work.title} - Before" onerror="window.handleGridImageError(this)">`
+                            : `<img class="reel-img w-full h-full object-contain pointer-events-none" ${isNearInitial ? `src="${rawBefore}"` : `data-src="${rawBefore}"`} alt="${work.title} - Before" onerror="window.handleGridImageError(this)">`
                         }
                         <span class="absolute top-20 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 shadow-md pointer-events-none font-display">${beforeLabel}</span>
                     </div>
 
                     <!-- Draggable Handle Bar -->
-                    <div class="reel-ba-handle absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize pointer-events-auto" style="left: 50%; transform: translateX(-50%); width: 44px;">
+                    <div class="reel-ba-handle absolute top-0 bottom-0 z-20 flex items-center justify-center cursor-ew-resize pointer-events-auto" style="left: 50%; transform: translateX(-50%); width: 48px; touch-action: none;">
                         <div class="w-0.5 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] pointer-events-none"></div>
-                        <div class="absolute w-9 h-9 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shadow-2xl border-2 border-[#12151c] pointer-events-none">
+                        <div class="absolute w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-xs shadow-2xl border-2 border-[#12151c] pointer-events-none">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
                         </div>
                     </div>
@@ -1674,27 +1674,31 @@ function renderMobileReelsFeed(targetIndex) {
 
                 const onPointerDown = (e) => {
                     isDragging = true;
+                    try { baHandle.setPointerCapture(e.pointerId); } catch(err) {}
                     e.stopPropagation();
+                    e.preventDefault();
                     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
                     updateReelSlider(clientX);
                 };
                 const onPointerMove = (e) => {
                     if (!isDragging) return;
                     e.stopPropagation();
+                    e.preventDefault();
                     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
                     updateReelSlider(clientX);
                 };
                 const onPointerUp = (e) => {
                     if (isDragging) {
                         isDragging = false;
+                        try { baHandle.releasePointerCapture(e.pointerId); } catch(err) {}
                         e.stopPropagation();
                     }
                 };
 
                 baHandle.addEventListener("pointerdown", onPointerDown);
-                baContainer.addEventListener("pointermove", onPointerMove);
-                baContainer.addEventListener("pointerup", onPointerUp);
-                baContainer.addEventListener("pointercancel", onPointerUp);
+                baHandle.addEventListener("pointermove", onPointerMove);
+                baHandle.addEventListener("pointerup", onPointerUp);
+                baHandle.addEventListener("pointercancel", onPointerUp);
             }
         }
 
@@ -1731,22 +1735,24 @@ function renderMobileReelsFeed(targetIndex) {
     mobileReelsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const slide = entry.target;
-            const video = slide.querySelector(".reel-video");
-            const img = slide.querySelector(".reel-img");
             const slideIdx = parseInt(slide.getAttribute("data-slide-index"));
             const configIndex = parseInt(slide.getAttribute("data-config-index"));
             const work = galleryConfig[configIndex];
 
-            // When slide enters viewport or is adjacent, attach media src
+            // When slide enters viewport or is adjacent, attach media src (handles both single & BA media)
             if (entry.isIntersecting) {
-                if (video && !video.src && video.dataset.src) {
-                    video.src = video.dataset.src;
-                    video.preload = "auto";
-                }
-                if (img && img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute("data-src");
-                }
+                slide.querySelectorAll(".reel-video").forEach(v => {
+                    if (!v.src && v.dataset.src) {
+                        v.src = v.dataset.src;
+                        v.preload = "auto";
+                    }
+                });
+                slide.querySelectorAll(".reel-img").forEach(img => {
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute("data-src");
+                    }
+                });
             }
 
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
@@ -1894,6 +1900,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
     // Check if on mobile viewport
     const isMobile = window.innerWidth <= 768;
+    const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
 
     // Update URL bar seamlessly with unique work link
     const slug = getWorkSlug(work);
@@ -1908,7 +1915,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     }
 
     // Handle Mobile Experience (TikTok / IG Reels Vertical Feed)
-    if (isMobile) {
+    // NOTE: Dedicated interactive Before & After comparisons ALWAYS use the responsive #project-modal on both mobile and desktop!
+    if (isMobile && !isBeforeAfter && document.getElementById("mobile-reels-container")) {
         renderMobileReelsFeed(currentLbIndex);
         projectModal.classList.add("active");
         projectModal.classList.remove("opacity-0", "pointer-events-none");
@@ -2089,6 +2097,16 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
         const mediaType = isBeforeAfter ? "before_after" : work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
 
+        if (stage) {
+            if (mediaType === "before_after") {
+                stage.classList.remove("aspect-[16/9]", "md:aspect-[16/9]");
+                stage.classList.add("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
+            } else {
+                stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
+                stage.classList.add("aspect-[16/9]", "md:aspect-[16/9]");
+            }
+        }
+
         if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
             mIframe.src = workUrl + "?embed";
@@ -2098,22 +2116,198 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 const cleanAfter = workUrl.split("?")[0];
                 const cleanBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
                 const isVideoBA = isVideo || isVideoUrl(cleanBefore, "video") || isVideoUrl(cleanAfter, "video");
-                
+
+                const mBAContent = document.getElementById("modal-ba-content");
+                const mBALoader = document.getElementById("modal-ba-loader");
+                const mBAPercent = document.getElementById("modal-ba-percent");
+                const mBABar = document.getElementById("modal-ba-progress-bar");
+                const mBAStatus = document.getElementById("modal-ba-status");
+                const mBtnBefore = document.getElementById("modal-ba-btn-before");
+                const mBtnSplit = document.getElementById("modal-ba-btn-split");
+                const mBtnAfter = document.getElementById("modal-ba-btn-after");
+
+                // Reset stage to loading state
+                if (mBALoader) {
+                    mBALoader.classList.remove("opacity-0", "pointer-events-none", "hidden");
+                }
+                if (mBAPercent) mBAPercent.textContent = "0%";
+                if (mBABar) mBABar.style.width = "0%";
+                if (mBAStatus) mBAStatus.textContent = "Connecting comparison assets...";
+                if (mBAContent) {
+                    mBAContent.classList.add("opacity-0");
+                    mBAContent.classList.remove("opacity-100");
+                }
+
+                if (mBeforeLabel) mBeforeLabel.innerText = work.beforeLabel || "Before";
+                if (mAfterLabel) mAfterLabel.innerText = work.afterLabel || "After";
+
+                // Slider position state
+                let sliderPercent = 50;
+                let userHasInteracted = false;
+
+                const setSliderPosition = (pct, animate = false) => {
+                    sliderPercent = Math.max(0, Math.min(100, pct));
+                    if (mBeforeClip && mBAHandle) {
+                        if (animate) {
+                            mBeforeClip.style.transition = "clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+                            mBAHandle.style.transition = "left 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+                            setTimeout(() => {
+                                if (mBeforeClip) mBeforeClip.style.transition = "";
+                                if (mBAHandle) mBAHandle.style.transition = "";
+                            }, 360);
+                        } else {
+                            mBeforeClip.style.transition = "";
+                            mBAHandle.style.transition = "";
+                        }
+                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
+                        mBAHandle.style.left = `${sliderPercent}%`;
+                    }
+
+                    // Dynamic quick switch button styling
+                    if (mBtnBefore && mBtnSplit && mBtnAfter) {
+                        if (sliderPercent >= 92) {
+                            mBtnBefore.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-black shadow-md transition-all cursor-pointer";
+                            mBtnSplit.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                            mBtnAfter.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                        } else if (sliderPercent <= 8) {
+                            mBtnBefore.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                            mBtnSplit.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                            mBtnAfter.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-[#0071e3] text-white shadow-md transition-all cursor-pointer";
+                        } else {
+                            mBtnBefore.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                            mBtnSplit.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-white/20 text-[#64d2ff] transition-all cursor-pointer";
+                            mBtnAfter.className = "px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer";
+                        }
+                    }
+
+                    // Auto-fade labels when slider passes over them
+                    if (mBeforeLabel) mBeforeLabel.style.opacity = sliderPercent < 15 ? "0.2" : "1";
+                    if (mAfterLabel) mAfterLabel.style.opacity = sliderPercent > 85 ? "0.2" : "1";
+                };
+
+                setSliderPosition(50);
+
+                // Preloading Gatekeeper & Animated Progress Percentage
+                let beforeLoaded = false;
+                let afterLoaded = false;
+                let loadProgress = 10;
+                let progressInterval = null;
+
+                const updateProgressUI = (pct, text) => {
+                    loadProgress = Math.max(loadProgress, pct);
+                    if (mBAPercent) mBAPercent.textContent = `${Math.min(100, Math.round(loadProgress))}%`;
+                    if (mBABar) mBABar.style.width = `${Math.min(100, Math.round(loadProgress))}%`;
+                    if (text && mBAStatus) mBAStatus.textContent = text;
+                };
+
+                progressInterval = setInterval(() => {
+                    if (!beforeLoaded || !afterLoaded) {
+                        if (loadProgress < 85) {
+                            const step = Math.max(1, Math.round((85 - loadProgress) * 0.12));
+                            updateProgressUI(loadProgress + step);
+                        }
+                    }
+                }, 120);
+
+                const onBothAssetsLoaded = () => {
+                    if (progressInterval) clearInterval(progressInterval);
+                    updateProgressUI(100, "Comparison Ready!");
+
+                    setTimeout(() => {
+                        if (mBALoader) {
+                            mBALoader.classList.add("opacity-0", "pointer-events-none");
+                            setTimeout(() => mBALoader.classList.add("hidden"), 350);
+                        }
+                        if (mBAContent) {
+                            mBAContent.classList.remove("opacity-0");
+                            mBAContent.classList.add("opacity-100");
+                        }
+
+                        // Gentle introductory hint animation (50% -> 60% -> 40% -> 50%)
+                        if (!userHasInteracted) {
+                            setTimeout(() => {
+                                if (userHasInteracted) return;
+                                setSliderPosition(60, true);
+                                setTimeout(() => {
+                                    if (userHasInteracted) return;
+                                    setSliderPosition(40, true);
+                                    setTimeout(() => {
+                                        if (userHasInteracted) return;
+                                        setSliderPosition(50, true);
+                                    }, 360);
+                                }, 360);
+                            }, 250);
+                        }
+                    }, 250);
+                };
+
                 if (isVideoBA) {
                     if (mAfterImg) mAfterImg.classList.add("hidden");
                     if (mBeforeImg) mBeforeImg.classList.add("hidden");
                     if (mAfterVid && mBeforeVid) {
                         mAfterVid.classList.remove("hidden");
                         mBeforeVid.classList.remove("hidden");
+                        mAfterVid.muted = true;
+                        mBeforeVid.muted = true;
+                        mAfterVid.preload = "auto";
+                        mBeforeVid.preload = "auto";
                         mAfterVid.src = cleanAfter;
                         mBeforeVid.src = cleanBefore;
-                        mAfterVid.play().catch(() => {});
-                        mBeforeVid.play().catch(() => {});
 
+                        let bVidReady = false, aVidReady = false;
+
+                        const checkVids = () => {
+                            if (bVidReady && aVidReady) {
+                                beforeLoaded = true;
+                                afterLoaded = true;
+                                mBeforeVid.currentTime = 0;
+                                mAfterVid.currentTime = 0;
+                                mAfterVid.play().catch(() => {});
+                                mBeforeVid.play().catch(() => {});
+                                onBothAssetsLoaded();
+                            }
+                        };
+
+                        const handleBeforeReady = () => {
+                            if (bVidReady) return;
+                            bVidReady = true;
+                            updateProgressUI(Math.max(loadProgress, 55), aVidReady ? "Syncing comparison playback..." : "Before video ready ✓ Buffering after...");
+                            checkVids();
+                        };
+
+                        const handleAfterReady = () => {
+                            if (aVidReady) return;
+                            aVidReady = true;
+                            updateProgressUI(Math.max(loadProgress, 55), bVidReady ? "Syncing comparison playback..." : "After video ready ✓ Buffering before...");
+                            checkVids();
+                        };
+
+                        if (mBeforeVid.readyState >= 2) handleBeforeReady();
+                        else {
+                            mBeforeVid.addEventListener("loadeddata", handleBeforeReady, { once: true });
+                            mBeforeVid.addEventListener("canplay", handleBeforeReady, { once: true });
+                        }
+
+                        if (mAfterVid.readyState >= 2) handleAfterReady();
+                        else {
+                            mAfterVid.addEventListener("loadeddata", handleAfterReady, { once: true });
+                            mAfterVid.addEventListener("canplay", handleAfterReady, { once: true });
+                        }
+
+                        // Safety fallback in case browser throttles background buffering
+                        setTimeout(() => {
+                            if (!bVidReady || !aVidReady) {
+                                bVidReady = true;
+                                aVidReady = true;
+                                checkVids();
+                            }
+                        }, 4000);
+
+                        // Lockstep synchronized playback
                         mAfterVid.onplay = () => mBeforeVid.play().catch(() => {});
                         mAfterVid.onpause = () => mBeforeVid.pause();
                         mAfterVid.ontimeupdate = () => {
-                            if (Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime) > 0.15) {
+                            if (Math.abs(mBeforeVid.currentTime - mAfterVid.currentTime) > 0.12) {
                                 mBeforeVid.currentTime = mAfterVid.currentTime;
                             }
                         };
@@ -2124,80 +2318,169 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 } else {
                     if (mAfterVid) mAfterVid.classList.add("hidden");
                     if (mBeforeVid) mBeforeVid.classList.add("hidden");
-                    if (mAfterImg) {
-                        mAfterImg.classList.remove("hidden");
-                        mAfterImg.src = cleanAfter;
-                    }
-                    if (mBeforeImg) {
-                        mBeforeImg.classList.remove("hidden");
-                        mBeforeImg.src = cleanBefore;
-                    }
+                    if (mAfterImg) mAfterImg.classList.remove("hidden");
+                    if (mBeforeImg) mBeforeImg.classList.remove("hidden");
+
+                    let bImgReady = false, aImgReady = false;
+
+                    const checkImgs = () => {
+                        if (bImgReady && aImgReady) {
+                            beforeLoaded = true;
+                            afterLoaded = true;
+                            onBothAssetsLoaded();
+                        }
+                    };
+
+                    const imgB = new Image();
+                    imgB.onload = () => {
+                        bImgReady = true;
+                        updateProgressUI(Math.max(loadProgress, 50), aImgReady ? "Finalizing Comparison..." : "Before asset ready ✓ Loading after...");
+                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
+                        checkImgs();
+                    };
+                    imgB.onerror = () => {
+                        bImgReady = true;
+                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
+                        checkImgs();
+                    };
+                    imgB.src = cleanBefore;
+
+                    const imgA = new Image();
+                    imgA.onload = () => {
+                        aImgReady = true;
+                        updateProgressUI(Math.max(loadProgress, 50), bImgReady ? "Finalizing Comparison..." : "After asset ready ✓ Loading before...");
+                        if (mAfterImg) mAfterImg.src = cleanAfter;
+                        checkImgs();
+                    };
+                    imgA.onerror = () => {
+                        aImgReady = true;
+                        if (mAfterImg) mAfterImg.src = cleanAfter;
+                        checkImgs();
+                    };
+                    imgA.src = cleanAfter;
+
+                    // Safety fallback in case cached images or slow network
+                    setTimeout(() => {
+                        if (!bImgReady || !aImgReady) {
+                            bImgReady = true;
+                            aImgReady = true;
+                            if (mBeforeImg && !mBeforeImg.src) mBeforeImg.src = cleanBefore;
+                            if (mAfterImg && !mAfterImg.src) mAfterImg.src = cleanAfter;
+                            checkImgs();
+                        }
+                    }, 3500);
                 }
 
-                if (mBeforeLabel) mBeforeLabel.innerText = work.beforeLabel || "Before";
-                if (mAfterLabel) mAfterLabel.innerText = work.afterLabel || "After";
+                // Interactive Pointer Events (Mobile touch + Mouse + Trackpad)
+                let isDragging = false;
 
-                // Initialize at 50%
-                let sliderPercent = 50;
-                mBeforeClip.style.clipPath = `polygon(0 0, 50% 0, 50% 100%, 0 100%)`;
-                mBAHandle.style.left = `50%`;
-
-                const updateSliderPosition = (clientX) => {
+                const updateFromClientX = (clientX) => {
+                    if (!mBA) return;
                     const rect = mBA.getBoundingClientRect();
                     if (!rect.width) return;
                     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-                    sliderPercent = (x / rect.width) * 100;
-                    mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
-                    mBAHandle.style.left = `${sliderPercent}%`;
+                    setSliderPosition((x / rect.width) * 100);
                 };
 
-                let isDragging = false;
                 const onPointerDown = (e) => {
+                    userHasInteracted = true;
                     isDragging = true;
+                    if (mBAHandle) {
+                        try { mBAHandle.setPointerCapture(e.pointerId); } catch (err) {}
+                    }
                     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
-                    updateSliderPosition(clientX);
-                    window.addEventListener("pointermove", onPointerMove);
-                    window.addEventListener("pointerup", onPointerUp);
+                    updateFromClientX(clientX);
+                    e.preventDefault();
                 };
+
                 const onPointerMove = (e) => {
                     if (!isDragging) return;
                     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
-                    updateSliderPosition(clientX);
-                };
-                const onPointerUp = () => {
-                    isDragging = false;
-                    window.removeEventListener("pointermove", onPointerMove);
-                    window.removeEventListener("pointerup", onPointerUp);
+                    updateFromClientX(clientX);
+                    e.preventDefault();
                 };
 
+                const onPointerUp = (e) => {
+                    if (isDragging) {
+                        isDragging = false;
+                        if (mBAHandle) {
+                            try { mBAHandle.releasePointerCapture(e.pointerId); } catch (err) {}
+                        }
+                    }
+                };
+
+                if (mBAHandle) {
+                    mBAHandle.addEventListener("pointerdown", onPointerDown);
+                    mBAHandle.addEventListener("pointermove", onPointerMove);
+                    mBAHandle.addEventListener("pointerup", onPointerUp);
+                    mBAHandle.addEventListener("pointercancel", onPointerUp);
+                }
+
+                mBA.addEventListener("pointerdown", (e) => {
+                    if (e.target.closest("#modal-ba-quick-switch") || e.target.closest("#modal-ba-handle") || e.target.closest("#modal-ba-loader")) return;
+                    onPointerDown(e);
+                });
+
+                // Quick Switch Buttons Handlers
+                if (mBtnBefore) {
+                    mBtnBefore.onclick = (e) => {
+                        e.stopPropagation();
+                        userHasInteracted = true;
+                        setSliderPosition(100, true);
+                    };
+                }
+                if (mBtnSplit) {
+                    mBtnSplit.onclick = (e) => {
+                        e.stopPropagation();
+                        userHasInteracted = true;
+                        setSliderPosition(50, true);
+                    };
+                }
+                if (mBtnAfter) {
+                    mBtnAfter.onclick = (e) => {
+                        e.stopPropagation();
+                        userHasInteracted = true;
+                        setSliderPosition(0, true);
+                    };
+                }
+
+                // Keyboard Accessibility
                 const onKeyDown = (e) => {
                     if (!projectModal.classList.contains("active")) return;
                     if (e.key === "ArrowLeft") {
                         e.preventDefault();
-                        sliderPercent = Math.max(0, sliderPercent - 5);
-                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
-                        mBAHandle.style.left = `${sliderPercent}%`;
+                        userHasInteracted = true;
+                        setSliderPosition(sliderPercent - 5);
                     } else if (e.key === "ArrowRight") {
                         e.preventDefault();
-                        sliderPercent = Math.min(100, sliderPercent + 5);
-                        mBeforeClip.style.clipPath = `polygon(0 0, ${sliderPercent}% 0, ${sliderPercent}% 100%, 0 100%)`;
-                        mBAHandle.style.left = `${sliderPercent}%`;
+                        userHasInteracted = true;
+                        setSliderPosition(sliderPercent + 5);
                     }
                 };
-
-                mBA.addEventListener("pointerdown", onPointerDown);
                 window.addEventListener("keydown", onKeyDown);
 
                 window._baCleanup = () => {
-                    mBA.removeEventListener("pointerdown", onPointerDown);
-                    window.removeEventListener("pointermove", onPointerMove);
-                    window.removeEventListener("pointerup", onPointerUp);
+                    if (progressInterval) clearInterval(progressInterval);
+                    if (mBAHandle) {
+                        mBAHandle.removeEventListener("pointerdown", onPointerDown);
+                        mBAHandle.removeEventListener("pointermove", onPointerMove);
+                        mBAHandle.removeEventListener("pointerup", onPointerUp);
+                        mBAHandle.removeEventListener("pointercancel", onPointerUp);
+                    }
                     window.removeEventListener("keydown", onKeyDown);
                     if (mAfterVid) {
                         mAfterVid.onplay = null;
                         mAfterVid.onpause = null;
                         mAfterVid.ontimeupdate = null;
                         mAfterVid.onseeking = null;
+                        mAfterVid.src = "";
+                    }
+                    if (mBeforeVid) {
+                        mBeforeVid.src = "";
+                    }
+                    if (stage) {
+                        stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
+                        stage.classList.add("aspect-[16/9]", "md:aspect-[16/9]");
                     }
                     window._baCleanup = null;
                 };

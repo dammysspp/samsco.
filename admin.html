@@ -4539,16 +4539,16 @@ Provide the response in structured JSON matching this schema:
                         <div class="relative w-full max-w-lg aspect-video rounded-xl overflow-hidden select-none border border-white/10 shadow-2xl bg-black group/admin-slider mx-auto" id="admin-ba-slider" style="touch-action: pan-y;">
                             <!-- After Layer (Base) -->
                             ${isVideoBA 
-                                ? `<video src="${url}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-cover" id="admin-ba-vid-after" onerror="showPreviewError('Failed to load After video.')"></video>`
-                                : `<img src="${url}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load After image.')">`
+                                ? `<video src="${url}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-contain" id="admin-ba-vid-after" onerror="showPreviewError('Failed to load After video.')"></video>`
+                                : `<img src="${url}" class="absolute inset-0 w-full h-full object-contain" onerror="showPreviewError('Failed to load After image.')">`
                             }
                             <span class="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/15 pointer-events-none">${afterLabel}</span>
 
                             <!-- Before Layer (Clipped Overlay) -->
                             <div class="absolute inset-0 w-full h-full overflow-hidden" id="admin-ba-clipped" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
                                 ${isVideoBA
-                                    ? `<video src="${beforeUrl}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-cover" id="admin-ba-vid-before" onerror="showPreviewError('Failed to load Before video.')"></video>`
-                                    : `<img src="${beforeUrl}" class="absolute inset-0 w-full h-full object-cover" onerror="showPreviewError('Failed to load Before image.')">`
+                                    ? `<video src="${beforeUrl}" playsinline autoplay muted loop class="absolute inset-0 w-full h-full object-contain" id="admin-ba-vid-before" onerror="showPreviewError('Failed to load Before video.')"></video>`
+                                    : `<img src="${beforeUrl}" class="absolute inset-0 w-full h-full object-contain" onerror="showPreviewError('Failed to load Before image.')">`
                                 }
                                 <span class="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/90 backdrop-blur-md text-black border border-amber-400/40 pointer-events-none">${beforeLabel}</span>
                             </div>
