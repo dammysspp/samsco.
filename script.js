@@ -1477,7 +1477,6 @@ function renderMobileReelsFeed(targetIndex) {
                 <div class="relative w-full h-full flex items-center justify-center bg-[#0a0c12] overflow-hidden">
                     <iframe ${isNearInitial ? `src="${workUrl}?embed"` : `data-src="${workUrl}?embed"`} 
                         loading="lazy"
-                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                         class="reel-iframe w-full h-full border-none relative z-10" 
                         allowfullscreen></iframe>
                 </div>
