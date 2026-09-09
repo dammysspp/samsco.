@@ -80,18 +80,33 @@ function trackWorkInteraction(work, metric) {
 
     if (!window.supabaseClient) return;
 
-    // Attempt RPC first (Security Definer function avoids RLS blocking anon visitors)
-    window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
-        .then(({ data, error }) => {
-            if (error) {
-                // Fallback direct table update if RPC function hasn't been added yet
-                const newVal = workObj ? workObj[metric] : undefined;
-                if (newVal !== undefined) {
-                    window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
+    // Track whether RPC is known to be missing so we don't spam 404 in console
+    if (window._hasRpcIncrement === undefined) {
+        window._hasRpcIncrement = true;
+    }
+
+    if (window._hasRpcIncrement) {
+        window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
+            .then(({ data, error }) => {
+                if (error) {
+                    if (error.code === 'PGRST202' || error.message?.includes('function') || error.status === 404) {
+                        window._hasRpcIncrement = false;
+                    }
+                    const newVal = workObj ? workObj[metric] : undefined;
+                    if (newVal !== undefined) {
+                        window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
+                    }
                 }
-            }
-        })
-        .catch(() => {});
+            })
+            .catch(() => {
+                window._hasRpcIncrement = false;
+            });
+    } else {
+        const newVal = workObj ? workObj[metric] : undefined;
+        if (newVal !== undefined) {
+            window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
+        }
+    }
 }
 window.trackWorkInteraction = trackWorkInteraction;
 
@@ -1755,13 +1770,15 @@ function renderMobileReelsFeed(targetIndex) {
                 });
             }
 
+            const slideVideos = slide.querySelectorAll(".reel-video");
+
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
                 currentLbIndex = slideIdx;
-                if (video) {
+                slideVideos.forEach(video => {
                     if (!video.src && video.dataset.src) video.src = video.dataset.src;
                     video.muted = reelsGlobalMuted;
                     video.play().catch(err => console.log("Reels autoplay note:", err));
-                }
+                });
                 if (work) {
                     const slug = getWorkSlug(work);
                     if (slug && history.replaceState && window.location.protocol !== 'file:') {
@@ -1791,11 +1808,11 @@ function renderMobileReelsFeed(targetIndex) {
                         }
                     }
                 });
-            } else {
-                if (video && entry.intersectionRatio < 0.2) {
+            } else if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+                slideVideos.forEach(video => {
                     video.pause();
                     video.currentTime = 0;
-                }
+                });
             }
         });
     }, {
@@ -1914,15 +1931,29 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         } catch (err) {}
     }
 
+    const reelsContainer = document.getElementById("mobile-reels-container");
+    const desktopContainer = document.getElementById("desktop-modal-container");
+
     // Handle Mobile Experience (TikTok / IG Reels Vertical Feed)
     // NOTE: Dedicated interactive Before & After comparisons ALWAYS use the responsive #project-modal on both mobile and desktop!
-    if (isMobile && !isBeforeAfter && document.getElementById("mobile-reels-container")) {
+    if (isMobile && !isBeforeAfter && reelsContainer) {
+        if (desktopContainer) desktopContainer.classList.add("hidden");
+        reelsContainer.classList.remove("hidden");
         renderMobileReelsFeed(currentLbIndex);
         projectModal.classList.add("active");
         projectModal.classList.remove("opacity-0", "pointer-events-none");
         document.body.style.overflow = "hidden";
         if (window.lenis) window.lenis.stop();
         return;
+    }
+
+    // Modal view (used for desktop AND for interactive Before & After comparisons on mobile/desktop)
+    if (reelsContainer) {
+        reelsContainer.classList.add("hidden");
+        reelsContainer.innerHTML = "";
+    }
+    if (desktopContainer) {
+        desktopContainer.classList.remove("hidden");
     }
 
     // Handle Desktop Experience (Cinematic Modal)
@@ -2099,9 +2130,11 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
         if (stage) {
             if (mediaType === "before_after") {
+                stage.classList.add("stage-before-after");
                 stage.classList.remove("aspect-[16/9]", "md:aspect-[16/9]");
                 stage.classList.add("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
             } else {
+                stage.classList.remove("stage-before-after");
                 stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
                 stage.classList.add("aspect-[16/9]", "md:aspect-[16/9]");
             }
@@ -2388,6 +2421,9 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     if (mBAHandle) {
                         try { mBAHandle.setPointerCapture(e.pointerId); } catch (err) {}
                     }
+                    window.addEventListener("pointermove", onPointerMove, { passive: false });
+                    window.addEventListener("pointerup", onPointerUp);
+                    window.addEventListener("pointercancel", onPointerUp);
                     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
                     updateFromClientX(clientX);
                     e.preventDefault();
@@ -2406,14 +2442,14 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         if (mBAHandle) {
                             try { mBAHandle.releasePointerCapture(e.pointerId); } catch (err) {}
                         }
+                        window.removeEventListener("pointermove", onPointerMove);
+                        window.removeEventListener("pointerup", onPointerUp);
+                        window.removeEventListener("pointercancel", onPointerUp);
                     }
                 };
 
                 if (mBAHandle) {
                     mBAHandle.addEventListener("pointerdown", onPointerDown);
-                    mBAHandle.addEventListener("pointermove", onPointerMove);
-                    mBAHandle.addEventListener("pointerup", onPointerUp);
-                    mBAHandle.addEventListener("pointercancel", onPointerUp);
                 }
 
                 mBA.addEventListener("pointerdown", (e) => {
@@ -2461,11 +2497,11 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
                 window._baCleanup = () => {
                     if (progressInterval) clearInterval(progressInterval);
+                    window.removeEventListener("pointermove", onPointerMove);
+                    window.removeEventListener("pointerup", onPointerUp);
+                    window.removeEventListener("pointercancel", onPointerUp);
                     if (mBAHandle) {
                         mBAHandle.removeEventListener("pointerdown", onPointerDown);
-                        mBAHandle.removeEventListener("pointermove", onPointerMove);
-                        mBAHandle.removeEventListener("pointerup", onPointerUp);
-                        mBAHandle.removeEventListener("pointercancel", onPointerUp);
                     }
                     window.removeEventListener("keydown", onKeyDown);
                     if (mAfterVid) {
@@ -2479,6 +2515,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         mBeforeVid.src = "";
                     }
                     if (stage) {
+                        stage.classList.remove("stage-before-after");
                         stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
                         stage.classList.add("aspect-[16/9]", "md:aspect-[16/9]");
                     }
@@ -2638,11 +2675,20 @@ function closeProjectModal(skipHistory = false) {
     }
     const reelsContainer = document.getElementById("mobile-reels-container");
     if (reelsContainer) {
+        reelsContainer.classList.add("hidden");
         reelsContainer.querySelectorAll("video").forEach(v => {
             v.pause();
             v.src = "";
         });
         reelsContainer.innerHTML = "";
+    }
+    const desktopContainer = document.getElementById("desktop-modal-container");
+    if (desktopContainer) {
+        desktopContainer.classList.remove("hidden");
+    }
+    const stage = document.getElementById("cinematic-stage");
+    if (stage) {
+        stage.classList.remove("stage-before-after");
     }
 
     const mVideo = document.getElementById("modal-video");

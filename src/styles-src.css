@@ -3039,10 +3039,30 @@ button:focus-visible,
         position: relative !important;
     }
 
+    #cinematic-stage.stage-before-after {
+        aspect-ratio: auto !important;
+        height: 55vh !important;
+        max-height: 68vh !important;
+        min-height: 320px !important;
+    }
+
     #modal-img, #modal-video {
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important; /* contain so media is never cut off */
+        background: #000000 !important;
+    }
+
+    #modal-before-img,
+    #modal-after-img,
+    #modal-before-vid,
+    #modal-after-vid {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        object-position: center !important;
         background: #000000 !important;
     }
 }
@@ -3081,11 +3101,32 @@ button:focus-visible,
         background: #000000 !important;
     }
 
+    #cinematic-stage.stage-before-after {
+        flex: 1 1 auto !important;
+        height: 100% !important;
+        max-height: 58vh !important;
+        min-height: 260px !important;
+        aspect-ratio: auto !important;
+    }
+
     #modal-img, #modal-video {
         width: 100% !important;
         height: 100% !important;
-        object-fit: cover !important;
-        object-position: center 25% !important;
+        object-fit: contain !important;
+        object-position: center !important;
+    }
+
+    #modal-before-img,
+    #modal-after-img,
+    #modal-before-vid,
+    #modal-after-vid {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        background: #000000 !important;
     }
 
     .mobile-player-bottom-sheet {

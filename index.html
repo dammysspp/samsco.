@@ -217,7 +217,7 @@
         class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-8 bg-black/95 md:bg-black/90 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-500">
         
         <!-- Outer Modal Container -->
-        <div class="relative w-full h-full md:h-auto max-w-4xl rounded-none md:rounded-3xl overflow-hidden bg-[#0d0f14] md:bg-[#12151c] md:border md:border-white/10 md:shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col justify-between transform scale-95 transition-transform duration-500 modal-content select-none">
+        <div id="desktop-modal-container" class="relative w-full h-full md:h-auto max-w-4xl rounded-none md:rounded-3xl overflow-hidden bg-[#0d0f14] md:bg-[#12151c] md:border md:border-white/10 md:shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col justify-between transform scale-95 transition-transform duration-500 modal-content select-none">
             
             <!-- Top Controls Overlay: Close, Prev, Next -->
             <div class="absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
@@ -275,7 +275,7 @@
                             <img id="modal-after-img" src="" alt="After Visual" class="w-full h-full object-contain pointer-events-none select-none">
                             <video id="modal-after-vid" src="" playsinline loop muted autoplay class="w-full h-full object-contain pointer-events-none select-none hidden"></video>
                         </div>
-                        <span id="modal-after-label" class="absolute bottom-4 right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/25 shadow-lg pointer-events-none font-display">After</span>
+                        <span id="modal-after-label" class="absolute bottom-12 sm:bottom-4 right-3 sm:right-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/80 backdrop-blur-md text-white border border-white/25 shadow-lg pointer-events-none font-display">After</span>
 
                         <!-- Clipped (Before) Layer -->
                         <div id="modal-before-clip" class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
@@ -283,7 +283,7 @@
                                 <img id="modal-before-img" src="" alt="Before Visual" class="w-full h-full object-contain pointer-events-none select-none">
                                 <video id="modal-before-vid" src="" playsinline loop muted autoplay class="w-full h-full object-contain pointer-events-none select-none hidden"></video>
                             </div>
-                            <span id="modal-before-label" class="absolute bottom-4 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/95 backdrop-blur-md text-black border border-amber-400/60 shadow-lg pointer-events-none font-display">Before</span>
+                            <span id="modal-before-label" class="absolute bottom-12 sm:bottom-4 left-3 sm:left-4 z-20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/95 backdrop-blur-md text-black border border-amber-400/60 shadow-lg pointer-events-none font-display">Before</span>
                         </div>
 
                         <!-- Interactive Slider Divider & Handle -->
@@ -295,7 +295,7 @@
                         </div>
 
                         <!-- Quick Comparison Toggle Switch (Pill segment) -->
-                        <div id="modal-ba-quick-switch" class="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-20 p-1 rounded-full bg-black/85 backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-1 select-none pointer-events-auto">
+                        <div id="modal-ba-quick-switch" class="absolute bottom-2 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-20 p-1 rounded-full bg-black/85 backdrop-blur-md border border-white/20 shadow-2xl flex items-center gap-1 select-none pointer-events-auto">
                             <button type="button" id="modal-ba-btn-before" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer">Before</button>
                             <button type="button" id="modal-ba-btn-split" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-white/20 text-[#64d2ff] transition-all cursor-pointer">50/50</button>
                             <button type="button" id="modal-ba-btn-after" class="px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-white transition-all cursor-pointer">After</button>
