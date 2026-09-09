@@ -1446,6 +1446,7 @@ function renderMobileReelsFeed(targetIndex) {
         const catColor = getOutcomeColor(mappedCat);
         const isVideo = isVideoUrl(workUrl, work.type);
         const isIframe = work.type === "iframe";
+        const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
 
         let targetLink = (work.projectUrl || work.demoUrl || "").trim();
         if (!targetLink && work.url && /^https?:\/\//i.test(work.url.trim())) {
