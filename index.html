@@ -524,13 +524,15 @@
             <div class="max-w-6xl mx-auto space-y-24 md:space-y-36">
                 <!-- Section Header -->
                 <div class="text-center mb-8">
-                    <span class="text-[#0071e3] text-xs font-medium tracking-[0.2em] mb-4 block">WHO I AM</span>
-                    <h2 class="text-3xl md:text-5xl font-bold font-display text-white">About Me</h2>
+                    <span class="text-[#0071e3] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">WHO I AM</span>
+                    <div class="hero-text-mask">
+                        <h2 class="text-3xl md:text-5xl font-bold font-display text-white anim-heading">About Me</h2>
+                    </div>
                 </div>
 
                 <!-- Card Row 1: The Persona (Image Left, Copy Right) -->
                 <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-                    <div class="relative group" id="about-img-container">
+                    <div class="relative group anim-stagger" id="about-img-container">
                         <div class="aspect-[4/5] bg-gray-900 rounded-3xl overflow-hidden relative glass-card cursor-hover border border-white/5 liquid-img-container shadow-2xl">
                             <img src="/SAMSCO.jpg" id="profile-img-1" alt="Samsco Portrait" loading="lazy"
                                 class="w-full h-full object-cover absolute inset-0 transition-all duration-700 opacity-90 group-hover:opacity-0 group-hover:scale-105 grayscale group-hover:grayscale-0 z-10">
@@ -540,16 +542,18 @@
                         </div>
                     </div>
                     <div class="space-y-6">
-                        <h3 class="text-2xl md:text-4xl font-bold text-white leading-tight font-display">
-                            Hello, I'm <span class="text-blue-500 relative cursor-help identity-trigger inline-block border-b-2 border-blue-500/30 hover:border-blue-500 transition-colors">Samsco<div id="identity-bubble">Aiyedun Samuel</div></span>
-                        </h3>
-                        <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed">
+                        <div class="hero-text-mask">
+                            <h3 class="text-2xl md:text-4xl font-bold text-white leading-tight font-display anim-heading">
+                                Hello, I'm <span class="text-blue-500 relative cursor-help identity-trigger inline-block border-b-2 border-blue-500/30 hover:border-blue-500 transition-colors">Samsco<div id="identity-bubble">Aiyedun Samuel</div></span>
+                            </h3>
+                        </div>
+                        <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed anim-text">
                             19-Year-Old Multi-Disciplinary Talent. Final Year Student at <span class="text-white font-semibold">Covenant University</span>.
                         </p>
-                        <p class="text-gray-400 leading-relaxed font-light">
+                        <p class="text-gray-400 leading-relaxed font-light anim-text">
                             I bridge the gap between Mass Communication and Creative Technology. My background in communications helps me craft visual stories that connect, while my programming skills give me the power to build the systems that deliver them.
                         </p>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 anim-stagger">
                             <span class="w-2.5 h-2.5 bg-[#30d158] rounded-full animate-pulse"></span>
                             <span class="text-xs text-white/50 tracking-wider">Covenant University • Mass Comm Class of '26</span>
                         </div>
@@ -559,23 +563,25 @@
                 <!-- Card Row 2: Digital Alchemy (Copy Left, Image Right) -->
                 <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
                     <div class="space-y-6 order-2 md:order-1">
-                        <h3 class="text-2xl md:text-4xl font-bold text-white leading-tight font-display">
-                            Digital Alchemy
-                        </h3>
-                        <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed">
+                        <div class="hero-text-mask">
+                            <h3 class="text-2xl md:text-4xl font-bold text-white leading-tight font-display anim-heading">
+                                Digital Alchemy
+                            </h3>
+                        </div>
+                        <p class="text-lg md:text-xl text-gray-300 font-light leading-relaxed anim-text">
                             Procedural 3D Modeling, Real-time VFX, and Custom Software.
                         </p>
-                        <p class="text-gray-400 leading-relaxed font-light">
+                        <p class="text-gray-400 leading-relaxed font-light anim-text">
                             I specialize in creating interactive digital worlds. By combining visual arts with programming tools (like C# and JavaScript), I build experiences that respond to users in real-time. Everything is engineered to be optimized, high-fidelity, and fast.
                         </p>
-                        <div class="grid grid-cols-2 gap-4 text-xs font-bold tracking-wide text-white/70">
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold tracking-wide text-white/70 anim-stagger">
                             <div class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> 3D Visualization</div>
                             <div class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> Vibe-Coding</div>
                             <div class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> Gaming & AI</div>
                             <div class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> Data Analytics</div>
                         </div>
                     </div>
-                    <div class="order-1 md:order-2">
+                    <div class="order-1 md:order-2 anim-stagger">
                         <div class="aspect-[4/3] bg-gray-900 rounded-3xl overflow-hidden relative glass-card border border-white/5 shadow-2xl group cursor-hover">
                             <img src="/3D Headset.avif" alt="Digital Alchemy 3D Render" loading="lazy"
                                 class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-700">
@@ -755,15 +761,17 @@
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 blur-3xl pointer-events-none"></div>
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-16">
-                    <span class="text-[#64d2ff] text-xs font-bold tracking-[0.25em] mb-4 block uppercase font-mono">CAREER & CREDENTIALS</span>
-                    <h2 class="text-3xl md:text-6xl font-black font-display text-white tracking-tight">Curriculum Vitae</h2>
-                    <p class="text-gray-400 max-w-2xl mx-auto mt-4 text-sm md:text-base font-light">
+                    <span class="text-[#64d2ff] text-xs font-bold tracking-[0.25em] mb-4 block uppercase font-mono anim-text">CAREER & CREDENTIALS</span>
+                    <div class="hero-text-mask">
+                        <h2 class="text-3xl md:text-6xl font-black font-display text-white tracking-tight anim-heading">Curriculum Vitae</h2>
+                    </div>
+                    <p class="text-gray-400 max-w-2xl mx-auto mt-4 text-sm md:text-base font-light anim-text">
                         Explore my complete professional timeline, academic background at Covenant University, technical mastery, and creative leadership across 50+ projects.
                     </p>
                 </div>
 
                 <!-- Preview Card & Action Hub -->
-                <div class="glass-card p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden bg-white/[0.02] backdrop-blur-xl shadow-2xl">
+                <div class="glass-card p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden bg-white/[0.02] backdrop-blur-xl shadow-2xl anim-stagger">
                     <div class="grid md:grid-cols-12 gap-8 items-center">
                         <div class="md:col-span-8 space-y-6">
                             <div class="flex flex-wrap items-center gap-3">
@@ -801,9 +809,11 @@
             <div class="absolute inset-0 bg-gradient-to-r from-[#0071e3]/5 via-transparent to-[#bf5af2]/5"></div>
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-16">
-                    <span class="text-[#30d158] text-xs font-medium tracking-[0.2em] mb-4 block">BY THE
+                    <span class="text-[#30d158] text-xs font-medium tracking-[0.2em] mb-4 block anim-text">BY THE
                         NUMBERS</span>
-                    <h2 class="text-3xl md:text-4xl font-semibold font-display">Fun Facts</h2>
+                    <div class="hero-text-mask">
+                        <h2 class="text-3xl md:text-4xl font-semibold font-display anim-heading">Fun Facts</h2>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 max-w-3xl mx-auto gap-6">

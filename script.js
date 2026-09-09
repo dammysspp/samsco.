@@ -1006,33 +1006,64 @@ navShortcutsMobile?.addEventListener("click", (e) => {
 });
 
 gsap.utils.toArray(".anim-heading").forEach(e => {
-    gsap.to(e, {
-        scrollTrigger: {
-            trigger: e, start: "top 85%", once: !0
-        }
-        , y: 0, opacity: 1, duration: 1.2, ease: "expo.out"
+    // Exclude hero words so hero text rotator and initial view aren't disturbed
+    if (e.id === "hero-word-1" || e.id === "hero-word-2") {
+        gsap.to(e, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+        return;
     }
-    )
-}
-), gsap.utils.toArray(".anim-text").forEach(e => {
-    gsap.to(e, {
-        scrollTrigger: {
-            trigger: e, start: "top 90%", once: !0
+    gsap.fromTo(e, 
+        { y: "110%", opacity: 0 },
+        {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            ease: "expo.out",
+            scrollTrigger: {
+                trigger: e,
+                start: "top 88%",
+                toggleActions: "play reverse play reverse"
+            }
         }
-        , y: 0, opacity: 1, duration: 1, ease: "power4.out"
-    }
-    )
-}
-), gsap.utils.toArray(".anim-stagger").forEach((e, t) => {
-    gsap.to(e, {
-        scrollTrigger: {
-            trigger: e, start: "top 90%", once: !0
+    );
+});
+
+gsap.utils.toArray(".anim-text").forEach(e => {
+    // If hero subtext is within #home, keep visible on initial load but reverse on upward scroll if scrolled past
+    const isHero = e.closest("#home");
+    gsap.fromTo(e,
+        { y: isHero ? 0 : 24, opacity: isHero ? 1 : 0 },
+        {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power4.out",
+            scrollTrigger: {
+                trigger: e,
+                start: "top 92%",
+                toggleActions: "play reverse play reverse"
+            }
         }
-        , y: 0, opacity: 1, duration: .8, delay: .1 * t, ease: "back.out(1.2)"
-    }
-    )
-}
-);
+    );
+});
+
+gsap.utils.toArray(".anim-stagger").forEach((e, t) => {
+    const isHero = e.closest("#home");
+    gsap.fromTo(e,
+        { y: isHero ? 0 : 24, opacity: isHero ? 1 : 0 },
+        {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            delay: isHero ? 0 : 0.08 * (t % 4),
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+                trigger: e,
+                start: "top 92%",
+                toggleActions: "play reverse play reverse"
+            }
+        }
+    );
+});
 const bubble = document.getElementById("identity-bubble"), trigger = document.querySelector(".identity-trigger"), identities = ["Aiyedun Samuel", "Visual Engineer", "Samsco Personal"];
 let idInterval, idIndex = 0;
 trigger && bubble && (trigger.addEventListener("mouseenter", () => {
@@ -3184,22 +3215,33 @@ if (canvas) {
 const counterElements = document.querySelectorAll(".counter-value");
 let countersAnimated = !1;
 function animateCounters() {
-    countersAnimated || (counterElements.forEach(e => {
+    if (countersAnimated) return;
+    counterElements.forEach(e => {
         const t = parseInt(e.getAttribute("data-target")), a = Date.now();
         !function r() {
             const i = Date.now() - a, o = Math.min(i / 2e3, 1), n = 1 - Math.pow(1 - o, 4), s = Math.floor(n * t);
             e.textContent = s.toLocaleString(), e.classList.add("counting"), o < 1 ? requestAnimationFrame(r) : (e.textContent = t.toLocaleString(), e.classList.remove("counting"))
         }
             ()
-    }
-    ), countersAnimated = !0)
+    });
+    countersAnimated = !0;
+}
+function resetCounters() {
+    countersAnimated = !1;
+    counterElements.forEach(e => {
+        e.textContent = "0";
+        e.classList.remove("counting");
+    });
 }
 if (counterElements.length > 0) {
     const y = document.getElementById("fun-stats");
     y && ScrollTrigger.create({
-        trigger: y, start: "top 80%", onEnter: animateCounters, once: !0
-    }
-    )
+        trigger: y,
+        start: "top 80%",
+        onEnter: animateCounters,
+        onEnterBack: animateCounters,
+        onLeaveBack: resetCounters
+    });
 }
 let skillsTrigger = null;
 function initSkillsAnimation() {
@@ -3209,18 +3251,33 @@ function initSkillsAnimation() {
         const f = document.getElementById("skills");
         if (f && typeof ScrollTrigger !== "undefined") {
             skillsTrigger = ScrollTrigger.create({
-                trigger: f, start: "top 70%", onEnter: () => {
+                trigger: f,
+                start: "top 75%",
+                onEnter: () => {
                     skillItems.forEach((e, t) => {
                         setTimeout(() => {
                             e.classList.add("visible");
                             const fill = e.querySelector(".skill-bar-fill"), a = e.getAttribute("data-skill");
                             if (fill && a) fill.style.width = a + "%";
-                        }
-                            , 150 * t)
-                    }
-                    )
+                        }, 120 * t);
+                    });
+                },
+                onEnterBack: () => {
+                    skillItems.forEach((e, t) => {
+                        setTimeout(() => {
+                            e.classList.add("visible");
+                            const fill = e.querySelector(".skill-bar-fill"), a = e.getAttribute("data-skill");
+                            if (fill && a) fill.style.width = a + "%";
+                        }, 120 * t);
+                    });
+                },
+                onLeaveBack: () => {
+                    skillItems.forEach(e => {
+                        e.classList.remove("visible");
+                        const fill = e.querySelector(".skill-bar-fill");
+                        if (fill) fill.style.width = "0%";
+                    });
                 }
-                , once: !0
             });
         }
     }
@@ -3233,16 +3290,27 @@ function initTimelineAnimation() {
     const timelineItems = document.querySelectorAll(".timeline-item");
     if (timelineItems.length > 0 && typeof ScrollTrigger !== "undefined") {
         timelineTrigger = ScrollTrigger.create({
-            trigger: ".timeline-container", start: "top 80%", onEnter: () => {
+            trigger: ".timeline-container",
+            start: "top 80%",
+            onEnter: () => {
                 timelineItems.forEach((e, t) => {
                     setTimeout(() => {
-                        e.classList.add("visible")
-                    }
-                        , 200 * t)
-                }
-                )
+                        e.classList.add("visible");
+                    }, 150 * t);
+                });
+            },
+            onEnterBack: () => {
+                timelineItems.forEach((e, t) => {
+                    setTimeout(() => {
+                        e.classList.add("visible");
+                    }, 150 * t);
+                });
+            },
+            onLeaveBack: () => {
+                timelineItems.forEach(e => {
+                    e.classList.remove("visible");
+                });
             }
-            , once: !0
         });
     }
 }
