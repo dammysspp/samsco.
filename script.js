@@ -1472,7 +1472,16 @@ function renderMobileReelsFeed(targetIndex) {
 
         let mediaHtml = "";
         if (isIframe) {
-            mediaHtml = `<iframe src="${workUrl}?embed" class="w-full h-full border-none pointer-events-auto" allowfullscreen></iframe>`;
+            const isNearInitial = Math.abs(slideIdx - targetIndex) === 0;
+            mediaHtml = `
+                <div class="relative w-full h-full flex items-center justify-center bg-[#0a0c12] overflow-hidden">
+                    <iframe ${isNearInitial ? `src="${workUrl}?embed"` : `data-src="${workUrl}?embed"`} 
+                        loading="lazy"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                        class="reel-iframe w-full h-full border-none relative z-10" 
+                        allowfullscreen></iframe>
+                </div>
+            `;
         } else if (isVideo) {
             const posterUrl = work.thumbnailUrl ? formatAssetUrl(work.thumbnailUrl) : "";
             const isNearInitial = Math.abs(slideIdx - targetIndex) <= 1;
@@ -1740,7 +1749,7 @@ function renderMobileReelsFeed(targetIndex) {
             const configIndex = parseInt(slide.getAttribute("data-config-index"));
             const work = galleryConfig[configIndex];
 
-            // When slide enters viewport or is adjacent, attach media src (handles both single & BA media)
+            // When slide enters viewport or is adjacent, attach media src (handles single, BA, & iframe media)
             if (entry.isIntersecting) {
                 slide.querySelectorAll(".reel-video").forEach(v => {
                     if (!v.src && v.dataset.src) {
@@ -1752,6 +1761,13 @@ function renderMobileReelsFeed(targetIndex) {
                     if (img.dataset.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute("data-src");
+                    }
+                });
+                slide.querySelectorAll(".reel-iframe").forEach(iframe => {
+                    if (!iframe.src || iframe.src === "about:blank") {
+                        if (iframe.dataset.src) {
+                            iframe.src = iframe.dataset.src;
+                        }
                     }
                 });
             }
@@ -1787,7 +1803,11 @@ function renderMobileReelsFeed(targetIndex) {
                         }, { passive: true });
                     }
                     video.muted = reelsGlobalMuted;
-                    video.play().catch(err => console.log("Reels autoplay note:", err));
+                    video.play().catch(err => {
+                        if (err && err.name !== "AbortError") {
+                            console.log("Reels autoplay note:", err);
+                        }
+                    });
                 });
                 if (work) {
                     const slug = getWorkSlug(work);
@@ -1822,6 +1842,13 @@ function renderMobileReelsFeed(targetIndex) {
                 slideVideos.forEach(video => {
                     video.pause();
                     video.currentTime = 0;
+                });
+                // Unload offscreen iframes to free memory and prevent external scripts/fonts from running in background
+                slide.querySelectorAll(".reel-iframe").forEach(iframe => {
+                    if (iframe.src && !iframe.src.includes("about:blank")) {
+                        iframe.dataset.src = iframe.src;
+                        iframe.src = "about:blank";
+                    }
                 });
             }
         });
@@ -2840,6 +2867,9 @@ function closeProjectModal(skipHistory = false) {
         reelsContainer.querySelectorAll("video").forEach(v => {
             v.pause();
             v.src = "";
+        });
+        reelsContainer.querySelectorAll("iframe").forEach(iframe => {
+            iframe.src = "about:blank";
         });
         reelsContainer.innerHTML = "";
     }
