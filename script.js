@@ -82,7 +82,11 @@ function trackWorkInteraction(work, metric) {
 
     const newVal = workObj ? workObj[metric] : undefined;
     if (newVal !== undefined) {
-        window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
+        try {
+            Promise.resolve(window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId))
+                .then(() => {})
+                .catch(() => {});
+        } catch (err) {}
     }
 }
 window.trackWorkInteraction = trackWorkInteraction;
