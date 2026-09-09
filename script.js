@@ -80,32 +80,9 @@ function trackWorkInteraction(work, metric) {
 
     if (!window.supabaseClient) return;
 
-    // Track whether RPC is known to be missing so we don't spam 404 in console
-    if (window._hasRpcIncrement === undefined) {
-        window._hasRpcIncrement = true;
-    }
-
-    if (window._hasRpcIncrement) {
-        window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
-            .then(({ data, error }) => {
-                if (error) {
-                    if (error.code === 'PGRST202' || error.message?.includes('function') || error.status === 404) {
-                        window._hasRpcIncrement = false;
-                    }
-                    const newVal = workObj ? workObj[metric] : undefined;
-                    if (newVal !== undefined) {
-                        window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
-                    }
-                }
-            })
-            .catch(() => {
-                window._hasRpcIncrement = false;
-            });
-    } else {
-        const newVal = workObj ? workObj[metric] : undefined;
-        if (newVal !== undefined) {
-            window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
-        }
+    const newVal = workObj ? workObj[metric] : undefined;
+    if (newVal !== undefined) {
+        window.supabaseClient.from("works").update({ [metric]: newVal }).eq("id", workId).catch(() => {});
     }
 }
 window.trackWorkInteraction = trackWorkInteraction;
