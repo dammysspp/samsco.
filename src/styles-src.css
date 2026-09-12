@@ -3066,7 +3066,7 @@ button:focus-visible,
         max-height: 100% !important;
         object-fit: contain !important;
         object-position: center !important;
-        background: #000000 !important;
+        background: transparent !important;
     }
 
     #modal-before-clip {
@@ -3144,7 +3144,7 @@ button:focus-visible,
         max-height: 100% !important;
         object-fit: contain !important;
         object-position: center !important;
-        background: #000000 !important;
+        background: transparent !important;
     }
 
     .mobile-player-bottom-sheet {

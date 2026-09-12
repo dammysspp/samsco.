@@ -2417,11 +2417,13 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 // Safety timeout so user isn't stuck if network or cache throttles events
                 let safetyTimer = setTimeout(() => {
                     if (!bReady || !aReady) {
+                        if (mAfterImg && !mAfterImg.src) mAfterImg.src = cleanAfter;
+                        if (mBeforeImg && !mBeforeImg.src) mBeforeImg.src = cleanBefore;
                         bReady = true;
                         aReady = true;
                         checkAllReady();
                     }
-                }, 3500);
+                }, 5000);
 
                 // Setup After Visual Asset
                 if (isAfterVid && mAfterVid) {
@@ -2461,19 +2463,26 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         mAfterVid.src = "";
                     }
                     mAfterImg.classList.remove("hidden");
-                    const imgA = new Image();
-                    imgA.onload = () => {
+                    mAfterImg.loading = "eager";
+                    mAfterImg.decoding = "async";
+
+                    const handleAfterImgReady = () => {
+                        if (aReady) return;
                         aReady = true;
-                        if (mAfterImg) mAfterImg.src = cleanAfter;
                         updateProgressUI(Math.max(loadProgress, 55), bReady ? "Finalizing Comparison..." : "After asset ready ✓ Loading before...");
                         checkAllReady();
                     };
-                    imgA.onerror = () => {
-                        aReady = true;
-                        if (mAfterImg) mAfterImg.src = cleanAfter;
-                        checkAllReady();
+
+                    mAfterImg.onload = handleAfterImgReady;
+                    mAfterImg.onerror = () => {
+                        console.warn("After image load error, proceeding with display");
+                        handleAfterImgReady();
                     };
-                    imgA.src = cleanAfter;
+
+                    mAfterImg.src = cleanAfter;
+                    if (mAfterImg.complete && mAfterImg.naturalWidth > 0) {
+                        handleAfterImgReady();
+                    }
                 }
 
                 // Setup Before Visual Asset
@@ -2514,19 +2523,26 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         mBeforeVid.src = "";
                     }
                     mBeforeImg.classList.remove("hidden");
-                    const imgB = new Image();
-                    imgB.onload = () => {
+                    mBeforeImg.loading = "eager";
+                    mBeforeImg.decoding = "async";
+
+                    const handleBeforeImgReady = () => {
+                        if (bReady) return;
                         bReady = true;
-                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
                         updateProgressUI(Math.max(loadProgress, 55), aReady ? "Finalizing Comparison..." : "Before asset ready ✓ Loading after...");
                         checkAllReady();
                     };
-                    imgB.onerror = () => {
-                        bReady = true;
-                        if (mBeforeImg) mBeforeImg.src = cleanBefore;
-                        checkAllReady();
+
+                    mBeforeImg.onload = handleBeforeImgReady;
+                    mBeforeImg.onerror = () => {
+                        console.warn("Before image load error, proceeding with display");
+                        handleBeforeImgReady();
                     };
-                    imgB.src = cleanBefore;
+
+                    mBeforeImg.src = cleanBefore;
+                    if (mBeforeImg.complete && mBeforeImg.naturalWidth > 0) {
+                        handleBeforeImgReady();
+                    }
                 }
 
                 // Video to Video Lockstep Synchronization (Master: After, Slave: Before)
