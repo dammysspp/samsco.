@@ -1268,11 +1268,13 @@ function formatAssetUrl(url) {
 }
 
 function isVideoUrl(url, type) {
-    if (type === "video") return true;
-    if (type === "image" || type === "iframe") return false;
     if (!url) return false;
     const cleanUrl = url.split("?")[0].toLowerCase();
-    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes('/video/upload/');
+    if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) return false;
+    if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || cleanUrl.includes('/video/upload/')) return true;
+    if (type === "video") return true;
+    if (type === "image" || type === "iframe" || type === "before_after") return false;
+    return false;
 }
 
 // URL Slug Helpers & Deep Linking
@@ -1546,8 +1548,8 @@ function renderMobileReelsFeed(targetIndex) {
             const rawBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
             const beforeLabel = work.beforeLabel || "Before";
             const afterLabel = work.afterLabel || "After";
-            const isAfterVid = isVideo || isVideoUrl(rawAfter, "video");
-            const isBeforeVid = isVideoUrl(rawBefore, "video");
+            const isAfterVid = isVideoUrl(rawAfter);
+            const isBeforeVid = isVideoUrl(rawBefore);
             const isNearInitial = Math.abs(slideIdx - targetIndex) <= 2;
 
             mediaHtml = `
@@ -2216,8 +2218,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 mBA.classList.remove("hidden");
                 const cleanAfter = workUrl.split("?")[0];
                 const cleanBefore = formatAssetUrl(work.beforeUrl || workUrl).split("?")[0];
-                const isAfterVid = isVideo || isVideoUrl(cleanAfter, "video");
-                const isBeforeVid = isVideoUrl(cleanBefore, "video");
+                const isAfterVid = isVideoUrl(cleanAfter);
+                const isBeforeVid = isVideoUrl(cleanBefore);
 
                 const mBAContent = document.getElementById("modal-ba-content");
                 const mBALoader = document.getElementById("modal-ba-loader");

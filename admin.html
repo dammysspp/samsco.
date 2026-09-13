@@ -4163,9 +4163,12 @@ Provide the response in structured JSON matching this schema:
 
                 function isVideoUrl(url, type) {
                     if (!url) return false;
-                    if (type === "video") return true;
                     const cleanUrl = url.split("?")[0].toLowerCase();
-                    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/");
+                    if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) return false;
+                    if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) return true;
+                    if (type === "video") return true;
+                    if (type === "image" || type === "iframe" || type === "before_after") return false;
+                    return false;
                 }
 
                 function sanitizeUrl(url) {
