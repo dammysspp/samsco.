@@ -626,7 +626,7 @@ function initGallery(force = false) {
         if (isTypographic) {
             mediaHtml = getTypographicFallbackHTML(work.title, mappedCat, outcomeColor);
         } else if (work.type === "iframe") {
-            const thumbUrl = `https://image.thum.io/get/width/400/crop/800/noanimate/${workUrl}`;
+            const thumbUrl = work.thumbnailUrl ? formatAssetUrl(work.thumbnailUrl) : `https://image.thum.io/get/width/400/crop/800/noanimate/${workUrl}`;
             mediaHtml = `
                 <div class="w-full h-full relative bg-gray-800 flex items-center justify-center overflow-hidden">
                     <img ${isEager ? `src="${thumbUrl}"` : `data-src="${thumbUrl}"`} loading="${isEager ? 'eager' : 'lazy'}" decoding="async" class="w-full h-full ${focalClass} object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-300" onload="window.vaultImagesLoaded = (window.vaultImagesLoaded || 0) + 1" onerror="window.handleGridImageError(this)">
@@ -896,7 +896,7 @@ function updateLightboxContent() {
     if ("iframe" === r && lbIframe) {
         lbIframe.classList.remove("hidden");
         lbIframe.style.display = "block";
-        lbIframe.src = t + "?embed";
+        lbIframe.src = formatEmbedUrl(t);
     } else if ("video" === r) {
         lbVideo.classList.remove("hidden");
         // Attach event handlers BEFORE setting src
@@ -1277,6 +1277,41 @@ function isVideoUrl(url, type) {
     return false;
 }
 
+function formatEmbedUrl(input) {
+    if (!input) return "";
+    let str = String(input).trim();
+    // 1. If user pasted a full <iframe ...> tag, extract the src
+    const iframeMatch = str.match(/src=["']([^"']+)["']/i);
+    if (iframeMatch) {
+        str = iframeMatch[1].trim();
+    }
+
+    // 2. Figma handling (proto, design, file)
+    if (str.includes("figma.com")) {
+        if (str.includes("embed.figma.com") || str.includes("figma.com/embed")) {
+            return str;
+        }
+        return "https://www.figma.com/embed?embed_host=share&url=" + encodeURIComponent(str);
+    }
+
+    // 3. Canva handling
+    if (str.includes("canva.com") && str.includes("/view")) {
+        return str.split("?")[0] + "?embed";
+    }
+
+    // 4. YouTube handling
+    if (str.includes("youtube.com/watch?v=")) {
+        const id = str.split("v=")[1]?.split("&")[0];
+        return "https://www.youtube.com/embed/" + id;
+    }
+    if (str.includes("youtu.be/")) {
+        const id = str.split("youtu.be/")[1]?.split("?")[0];
+        return "https://www.youtube.com/embed/" + id;
+    }
+
+    return str;
+}
+
 // URL Slug Helpers & Deep Linking
 function getWorkSlug(work) {
     if (!work) return "";
@@ -1507,12 +1542,14 @@ function renderMobileReelsFeed(targetIndex) {
         let mediaHtml = "";
         if (isIframe) {
             const isNearInitial = Math.abs(slideIdx - targetIndex) === 0;
+            const embedSrc = formatEmbedUrl(workUrl);
             mediaHtml = `
                 <div class="relative w-full h-full flex items-center justify-center bg-[#0a0c12] overflow-hidden">
-                    <iframe ${isNearInitial ? `src="${workUrl}?embed"` : `data-src="${workUrl}?embed"`} 
+                    <iframe ${isNearInitial ? `src="${embedSrc}"` : `data-src="${embedSrc}"`} 
                         loading="lazy"
                         class="reel-iframe w-full h-full border-none relative z-10" 
-                        allowfullscreen></iframe>
+                        allowfullscreen
+                        allow="clipboard-write; fullscreen"></iframe>
                 </div>
             `;
         } else if (isVideo) {
@@ -2109,6 +2146,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     mProjectLinkText.innerText = "WATCH ON VIMEO ↗";
                 } else if (lower.includes("drive.google.com")) {
                     mProjectLinkText.innerText = "OPEN GOOGLE DRIVE ↗";
+                } else if (lower.includes("figma.com")) {
+                    mProjectLinkText.innerText = "OPEN IN FIGMA ↗";
                 } else {
                     mProjectLinkText.innerText = "VISIT LIVE PROJECT ↗";
                 }
@@ -2212,7 +2251,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
 
         if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
-            mIframe.src = workUrl + "?embed";
+            mIframe.src = formatEmbedUrl(workUrl);
         } else if (mediaType === "before_after") {
             if (mBA && mBeforeClip && mBAHandle) {
                 mBA.classList.remove("hidden");

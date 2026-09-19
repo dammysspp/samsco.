@@ -1235,8 +1235,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <!-- Direct Link -->
                         <div>
                             <span class="block text-[10px] text-white/30 font-medium mb-1.5">Direct URL Option:</span>
-                            <input type="text" id="work-url" required placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
-                            <span class="block text-[9px] text-white/30 mt-1 leading-relaxed">Paste an external image/video link or Canva embed viewer URL. If you upload a file on the right, this field is filled automatically.</span>
+                            <input type="text" id="work-url" required placeholder="https://... or <iframe src='...'>" class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
+                            <span class="block text-[9px] text-white/40 mt-1 leading-relaxed">Direct image/video URL, or Canva/Figma embed code or share link (<code class="text-[#64d2ff] font-mono text-[8px]">&lt;iframe src="..."&gt;</code> is automatically extracted).</span>
                             
                             <!-- Thumbnail / Poster Link -->
                             <div class="mt-4">
@@ -2824,7 +2824,12 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                             preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-purple-400 font-bold">VIDEO</div>`;
                         }
                     } else if (work.type === "iframe") {
-                        preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] text-blue-400 font-bold">EMBED</div>`;
+                        if (work.thumbnailUrl) {
+                            preview = `<img src="${work.thumbnailUrl}" class="w-12 h-12 object-cover rounded-lg border border-white/5">`;
+                        } else {
+                            const isFigma = (work.url || "").includes("figma.com");
+                            preview = `<div class="w-12 h-12 rounded-lg bg-gray-900 border border-white/5 flex items-center justify-center text-[10px] ${isFigma ? 'text-[#a259ff]' : 'text-blue-400'} font-bold">${isFigma ? 'FIGMA' : 'EMBED'}</div>`;
+                        }
                     }
                     
                     const cats = (work.cat || '').split(',').map(c => c.trim()).filter(Boolean);
@@ -2910,12 +2915,14 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                 <video src="${work.url}" poster="${work.thumbnailUrl || ''}" class="w-full h-full object-cover" preload="metadata" muted playsinline></video>
                             </div>`;
                     } else if (work.type === "iframe") {
-                        const iframeThumb = `https://image.thum.io/get/width/400/crop/800/noanimate/${work.url}`;
+                        const isFigma = (work.url || "").includes("figma.com");
+                        const iframeThumb = work.thumbnailUrl ? work.thumbnailUrl : `https://image.thum.io/get/width/400/crop/800/noanimate/${work.url}`;
                         cardPreview = `
                             <div class="aspect-video w-full relative overflow-hidden bg-gray-900 border-b border-white/5">
                                 <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
-                                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                                        <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Embed</span>
+                                    <div class="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md flex items-center gap-1.5 border border-white/20">
+                                        <span class="w-1.5 h-1.5 rounded-full ${isFigma ? 'bg-[#a259ff]' : 'bg-blue-400'}"></span>
+                                        <span class="text-[10px] ${isFigma ? 'text-[#a259ff]' : 'text-blue-400'} font-bold uppercase tracking-wider">${isFigma ? 'Figma' : 'Embed'}</span>
                                     </div>
                                 </div>
                                 <img src="${iframeThumb}" onerror="this.style.display='none'" class="w-full h-full object-cover">
@@ -4259,13 +4266,21 @@ Provide the response in structured JSON matching this schema:
                     return;
                 }
                 const cat = selectedCats.join(', ');
-                const type = document.getElementById("work-type").value;
+                let type = document.getElementById("work-type").value;
                 const isBa = document.getElementById("work-is-ba")?.checked;
-                const url = document.getElementById("work-url").value.trim();
+                let url = document.getElementById("work-url").value.trim();
 
                 if (/^[a-zA-Z]:\\|^file:\/\//i.test(url)) {
                     showToast("Cannot save local file path (C:\\...). Please drag & drop the file into the upload box to upload it!", "error");
                     return;
+                }
+
+                // Auto-format embed URL and set type
+                if (url.includes("<iframe") || url.includes("figma.com") || url.includes("canva.com/design")) {
+                    url = formatEmbedUrl(url);
+                    if (!isBa && type !== "iframe") {
+                        type = "iframe";
+                    }
                 }
                 
                 const thumbnailUrl = document.getElementById("work-thumbnailUrl").value.trim();
@@ -4498,8 +4513,43 @@ Provide the response in structured JSON matching this schema:
             const workUrlInput = document.getElementById("work-url");
             const workTypeSelect = document.getElementById("work-type");
 
+            function formatEmbedUrl(input) {
+                if (!input) return "";
+                let str = String(input).trim();
+                // 1. If user pasted a full <iframe ...> tag, extract the src
+                const iframeMatch = str.match(/src=["']([^"']+)["']/i);
+                if (iframeMatch) {
+                    str = iframeMatch[1].trim();
+                }
+
+                // 2. Figma handling (proto, design, file)
+                if (str.includes("figma.com")) {
+                    if (str.includes("embed.figma.com") || str.includes("figma.com/embed")) {
+                        return str;
+                    }
+                    return "https://www.figma.com/embed?embed_host=share&url=" + encodeURIComponent(str);
+                }
+
+                // 3. Canva handling
+                if (str.includes("canva.com") && str.includes("/view")) {
+                    return str.split("?")[0] + "?embed";
+                }
+
+                // 4. YouTube handling
+                if (str.includes("youtube.com/watch?v=")) {
+                    const id = str.split("v=")[1]?.split("&")[0];
+                    return "https://www.youtube.com/embed/" + id;
+                }
+                if (str.includes("youtu.be/")) {
+                    const id = str.split("youtu.be/")[1]?.split("?")[0];
+                    return "https://www.youtube.com/embed/" + id;
+                }
+
+                return str;
+            }
+
             function updateMediaPreview() {
-                const url = workUrlInput.value.trim();
+                let url = workUrlInput.value.trim();
                 let type = workTypeSelect.value;
 
                 if (!url) {
@@ -4513,6 +4563,19 @@ Provide the response in structured JSON matching this schema:
                     mediaPreviewContainer.classList.remove("hidden");
                     showPreviewError("Local file path detected! Visitors cannot view files on your computer. Please upload the file using the Drag & Drop upload box above.");
                     return;
+                }
+
+                // Auto-detect iframe/embed snippet or Figma/Canva link
+                if (url.includes("<iframe") || url.includes("figma.com") || url.includes("canva.com/design")) {
+                    const extracted = formatEmbedUrl(url);
+                    if (url.includes("<iframe") && extracted !== url) {
+                        workUrlInput.value = extracted;
+                        url = extracted;
+                    }
+                    if (type !== "iframe" && !document.getElementById("work-is-ba")?.checked) {
+                        workTypeSelect.value = "iframe";
+                        type = "iframe";
+                    }
                 }
 
                 // Auto-detect media type if matching extensions (only for image / video modes)
@@ -4642,12 +4705,9 @@ Provide the response in structured JSON matching this schema:
                         <video src="${url}" controls autoplay muted loop class="max-w-full max-h-64 rounded-lg" onerror="showPreviewError('Failed to load video. Ensure the file URL is public and supported by browsers (.mp4, .webm).')"></video>
                     `;
                 } else if (type === "iframe") {
-                    let embedUrl = url;
-                    if (url.includes("canva.com") && url.includes("/view")) {
-                        embedUrl = url.split("?")[0] + "?embed";
-                    }
+                    const embedUrl = formatEmbedUrl(url);
                     mediaPreviewElement.innerHTML = `
-                        <iframe src="${embedUrl}" class="w-full h-64 rounded-lg border-0 bg-white" allowfullscreen></iframe>
+                        <iframe src="${embedUrl}" class="w-full h-72 rounded-lg border-0 bg-white" allowfullscreen allow="clipboard-write; fullscreen"></iframe>
                     `;
                 }
             }
