@@ -1267,14 +1267,299 @@ function formatAssetUrl(url) {
     return clean;
 }
 
+function isPdfUrl(url, type) {
+    if (type === "pdf") return true;
+    if (!url) return false;
+    const cleanUrl = String(url).split("?")[0].toLowerCase();
+    return cleanUrl.endsWith(".pdf") || String(url).toLowerCase().includes(".pdf?");
+}
+
 function isVideoUrl(url, type) {
     if (!url) return false;
     const cleanUrl = url.split("?")[0].toLowerCase();
+    if (isPdfUrl(url, type)) return false;
     if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(cleanUrl)) return false;
     if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || cleanUrl.includes('/video/upload/')) return true;
     if (type === "video") return true;
-    if (type === "image" || type === "iframe" || type === "before_after") return false;
+    if (type === "image" || type === "iframe" || type === "before_after" || type === "pdf") return false;
     return false;
+}
+
+// ----------------------------------------------------
+// PDF FLIPBOOK VIEWER ENGINE (Mozilla PDF.js + PageFlip)
+// ----------------------------------------------------
+let activePageFlip = null;
+let activePdfDoc = null;
+let flipbookRenderToken = 0;
+
+function destroyActiveFlipbook() {
+    flipbookRenderToken++;
+    if (activePageFlip) {
+        try {
+            activePageFlip.destroy();
+        } catch (e) {
+            console.warn("Flipbook destroy caught:", e);
+        }
+        activePageFlip = null;
+    }
+    activePdfDoc = null;
+    const bookEl = document.getElementById("flipbook-book");
+    if (bookEl) {
+        bookEl.innerHTML = "";
+        bookEl.style.transform = "none";
+    }
+    const stageEl = document.getElementById("modal-flipbook-stage");
+    if (stageEl) {
+        stageEl.classList.add("hidden");
+    }
+}
+
+async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
+    const stageEl = document.getElementById("modal-flipbook-stage");
+    const bookEl = document.getElementById("flipbook-book");
+    const loaderEl = document.getElementById("flipbook-loader");
+    const percentEl = document.getElementById("flipbook-percent");
+    const barEl = document.getElementById("flipbook-progress-bar");
+    const statusEl = document.getElementById("flipbook-status");
+    const pageNumEl = document.getElementById("flipbook-page-num");
+    const totalPagesEl = document.getElementById("flipbook-total-pages");
+    const prevBtn = document.getElementById("flipbook-prev-btn");
+    const nextBtn = document.getElementById("flipbook-next-btn");
+    const zoomBtn = document.getElementById("flipbook-zoom-btn");
+    const rawLink = document.getElementById("flipbook-raw-link");
+
+    if (!stageEl || !bookEl) return;
+
+    destroyActiveFlipbook();
+    const thisToken = ++flipbookRenderToken;
+
+    stageEl.classList.remove("hidden");
+    if (loaderEl) {
+        loaderEl.classList.remove("opacity-0", "pointer-events-none");
+        loaderEl.style.display = "flex";
+    }
+    if (percentEl) percentEl.textContent = "10%";
+    if (barEl) barEl.style.width = "10%";
+    if (statusEl) statusEl.textContent = "Connecting document archive...";
+    if (rawLink) rawLink.href = pdfUrl;
+
+    // Configure PDF.js worker
+    if (typeof pdfjsLib !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+
+    try {
+        if (typeof pdfjsLib === "undefined") {
+            throw new Error("PDF.js library could not be loaded from CDN.");
+        }
+
+        const loadingTask = pdfjsLib.getDocument({
+            url: pdfUrl,
+            cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+            cMapPacked: true,
+            disableRange: false,
+            disableStream: false,
+        });
+
+        loadingTask.onProgress = (progress) => {
+            if (progress.total > 0 && percentEl && barEl) {
+                const pct = Math.min(45, Math.round((progress.loaded / progress.total) * 45));
+                percentEl.textContent = `${pct}%`;
+                barEl.style.width = `${pct}%`;
+            }
+        };
+
+        const pdf = await loadingTask.promise;
+        if (thisToken !== flipbookRenderToken) return;
+
+        activePdfDoc = pdf;
+        const numPages = pdf.numPages;
+        if (totalPagesEl) totalPagesEl.textContent = String(numPages);
+        if (pageNumEl) pageNumEl.textContent = "1";
+
+        if (statusEl) statusEl.textContent = `Rasterizing ${numPages} high-definition pages...`;
+        if (percentEl) percentEl.textContent = "50%";
+        if (barEl) barEl.style.width = "50%";
+
+        // Fetch page 1 to compute aspect ratio
+        const firstPage = await pdf.getPage(1);
+        const unscaledViewport = firstPage.getViewport({ scale: 1.0 });
+        const pageWidth = unscaledViewport.width || 600;
+        const pageHeight = unscaledViewport.height || 800;
+        const isMobile = window.innerWidth <= 768;
+
+        // Determine optimal rendering scale
+        const renderScale = isMobile ? Math.min(window.devicePixelRatio || 1.5, 2.0) : Math.min(window.devicePixelRatio || 1.5, 2.2);
+
+        bookEl.innerHTML = "";
+
+        // Pre-create container pages
+        for (let i = 1; i <= numPages; i++) {
+            const pageDiv = document.createElement("div");
+            pageDiv.className = `flipbook-page ${i === 1 || i === numPages ? "flipbook-page-hard" : ""}`;
+            pageDiv.setAttribute("data-density", i === 1 || i === numPages ? "hard" : "soft");
+            pageDiv.setAttribute("data-page-num", i);
+            pageDiv.style.width = "100%";
+            pageDiv.style.height = "100%";
+
+            const canvas = document.createElement("canvas");
+            canvas.className = "w-full h-full object-contain";
+            pageDiv.appendChild(canvas);
+            bookEl.appendChild(pageDiv);
+        }
+
+        // Render each page to canvas
+        for (let i = 1; i <= numPages; i++) {
+            if (thisToken !== flipbookRenderToken) return;
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: renderScale });
+            const pageDiv = bookEl.children[i - 1];
+            if (!pageDiv) continue;
+
+            const canvas = pageDiv.querySelector("canvas");
+            if (canvas) {
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const ctx = canvas.getContext("2d");
+                await page.render({ canvasContext: ctx, viewport }).promise;
+            }
+
+            const currentPct = 50 + Math.round((i / numPages) * 45);
+            if (percentEl) percentEl.textContent = `${currentPct}%`;
+            if (barEl) barEl.style.width = `${currentPct}%`;
+        }
+
+        if (thisToken !== flipbookRenderToken) return;
+
+        if (percentEl) percentEl.textContent = "100%";
+        if (barEl) barEl.style.width = "100%";
+        if (statusEl) statusEl.textContent = "Ready!";
+
+        // Initialize St.PageFlip
+        if (typeof St !== "undefined" && St.PageFlip) {
+            // Viewport sizing
+            const stageBox = stageEl.getBoundingClientRect();
+            const availableW = Math.max(320, stageBox.width - (isMobile ? 16 : 48));
+            const availableH = Math.max(400, (stageBox.height || window.innerHeight * 0.65) - 60);
+
+            // Compute single page dimensions fitting inside viewport
+            let targetPageW = isMobile ? availableW : availableW / 2;
+            let targetPageH = targetPageW * (pageHeight / pageWidth);
+
+            if (targetPageH > availableH) {
+                targetPageH = availableH;
+                targetPageW = targetPageH * (pageWidth / pageHeight);
+            }
+
+            targetPageW = Math.floor(targetPageW);
+            targetPageH = Math.floor(targetPageH);
+
+            const pageFlip = new St.PageFlip(bookEl, {
+                width: targetPageW,
+                height: targetPageH,
+                size: "fixed",
+                minWidth: 260,
+                maxWidth: 1200,
+                minHeight: 350,
+                maxHeight: 1400,
+                showCover: true,
+                maxShadowOpacity: 0.5,
+                mobileScrollSupport: false,
+                useMouseEvents: true,
+                swipeDistance: 30,
+                flippingTime: 650,
+                usePortrait: isMobile,
+                startPage: 0,
+            });
+
+            pageFlip.loadFromHTML(bookEl.querySelectorAll(".flipbook-page"));
+            activePageFlip = pageFlip;
+
+            const updatePageUI = (pageIndex) => {
+                if (pageNumEl) {
+                    const displayNum = Math.min(numPages, Math.max(1, pageIndex + 1));
+                    pageNumEl.textContent = String(displayNum);
+                }
+            };
+
+            pageFlip.on("flip", (e) => {
+                updatePageUI(e.data);
+            });
+
+            if (prevBtn) {
+                prevBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    pageFlip.flipPrev();
+                };
+            }
+            if (nextBtn) {
+                nextBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    pageFlip.flipNext();
+                };
+            }
+
+            let isZoomed = false;
+            if (zoomBtn) {
+                zoomBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    isZoomed = !isZoomed;
+                    bookEl.style.transform = isZoomed ? "scale(1.3)" : "none";
+                    zoomBtn.classList.toggle("text-[#64d2ff]", isZoomed);
+                    zoomBtn.title = isZoomed ? "Reset Zoom" : "Zoom In";
+                };
+            }
+
+            // Keyboard navigation
+            const flipKeyHandler = (e) => {
+                if (!activePageFlip) return;
+                if (e.key === "ArrowLeft") {
+                    e.preventDefault();
+                    pageFlip.flipPrev();
+                } else if (e.key === "ArrowRight") {
+                    e.preventDefault();
+                    pageFlip.flipNext();
+                }
+            };
+            window.addEventListener("keydown", flipKeyHandler);
+
+            window._flipbookCleanup = () => {
+                window.removeEventListener("keydown", flipKeyHandler);
+                destroyActiveFlipbook();
+                window._flipbookCleanup = null;
+            };
+        } else {
+            console.warn("St.PageFlip library not loaded, using fallback scroll view");
+            bookEl.style.display = "flex";
+            bookEl.style.flexDirection = "column";
+            bookEl.style.overflowY = "auto";
+            bookEl.style.maxHeight = "65vh";
+        }
+
+        // Hide loader after smooth fade
+        setTimeout(() => {
+            if (loaderEl && thisToken === flipbookRenderToken) {
+                loaderEl.classList.add("opacity-0", "pointer-events-none");
+                setTimeout(() => {
+                    if (thisToken === flipbookRenderToken) loaderEl.style.display = "none";
+                }, 300);
+            }
+        }, 200);
+
+    } catch (err) {
+        console.error("Failed to render PDF flipbook:", err);
+        if (thisToken !== flipbookRenderToken) return;
+        if (loaderEl) {
+            loaderEl.innerHTML = `
+                <div class="p-6 text-center text-xs text-amber-300 flex flex-col items-center justify-center gap-2">
+                    <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span class="font-bold text-white uppercase tracking-wider">Document Preview Unavailable</span>
+                    <span class="text-white/60 max-w-sm leading-relaxed">${err.message || "Failed to load PDF."}</span>
+                    <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" class="mt-2 px-4 py-2 rounded-full bg-[#0071e3] text-white font-bold text-xs uppercase tracking-wider shadow-lg">Open / Download PDF ↗</a>
+                </div>
+            `;
+        }
+    }
 }
 
 function formatEmbedUrl(input) {
@@ -2025,6 +2310,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     // Check if on mobile viewport
     const isMobile = window.innerWidth <= 768;
     const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
+    const isPdf = isPdfUrl(work.url, work.type);
 
     // Update URL bar seamlessly with unique work link
     const slug = getWorkSlug(work);
@@ -2042,8 +2328,8 @@ function openProjectModal(indexOrEl, skipHistory = false) {
     const desktopContainer = document.getElementById("desktop-modal-container");
 
     // Handle Mobile Experience (TikTok / IG Reels Vertical Feed)
-    // NOTE: Dedicated interactive Before & After comparisons ALWAYS use the responsive #project-modal on both mobile and desktop!
-    if (isMobile && !isBeforeAfter && reelsContainer) {
+    // NOTE: Dedicated interactive Before & After comparisons AND PDF Flipbooks ALWAYS use the responsive #project-modal on both mobile and desktop!
+    if (isMobile && !isBeforeAfter && !isPdf && reelsContainer) {
         if (desktopContainer) desktopContainer.classList.add("hidden");
         reelsContainer.classList.remove("hidden");
         renderMobileReelsFeed(currentLbIndex);
@@ -2232,24 +2518,34 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             window._baCleanup();
         }
 
+        // Clean up previous PDF Flipbook if any
+        if (window._flipbookCleanup) {
+            window._flipbookCleanup();
+        } else if (typeof destroyActiveFlipbook === "function") {
+            destroyActiveFlipbook();
+        }
+
         const workUrl = formatAssetUrl(work.url);
         const isVideo = isVideoUrl(workUrl, work.type);
         const isBeforeAfter = work.type === "before_after" || !!work.beforeUrl;
-        const mediaType = isBeforeAfter ? "before_after" : work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
+        const isPdf = isPdfUrl(workUrl, work.type);
+        const mediaType = isBeforeAfter ? "before_after" : isPdf ? "pdf" : work.type === "iframe" ? "iframe" : isVideo ? "video" : "image";
 
         if (stage) {
+            stage.classList.remove("stage-before-after", "stage-flipbook", "aspect-[16/9]", "md:aspect-[16/9]", "h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
             if (mediaType === "before_after") {
                 stage.classList.add("stage-before-after");
-                stage.classList.remove("aspect-[16/9]", "md:aspect-[16/9]");
                 stage.classList.add("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
+            } else if (mediaType === "pdf") {
+                stage.classList.add("stage-flipbook");
             } else {
-                stage.classList.remove("stage-before-after");
-                stage.classList.remove("h-[48vh]", "md:h-[65vh]", "max-h-[720px]", "min-h-[320px]");
                 stage.classList.add("aspect-[16/9]", "md:aspect-[16/9]");
             }
         }
 
-        if (mediaType === "iframe") {
+        if (mediaType === "pdf") {
+            renderPdfFlipbook(workUrl, work.title);
+        } else if (mediaType === "iframe") {
             mIframe.classList.remove("hidden");
             mIframe.src = formatEmbedUrl(workUrl);
         } else if (mediaType === "before_after") {
@@ -2944,6 +3240,13 @@ function closeProjectModal(skipHistory = false) {
         window._baCleanup();
     }
 
+    // Clean up PDF Flipbook listeners & instance
+    if (window._flipbookCleanup) {
+        window._flipbookCleanup();
+    } else if (typeof destroyActiveFlipbook === "function") {
+        destroyActiveFlipbook();
+    }
+
     // Clean up mobile reels
     if (mobileReelsObserver) {
         mobileReelsObserver.disconnect();
@@ -2967,7 +3270,7 @@ function closeProjectModal(skipHistory = false) {
     }
     const stage = document.getElementById("cinematic-stage");
     if (stage) {
-        stage.classList.remove("stage-before-after");
+        stage.classList.remove("stage-before-after", "stage-flipbook");
     }
 
     const mVideo = document.getElementById("modal-video");

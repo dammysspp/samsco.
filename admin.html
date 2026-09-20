@@ -1024,6 +1024,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <select id="work-type" required class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                             <option value="image">Image (jpg, png, webp, gif)</option>
                             <option value="video">Video (mp4, webm)</option>
+                            <option value="pdf">PDF Document (Flipbook Presentation)</option>
                             <option value="iframe">External Embed (Canva, YouTube, Figma)</option>
                         </select>
                     </div>
@@ -1259,8 +1260,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
                                 <span class="text-[10px] font-semibold text-white/60">DRAG & DROP FILE</span>
-                                <span id="upload-limit-label" class="text-[9px] text-white/30 mt-0.5">Auto-optimizes images & extracts video poster (00:02)</span>
-                                <input type="file" id="file-input" class="hidden">
+                                <span id="upload-limit-label" class="text-[9px] text-white/30 mt-0.5">Images, Videos, or PDF Presentations (Auto Flipbook)</span>
+                                <input type="file" id="file-input" class="hidden" accept="image/*,video/*,application/pdf,.pdf">
                             </div>
                             <!-- Upload Progress -->
                             <div id="upload-progress-container" class="hidden mt-3">
@@ -3604,7 +3605,9 @@ Provide the response in structured JSON matching this schema:
                     showToast("Media uploaded to R2 successfully!", "success");
                     
                     const workTypeSelect = document.getElementById("work-type");
-                    if (file.type.startsWith("video/")) {
+                    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+                        workTypeSelect.value = "pdf";
+                    } else if (file.type.startsWith("video/")) {
                         workTypeSelect.value = "video";
                     } else if (file.type.startsWith("image/")) {
                         workTypeSelect.value = "image";
@@ -3668,7 +3671,9 @@ Provide the response in structured JSON matching this schema:
                     showToast("Media uploaded successfully!", "success");
                     
                     const workTypeSelect = document.getElementById("work-type");
-                    if (file.type.startsWith("video/")) {
+                    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+                        workTypeSelect.value = "pdf";
+                    } else if (file.type.startsWith("video/")) {
                         workTypeSelect.value = "video";
                     } else if (file.type.startsWith("image/")) {
                         workTypeSelect.value = "image";
@@ -4578,10 +4583,15 @@ Provide the response in structured JSON matching this schema:
                     }
                 }
 
-                // Auto-detect media type if matching extensions (only for image / video modes)
+                // Auto-detect media type if matching extensions (only for image / video / pdf modes)
                 const cleanUrl = url.split("?")[0].toLowerCase();
                 if (type !== "before_after" && type !== "iframe") {
-                    if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) {
+                    if (cleanUrl.endsWith(".pdf") || url.toLowerCase().includes(".pdf?")) {
+                        if (type !== "pdf") {
+                            workTypeSelect.value = "pdf";
+                            type = "pdf";
+                        }
+                    } else if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(cleanUrl) || url.includes("/video/upload/")) {
                         if (type !== "video") {
                             workTypeSelect.value = "video";
                             type = "video";
@@ -4696,6 +4706,21 @@ Provide the response in structured JSON matching this schema:
 
                         slider.addEventListener("pointerdown", onPointerDown);
                     }
+                } else if (type === "pdf") {
+                    mediaPreviewElement.innerHTML = `
+                        <div class="p-6 text-center text-xs text-white/90 flex flex-col items-center justify-center gap-3 bg-gradient-to-b from-[#1b1e28] to-[#12151c] rounded-2xl border border-white/10 shadow-xl max-w-md mx-auto">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0071e3]/30 to-[#64d2ff]/20 border border-[#64d2ff]/30 flex items-center justify-center text-[#64d2ff] shadow-lg">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div>
+                                <span class="font-bold text-sm tracking-wide text-white block uppercase font-display">PDF Flipbook Enabled</span>
+                                <span class="text-[11px] text-white/50 block mt-1">Visitors will enjoy an interactive, 3D animated flipbook experience with mobile touch swipe.</span>
+                            </div>
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-mono text-[10px] font-bold border border-white/15 transition-all">
+                                Open Source PDF ↗
+                            </a>
+                        </div>
+                    `;
                 } else if (type === "image") {
                     mediaPreviewElement.innerHTML = `
                         <img src="${url}" class="max-w-full max-h-64 object-contain rounded-lg" onerror="showPreviewError('Failed to load image. If hosted on Supabase, ensure the storage bucket portfolio is set to Public!')">
