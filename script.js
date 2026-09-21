@@ -56,21 +56,42 @@ try {
 // Interaction & Analytics Tracking System
 const recentInteractions = new Map();
 
-function trackWorkInteraction(work, metric) {
+async function trackWorkInteraction(work, metric) {
     if (!work) return;
-    const workId = typeof work === 'object' ? work.id : work;
-    if (!workId) return;
+    
+    // Auto-resolve work object & numeric ID if work is passed as string title or config item
+    let workObj = null;
+    let workId = null;
 
-    // Deduplicate rapid repeat events (within 3 seconds for same work + metric)
-    const dedupKey = `${workId}_${metric}`;
+    if (typeof work === 'object') {
+        workObj = work;
+        workId = work.id;
+    } else if (typeof work === 'number' || (typeof work === 'string' && /^\d+$/.test(work))) {
+        workId = Number(work);
+        workObj = galleryConfig.find(w => w.id === workId);
+    }
+
+    if (!workId && workObj) {
+        // Try matching against loaded galleryConfig items that have an ID
+        const matched = galleryConfig.find(w => w.id && (
+            (workObj.title && w.title === workObj.title) ||
+            (workObj.url && w.url === workObj.url)
+        ));
+        if (matched && matched.id) {
+            workId = matched.id;
+            workObj.id = matched.id;
+        }
+    }
+
+    // Deduplicate rapid repeat events (within 3.5 seconds for same work + metric)
+    const dedupKey = `${workId || (workObj && workObj.title) || 'unknown'}_${metric}`;
     const now = Date.now();
-    if (recentInteractions.has(dedupKey) && (now - recentInteractions.get(dedupKey)) < 3000) {
+    if (recentInteractions.has(dedupKey) && (now - recentInteractions.get(dedupKey)) < 3500) {
         return;
     }
     recentInteractions.set(dedupKey, now);
 
-    // Update in-memory work object
-    let workObj = typeof work === 'object' ? work : galleryConfig.find(w => w.id === workId);
+    // 1. Immediately update in-memory work object and browser cache
     if (workObj) {
         workObj[metric] = (Number(workObj[metric]) || 0) + 1;
         try {
@@ -78,13 +99,34 @@ function trackWorkInteraction(work, metric) {
         } catch (e) {}
     }
 
-    if (!window.supabaseClient) return;
+    if (!window.supabaseClient || !workId) return;
 
+    // 2. Persist to Supabase: Try RPC first; if missing (PGRST202) or fails, fallback to direct update
     try {
-        window.supabaseClient.rpc('increment_work_metric', { work_id: workId, metric: metric })
-            .then(() => {})
-            .catch(() => {});
-    } catch (err) {}
+        const { error: rpcError } = await window.supabaseClient.rpc('increment_work_metric', { 
+            work_id: workId, 
+            metric: metric 
+        });
+
+        if (rpcError) {
+            // RPC not created or failed - fallback to direct read-modify-write / patch
+            const { data, error: selectError } = await window.supabaseClient
+                .from('works')
+                .select(metric)
+                .eq('id', workId)
+                .single();
+
+            if (!selectError && data) {
+                const currentVal = Number(data[metric]) || 0;
+                await window.supabaseClient
+                    .from('works')
+                    .update({ [metric]: currentVal + 1 })
+                    .eq('id', workId);
+            }
+        }
+    } catch (err) {
+        console.debug("Metric sync note:", err);
+    }
 }
 window.trackWorkInteraction = trackWorkInteraction;
 
@@ -2337,6 +2379,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
         projectModal.classList.remove("opacity-0", "pointer-events-none");
         document.body.style.overflow = "hidden";
         if (window.lenis) window.lenis.stop();
+        trackWorkInteraction(work, "views");
         return;
     }
 
@@ -2597,6 +2640,7 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                         if (isAfterVid && mAfterVid) mAfterVid.play().catch(() => {});
                         if (isBeforeVid && mBeforeVid) mBeforeVid.play().catch(() => {});
                         updateBAPlayUI(true);
+                        trackWorkInteraction(work, "plays");
                     }
                 };
 
