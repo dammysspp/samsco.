@@ -3404,6 +3404,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 currentProcessShots = [];
                 renderProcessShotsList();
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
+                if (typeof toggleScheduledDate === 'function') toggleScheduledDate();
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
             }
 
@@ -3418,6 +3419,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 currentProcessShots = [];
                 renderProcessShotsList();
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
+                if (typeof toggleScheduledDate === 'function') toggleScheduledDate();
                 document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
                 showModal("Create New Portfolio Work");
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
@@ -4514,6 +4516,16 @@ Provide the response in structured JSON matching this schema:
                     showToast("Shot added to process breakdown!", "success");
                 });
             }
+
+            function toggleScheduledDate() {
+                const status = document.getElementById("work-status")?.value;
+                const container = document.getElementById("scheduled-date-container");
+                if (container) {
+                    if (status === "scheduled") container.classList.remove("hidden");
+                    else container.classList.add("hidden");
+                }
+            }
+            document.getElementById("work-status")?.addEventListener("change", toggleScheduledDate);
 
             // Edit Item
             function openEditModal(id) {
