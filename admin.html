@@ -272,6 +272,7 @@ ALTER TABLE public.works ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS plays INTEGER DEFAULT 0;
 ALTER TABLE public.works ADD COLUMN IF NOT EXISTS clicks INTEGER DEFAULT 0;
+ALTER TABLE public.works ADD COLUMN IF NOT EXISTS process_shots JSONB DEFAULT '[]'::jsonb;
 
 ALTER TABLE public.works ENABLE ROW LEVEL SECURITY;
 
@@ -1352,6 +1353,56 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <label for="work-demoUrl" class="block text-[10px] font-semibold text-white/50 tracking-wider mb-2 uppercase">Interactive Live Demo URL (Optional)</label>
                         <input type="url" id="work-demoUrl" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl admin-input text-xs">
                         <span class="block text-[9px] text-white/30 mt-1 leading-relaxed">External link specifically for users to play with a live version of the code, game, or prototype.</span>
+                    </div>
+                </div>
+
+                <!-- See the Process (Shot-by-Shot Breakdown & Comparison) -->
+                <div class="border-t border-white/5 pt-6 space-y-4">
+                    <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-white tracking-wider uppercase">
+                                    See The Process (Shot-by-Shot Breakdown)
+                                </label>
+                                <span class="text-[10px] text-white/40 block">Upload individual shots, raw renders, wireframes, or progression steps making up this work</span>
+                            </div>
+                        </div>
+                        <span id="process-shots-count-badge" class="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">0 SHOTS</span>
+                    </div>
+
+                    <!-- Upload & Add Process Shots Drop Zone -->
+                    <div id="drop-zone-process" class="border-2 border-dashed border-purple-500/30 hover:border-purple-400 bg-purple-500/[0.02] hover:bg-purple-500/[0.05] p-5 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300">
+                        <svg class="w-7 h-7 text-purple-400/80 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="text-[10px] font-bold text-purple-300 uppercase tracking-wider">CLICK OR DRAG SHOTS / RENDERS HERE</span>
+                        <span class="text-[9px] text-white/40 mt-1">Upload multiple images or progression clips at once (Supports R2 & Supabase)</span>
+                        <input type="file" id="file-input-process" class="hidden" accept="image/*,video/*" multiple>
+                    </div>
+
+                    <!-- Process Shots Upload Progress Indicator -->
+                    <div id="process-upload-progress" class="hidden space-y-1.5 p-3 rounded-xl bg-purple-950/20 border border-purple-500/20">
+                        <div class="flex justify-between items-center text-[10px] font-medium text-purple-300">
+                            <span id="process-upload-status">Uploading shot...</span>
+                            <span id="process-upload-percent" class="font-mono">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div id="process-upload-bar" class="h-full bg-gradient-to-r from-purple-500 to-[#64d2ff] transition-all duration-150" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Manual URL Add Row -->
+                    <div class="flex gap-2 items-center">
+                        <input type="url" id="process-manual-url" placeholder="Or paste media URL for a process shot..." class="flex-1 px-4 py-2 rounded-xl admin-input text-xs">
+                        <button type="button" id="process-add-url-btn" class="px-3.5 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap">
+                            + Add URL
+                        </button>
+                    </div>
+
+                    <!-- Process Shots List (Draggable/Editable Cards) -->
+                    <div id="process-shots-container" class="space-y-3 pt-2">
+                        <!-- Injected dynamically -->
                     </div>
                 </div>
 
@@ -3350,6 +3401,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
                 document.getElementById("work-afterLabel").value = "After";
+                currentProcessShots = [];
+                renderProcessShotsList();
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
             }
@@ -3362,6 +3415,8 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 if (document.getElementById("work-afterUrl-input")) document.getElementById("work-afterUrl-input").value = "";
                 document.getElementById("work-beforeLabel").value = "Before";
                 document.getElementById("work-afterLabel").value = "After";
+                currentProcessShots = [];
+                renderProcessShotsList();
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
                 document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
                 showModal("Create New Portfolio Work");
@@ -4231,15 +4286,234 @@ Provide the response in structured JSON matching this schema:
                 }
             }
 
-            function toggleScheduledDate() {
-                const status = document.getElementById("work-status")?.value;
-                const container = document.getElementById("scheduled-date-container");
-                if (container) {
-                    if (status === "scheduled") container.classList.remove("hidden");
-                    else container.classList.add("hidden");
+            // ==========================================
+            // SEE THE PROCESS (SHOT-BY-SHOT BREAKDOWN)
+            // ==========================================
+            let currentProcessShots = [];
+
+            function renderProcessShotsList() {
+                const container = document.getElementById("process-shots-container");
+                const countBadge = document.getElementById("process-shots-count-badge");
+                if (!container) return;
+
+                if (countBadge) {
+                    countBadge.textContent = `${currentProcessShots.length} SHOT${currentProcessShots.length === 1 ? '' : 'S'}`;
                 }
+
+                if (currentProcessShots.length === 0) {
+                    container.innerHTML = `
+                        <div class="py-4 px-3 text-center rounded-xl bg-white/[0.02] border border-dashed border-white/10 text-white/40 text-[11px]">
+                            No process shots added yet. Upload files above or paste a URL to show step-by-step breakdown.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = "";
+                currentProcessShots.forEach((shot, index) => {
+                    const card = document.createElement("div");
+                    card.className = "p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col md:flex-row gap-3 items-start md:items-center justify-between group transition-all duration-200 hover:border-purple-500/40";
+                    card.dataset.index = index;
+
+                    const isVideo = isVideoUrl(shot.url);
+                    let thumbHtml = isVideo 
+                        ? `<div class="w-14 h-14 rounded-xl bg-purple-950/40 border border-purple-500/20 flex items-center justify-center shrink-0 overflow-hidden"><svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`
+                        : `<img src="${shot.url}" class="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0 bg-black" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 1 1\\'%3E%3C/svg%3E'">`;
+
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3 w-full md:w-auto flex-1">
+                            <span class="w-6 h-6 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                                ${index + 1}
+                            </span>
+                            ${thumbHtml}
+                            <div class="flex-1 min-w-0 space-y-1">
+                                <input type="text" class="shot-title-input w-full px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-purple-500" placeholder="Shot Title (e.g. Clay Render, Pass 1)" value="${escapeHtml(shot.title || `Shot ${index + 1}`)}">
+                                <input type="text" class="shot-desc-input w-full px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] text-white/70 focus:outline-none focus:border-purple-500" placeholder="Notes / details (e.g. Octane lighting pass)" value="${escapeHtml(shot.desc || '')}">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end md:self-center shrink-0">
+                            <div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-lg border border-white/10">
+                                <span class="text-[9px] text-white/40 font-mono">TIME:</span>
+                                <input type="text" class="shot-time-input w-12 text-[10px] font-mono text-cyan-300 bg-transparent focus:outline-none" placeholder="0:02" value="${escapeHtml(shot.time || '')}">
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" class="shot-move-up-btn p-1.5 text-white/40 hover:text-white rounded-lg hover:bg-white/10 disabled:opacity-20" ${index === 0 ? 'disabled' : ''} title="Move Up">↑</button>
+                                <button type="button" class="shot-move-down-btn p-1.5 text-white/40 hover:text-white rounded-lg hover:bg-white/10 disabled:opacity-20" ${index === currentProcessShots.length - 1 ? 'disabled' : ''} title="Move Down">↓</button>
+                                <button type="button" class="shot-delete-btn p-1.5 text-red-400 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors" title="Remove Shot">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Event handlers for inline editing
+                    const titleInput = card.querySelector(".shot-title-input");
+                    const descInput = card.querySelector(".shot-desc-input");
+                    const timeInput = card.querySelector(".shot-time-input");
+                    const deleteBtn = card.querySelector(".shot-delete-btn");
+                    const upBtn = card.querySelector(".shot-move-up-btn");
+                    const downBtn = card.querySelector(".shot-move-down-btn");
+
+                    titleInput.addEventListener("input", (e) => { currentProcessShots[index].title = e.target.value; });
+                    descInput.addEventListener("input", (e) => { currentProcessShots[index].desc = e.target.value; });
+                    timeInput.addEventListener("input", (e) => { currentProcessShots[index].time = e.target.value; });
+
+                    deleteBtn.addEventListener("click", () => {
+                        currentProcessShots.splice(index, 1);
+                        renderProcessShotsList();
+                    });
+
+                    if (upBtn) {
+                        upBtn.addEventListener("click", () => {
+                            if (index > 0) {
+                                const temp = currentProcessShots[index];
+                                currentProcessShots[index] = currentProcessShots[index - 1];
+                                currentProcessShots[index - 1] = temp;
+                                renderProcessShotsList();
+                            }
+                        });
+                    }
+
+                    if (downBtn) {
+                        downBtn.addEventListener("click", () => {
+                            if (index < currentProcessShots.length - 1) {
+                                const temp = currentProcessShots[index];
+                                currentProcessShots[index] = currentProcessShots[index + 1];
+                                currentProcessShots[index + 1] = temp;
+                                renderProcessShotsList();
+                            }
+                        });
+                    }
+
+                    container.appendChild(card);
+                });
             }
-            document.getElementById("work-status")?.addEventListener("change", toggleScheduledDate);
+
+            async function handleProcessFileUpload(files) {
+                if (!files || files.length === 0) return;
+                const r2Worker = localStorage.getItem("samsco_r2_worker");
+                const r2Key = localStorage.getItem("samsco_r2_key");
+
+                const progressContainer = document.getElementById("process-upload-progress");
+                const statusEl = document.getElementById("process-upload-status");
+                const percentEl = document.getElementById("process-upload-percent");
+                const barEl = document.getElementById("process-upload-bar");
+
+                if (progressContainer) progressContainer.classList.remove("hidden");
+
+                const totalFiles = files.length;
+                let completedFiles = 0;
+
+                for (let i = 0; i < totalFiles; i++) {
+                    const file = files[i];
+                    const fileNum = i + 1;
+                    if (statusEl) statusEl.textContent = `Uploading shot ${fileNum} of ${totalFiles}: "${file.name}"...`;
+
+                    const sanitizedBaseName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+                    const cleanName = `process_${Date.now()}_${i}_${sanitizedBaseName}`;
+
+                    try {
+                        let publicUrl = "";
+                        if (r2Worker && r2Key) {
+                            const presignUrl = `${r2Worker.replace(/\/$/, '')}/presign?name=${encodeURIComponent(cleanName)}&type=${encodeURIComponent(file.type)}`;
+                            const presignResponse = await fetch(presignUrl, {
+                                method: "POST",
+                                headers: { "Authorization": `Bearer ${r2Key}` }
+                            });
+                            if (!presignResponse.ok) throw new Error("Worker upload link failed");
+                            const res = await presignResponse.json();
+
+                            await new Promise((resolve, reject) => {
+                                const xhr = new XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", (e) => {
+                                    if (e.lengthComputable) {
+                                        const overallPercent = Math.round(((completedFiles + (e.loaded / e.total)) / totalFiles) * 100);
+                                        if (barEl) barEl.style.width = `${overallPercent}%`;
+                                        if (percentEl) percentEl.textContent = `${overallPercent}%`;
+                                    }
+                                });
+                                xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error(`Upload failed (${xhr.status})`));
+                                xhr.onerror = () => reject(new Error("Network error"));
+                                xhr.open("PUT", res.uploadUrl, true);
+                                if (file.type) xhr.setRequestHeader("Content-Type", file.type);
+                                xhr.send(file);
+                            });
+                            publicUrl = res.publicUrl;
+                        } else if (window.supabaseClient) {
+                            const { error } = await window.supabaseClient.storage.from('portfolio').upload(cleanName, file, { cacheControl: '3600', upsert: false });
+                            if (error) throw error;
+                            const res = window.supabaseClient.storage.from('portfolio').getPublicUrl(cleanName);
+                            publicUrl = res.data.publicUrl;
+                        }
+
+                        if (publicUrl) {
+                            const defaultTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+                            currentProcessShots.push({
+                                url: publicUrl,
+                                title: defaultTitle,
+                                desc: `Shot progression asset (${file.type.startsWith('video') ? 'Video' : 'Render'})`,
+                                time: ""
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Shot upload error:", err);
+                        showToast(`Failed to upload ${file.name}: ${err.message || err}`, "error");
+                    }
+                    completedFiles++;
+                }
+
+                if (progressContainer) progressContainer.classList.add("hidden");
+                showToast(`Added ${completedFiles} process shot(s)!`, "success");
+                renderProcessShotsList();
+            }
+
+            // Bind process shots drag & drop + manual add events
+            const dropZoneProcess = document.getElementById("drop-zone-process");
+            const fileInputProcess = document.getElementById("file-input-process");
+            const addUrlProcessBtn = document.getElementById("process-add-url-btn");
+            const manualUrlProcessInput = document.getElementById("process-manual-url");
+
+            if (dropZoneProcess && fileInputProcess) {
+                dropZoneProcess.addEventListener("click", () => fileInputProcess.click());
+                dropZoneProcess.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                    dropZoneProcess.classList.add("border-purple-400", "bg-purple-500/[0.08]");
+                });
+                dropZoneProcess.addEventListener("dragleave", () => {
+                    dropZoneProcess.classList.remove("border-purple-400", "bg-purple-500/[0.08]");
+                });
+                dropZoneProcess.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    dropZoneProcess.classList.remove("border-purple-400", "bg-purple-500/[0.08]");
+                    if (e.dataTransfer.files.length > 0) {
+                        handleProcessFileUpload(Array.from(e.dataTransfer.files));
+                    }
+                });
+                fileInputProcess.addEventListener("change", () => {
+                    if (fileInputProcess.files.length > 0) {
+                        handleProcessFileUpload(Array.from(fileInputProcess.files));
+                    }
+                });
+            }
+
+            if (addUrlProcessBtn && manualUrlProcessInput) {
+                addUrlProcessBtn.addEventListener("click", () => {
+                    const u = manualUrlProcessInput.value.trim();
+                    if (!u) {
+                        showToast("Please enter a media URL.", "warning");
+                        return;
+                    }
+                    currentProcessShots.push({
+                        url: u,
+                        title: `Shot ${currentProcessShots.length + 1}`,
+                        desc: "Breakdown step / progression render",
+                        time: ""
+                    });
+                    manualUrlProcessInput.value = "";
+                    renderProcessShotsList();
+                    showToast("Shot added to process breakdown!", "success");
+                });
+            }
 
             // Edit Item
             function openEditModal(id) {
@@ -4313,6 +4587,14 @@ Provide the response in structured JSON matching this schema:
                 document.getElementById("work-views").value = work.views || 0;
                 document.getElementById("work-plays").value = work.plays || 0;
                 
+                // Populate process shots
+                let rawShots = work.process_shots;
+                if (typeof rawShots === 'string') {
+                    try { rawShots = JSON.parse(rawShots); } catch (e) { rawShots = []; }
+                }
+                currentProcessShots = Array.isArray(rawShots) ? [...rawShots] : [];
+                renderProcessShotsList();
+
                 // Show or hide extract poster button if type is video
                 if (extractPosterBtn) {
                     if (detectedType === "video" || (work.url && work.url.endsWith(".mp4"))) {
@@ -4420,6 +4702,7 @@ Provide the response in structured JSON matching this schema:
                     scheduledAt: scheduledAt,
                     views: Math.max(0, viewsVal),
                     plays: Math.max(0, playsVal),
+                    process_shots: currentProcessShots || [],
                     ...(projectUrl && { projectUrl }),
                     ...(client && { client }),
                     ...(year && { year }),

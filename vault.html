@@ -244,6 +244,15 @@
         .reel-action-btn:active {
             transform: scale(0.9);
         }
+        /* Mobile Reels Process Bottom Sheet */
+        #reel-process-sheet {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+        }
+        #reel-process-sheet.active {
+            transform: translateY(0%) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
         @keyframes swipeUpFloat {
             0%, 100% {
                 transform: translateY(0);
@@ -524,6 +533,28 @@
             <!-- Dynamic vertical snap slides injected by JS -->
         </div>
 
+        <!-- MOBILE REELS PROCESS BOTTOM SHEET (Slide-up Process Breakdown Drawer for Mobile) -->
+        <div id="reel-process-sheet" class="md:hidden fixed inset-x-0 bottom-0 z-[60] bg-[#0e1118]/95 backdrop-blur-2xl border-t border-purple-500/30 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.9)] p-5 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 select-none max-h-[82vh] flex flex-col">
+            <!-- Grab Handle Bar -->
+            <div class="w-12 h-1 bg-white/25 rounded-full mx-auto mb-3 cursor-pointer"></div>
+            <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-black text-white uppercase tracking-wider font-display">See The Process</h3>
+                        <p id="reel-process-subtitle" class="text-[10px] text-white/50 font-sans">Shot-by-shot progression breakdown</p>
+                    </div>
+                </div>
+                <button type="button" id="reel-process-close-btn" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/80 flex items-center justify-center text-xs">✕</button>
+            </div>
+            <!-- Horizontal Process Shots Carousel -->
+            <div id="reel-process-shots-list" class="flex gap-3 overflow-x-auto pb-2 scroll-smooth no-scrollbar">
+                <!-- Process cards populated dynamically -->
+            </div>
+        </div>
+
         <!-- RESPONSIVE THEATER MODAL (Mobile Fullscreen & Desktop Cinematic) -->
         <div id="desktop-modal-container" class="relative w-full h-full md:h-auto max-w-4xl rounded-none md:rounded-3xl overflow-hidden bg-[#0d0f14] md:bg-[#12151c] border-0 md:border md:border-white/10 shadow-none md:shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col justify-between transform scale-95 transition-transform duration-300 modal-content select-none">
             
@@ -717,8 +748,14 @@
                             Creative project description and brief details.
                         </p>
 
-                        <div id="modal-action-container" class="mt-3.5 hidden">
-                            <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-white hover:text-[#64d2ff] transition-colors underline decoration-white/30 underline-offset-4">
+                        <div id="modal-action-container" class="mt-3.5 flex flex-wrap items-center gap-3">
+                            <button type="button" id="modal-process-trigger-btn" class="hidden inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-600/30 to-blue-600/30 hover:from-purple-600/50 hover:to-blue-600/50 text-[#c084fc] hover:text-white border border-purple-500/40 hover:border-purple-400 transition-all text-xs font-bold tracking-wider uppercase active:scale-95 shadow-lg shadow-purple-950/40">
+                                <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                                <span>See The Process</span>
+                                <span id="modal-process-count-badge" class="px-1.5 py-0.2 rounded-full text-[9px] bg-purple-500/30 text-white font-mono">0</span>
+                            </button>
+
+                            <a id="modal-project-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-white hover:text-[#64d2ff] transition-colors underline decoration-white/30 underline-offset-4">
                                 <span id="modal-project-link-text">VISIT LIVE PROJECT ↗</span>
                             </a>
                         </div>
@@ -746,6 +783,26 @@
                                 <span id="modal-tools-text" class="text-white/80 font-medium">Premiere, After Effects</span>
                             </p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- See the Process (Shot-by-Shot Filmstrip Drawer) -->
+                <div id="modal-process-drawer" class="hidden border-t border-purple-500/20 pt-4 mt-2 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                            </div>
+                            <span class="text-xs font-bold text-white uppercase tracking-wider font-display">Creative Process &amp; Shot Breakdown</span>
+                        </div>
+                        <button type="button" id="modal-process-close-btn" class="text-white/40 hover:text-white text-xs px-2 py-1 rounded-md hover:bg-white/10 transition-colors">
+                            Hide Breakdown ✕
+                        </button>
+                    </div>
+
+                    <!-- Filmstrip Horizontal Scroll -->
+                    <div id="modal-process-filmstrip" class="flex gap-3 overflow-x-auto pb-2 scroll-smooth no-scrollbar">
+                        <!-- Process shot cards dynamically injected -->
                     </div>
                 </div>
             </div>

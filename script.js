@@ -186,7 +186,8 @@ async function fetchWorksFromSupabase() {
                 problem: item.problem || "",
                 process: item.process || "",
                 result: item.result || "",
-                demoUrl: item.demoUrl || ""
+                demoUrl: item.demoUrl || "",
+                process_shots: Array.isArray(item.process_shots) ? item.process_shots : (typeof item.process_shots === "string" ? (() => { try { return JSON.parse(item.process_shots); } catch (e) { return []; } })() : [])
             }));
             
             // Compare and update if changed
@@ -1764,6 +1765,79 @@ function initReelsContainerDelegation() {
             return;
         }
 
+        const processBtn = e.target.closest(".reel-process-btn");
+        if (processBtn) {
+            e.stopPropagation();
+            const slide = processBtn.closest(".reel-slide");
+            const configIndex = slide ? parseInt(slide.getAttribute("data-config-index")) : 0;
+            const work = galleryConfig[configIndex];
+            if (!work || !work.process_shots || work.process_shots.length === 0) return;
+
+            const sheet = document.getElementById("reel-process-sheet");
+            const list = document.getElementById("reel-process-shots-list");
+            const subtitle = document.getElementById("reel-process-subtitle");
+            const closeBtn = document.getElementById("reel-process-close-btn");
+
+            if (!sheet || !list) return;
+
+            if (subtitle) {
+                subtitle.innerText = `${work.title} • ${work.process_shots.length} shots`;
+            }
+
+            list.innerHTML = "";
+            work.process_shots.forEach((shot, sIdx) => {
+                const isVid = isVideoUrl(shot.url || "");
+                const card = document.createElement("div");
+                card.className = "flex-shrink-0 w-52 p-3 rounded-2xl bg-white/[0.05] border border-white/10 active:border-purple-400 flex flex-col gap-2 cursor-pointer";
+                
+                const thumb = isVid
+                    ? `<video src="${formatAssetUrl(shot.url)}" class="w-full h-28 object-cover rounded-xl bg-black pointer-events-none" muted playsinline preload="metadata"></video>`
+                    : `<img src="${formatAssetUrl(shot.url)}" alt="${shot.title || 'Shot ' + (sIdx + 1)}" class="w-full h-28 object-cover rounded-xl bg-black pointer-events-none" loading="lazy">`;
+
+                card.innerHTML = `
+                    <div class="relative w-full h-28 rounded-xl overflow-hidden bg-black flex items-center justify-center">
+                        ${thumb}
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/80 text-[#c084fc] border border-purple-500/40 backdrop-blur-md">
+                            Shot ${sIdx + 1}
+                        </span>
+                        ${shot.time ? `<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90 backdrop-blur-md">${shot.time}</span>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-0.5">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-tight truncate">${shot.title || `Shot ${sIdx + 1}`}</h4>
+                        <p class="text-[10px] text-white/60 leading-snug line-clamp-2">${shot.desc || 'Progression breakdown frame'}</p>
+                    </div>
+                `;
+
+                // Tapping shot swaps reel slide media temporarily or opens full modal view
+                card.onclick = (ce) => {
+                    ce.stopPropagation();
+                    const slideMedia = slide.querySelector(".reel-video, .reel-img, .reel-iframe");
+                    if (slideMedia) {
+                        const targetUrl = formatAssetUrl(shot.url);
+                        if (isVid && slideMedia.tagName === "VIDEO") {
+                            slideMedia.src = targetUrl;
+                            slideMedia.play().catch(() => {});
+                        } else if (!isVid && slideMedia.tagName === "IMG") {
+                            slideMedia.src = targetUrl;
+                        }
+                    }
+                    sheet.classList.remove("active");
+                };
+
+                list.appendChild(card);
+            });
+
+            sheet.classList.add("active");
+
+            if (closeBtn) {
+                closeBtn.onclick = (ce) => {
+                    ce.stopPropagation();
+                    sheet.classList.remove("active");
+                };
+            }
+            return;
+        }
+
         const moreBtn = e.target.closest(".reel-desc-more-btn");
         if (moreBtn) {
             e.stopPropagation();
@@ -2009,6 +2083,14 @@ function renderMobileReelsFeed(targetIndex) {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     <span class="text-[9px] font-bold mt-0.5">Visit</span>
                 </a>` : ''}
+
+                <!-- Process Button (if shots exist) -->
+                ${(work.process_shots && work.process_shots.length > 0) ? `
+                <button class="reel-action-btn reel-process-btn text-purple-300 relative" title="See The Process (${work.process_shots.length} shots)">
+                    <svg class="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                    <span class="text-[9px] font-bold mt-0.5">Process</span>
+                    <span class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[8px] font-black bg-purple-500 text-white font-mono shadow-md">${work.process_shots.length}</span>
+                </button>` : ''}
 
                 <!-- Share Button -->
                 <button class="reel-action-btn reel-share-btn text-white" title="Share Project">
@@ -2488,7 +2570,122 @@ function openProjectModal(indexOrEl, skipHistory = false) {
             };
             mProjectLink.onclick = trackOutboundClick;
         } else {
-            if (actionContainer) actionContainer.classList.add("hidden");
+            if (mProjectLink) mProjectLink.classList.add("hidden");
+        }
+    }
+
+    // See the Process (Shot-by-Shot Breakdown) Handling
+    const processTriggerBtn = document.getElementById("modal-process-trigger-btn");
+    const processCountBadge = document.getElementById("modal-process-count-badge");
+    const processDrawer = document.getElementById("modal-process-drawer");
+    const processCloseBtn = document.getElementById("modal-process-close-btn");
+    const processFilmstrip = document.getElementById("modal-process-filmstrip");
+
+    const shots = (work.process_shots && Array.isArray(work.process_shots)) ? work.process_shots : [];
+
+    // Reset drawer state on each project open
+    if (processDrawer) processDrawer.classList.add("hidden");
+
+    if (processTriggerBtn) {
+        if (shots.length > 0) {
+            processTriggerBtn.classList.remove("hidden");
+            if (processCountBadge) processCountBadge.innerText = shots.length;
+            if (actionContainer) actionContainer.classList.remove("hidden");
+
+            processTriggerBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (!processDrawer) return;
+                const isHidden = processDrawer.classList.contains("hidden");
+                if (isHidden) {
+                    processDrawer.classList.remove("hidden");
+                    processDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    processDrawer.classList.add("hidden");
+                }
+            };
+
+            if (processCloseBtn) {
+                processCloseBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (processDrawer) processDrawer.classList.add("hidden");
+                };
+            }
+
+            // Populate Filmstrip cards
+            if (processFilmstrip) {
+                processFilmstrip.innerHTML = "";
+                shots.forEach((shot, shotIdx) => {
+                    const shotCard = document.createElement("div");
+                    shotCard.className = "flex-shrink-0 w-44 sm:w-52 p-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer group flex flex-col gap-2";
+                    
+                    const isVidShot = isVideoUrl(shot.url || "");
+                    const shotThumb = isVidShot
+                        ? `<video src="${formatAssetUrl(shot.url)}" class="w-full h-24 object-cover rounded-xl bg-black pointer-events-none" muted playsinline preload="metadata"></video>`
+                        : `<img src="${formatAssetUrl(shot.url)}" alt="${shot.title || 'Shot ' + (shotIdx + 1)}" class="w-full h-24 object-cover rounded-xl bg-black pointer-events-none group-hover:scale-105 transition-transform duration-300" loading="lazy">`;
+
+                    shotCard.innerHTML = `
+                        <div class="relative w-full h-24 rounded-xl overflow-hidden bg-black flex items-center justify-center">
+                            ${shotThumb}
+                            <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/80 text-[#c084fc] border border-purple-500/30 backdrop-blur-md">
+                                Shot ${shotIdx + 1}
+                            </span>
+                            ${shot.time ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90 backdrop-blur-md">${shot.time}</span>` : ''}
+                            <div class="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                <span class="px-2 py-1 rounded-full bg-black/80 text-[10px] text-white font-bold tracking-wider uppercase border border-white/20">Preview</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-0.5 min-w-0">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-tight truncate">${shot.title || `Shot ${shotIdx + 1}`}</h4>
+                            <p class="text-[10px] text-white/50 leading-snug line-clamp-2">${shot.desc || 'Progression breakdown frame'}</p>
+                        </div>
+                    `;
+
+                    // Click to preview this shot in the main media stage
+                    shotCard.onclick = (e) => {
+                        e.stopPropagation();
+                        // Highlight active card
+                        processFilmstrip.querySelectorAll(".ring-2").forEach(el => el.classList.remove("ring-2", "ring-purple-400"));
+                        shotCard.classList.add("ring-2", "ring-purple-400");
+
+                        const stageMediaUrl = formatAssetUrl(shot.url);
+                        const mStageImg = document.getElementById("modal-img");
+                        const mStageVid = document.getElementById("modal-video");
+                        const mStageIframe = document.getElementById("modal-iframe");
+                        const mStageBA = document.getElementById("modal-before-after");
+                        const mStageOverlay = document.getElementById("cinematic-overlay-bar");
+
+                        if (mStageIframe) mStageIframe.classList.add("hidden");
+                        if (mStageBA) mStageBA.classList.add("hidden");
+
+                        if (isVidShot && mStageVid) {
+                            if (mStageImg) mStageImg.classList.add("hidden");
+                            mStageVid.classList.remove("hidden");
+                            if (mStageOverlay) mStageOverlay.classList.remove("hidden");
+                            mStageVid.src = stageMediaUrl;
+                            mStageVid.play().catch(() => {});
+                        } else if (mStageImg) {
+                            if (mStageVid) {
+                                mStageVid.pause();
+                                mStageVid.classList.add("hidden");
+                            }
+                            if (mStageOverlay) mStageOverlay.classList.add("hidden");
+                            mStageImg.classList.remove("hidden");
+                            mStageImg.src = stageMediaUrl;
+                        }
+
+                        // Scroll stage smoothly into view if user is looking down
+                        const modalStage = document.getElementById("cinematic-stage");
+                        if (modalStage) modalStage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    };
+
+                    processFilmstrip.appendChild(shotCard);
+                });
+            }
+        } else {
+            processTriggerBtn.classList.add("hidden");
+            if (!targetLink && actionContainer) {
+                actionContainer.classList.add("hidden");
+            }
         }
     }
 
@@ -3330,6 +3527,14 @@ function closeProjectModal(skipHistory = false) {
     if (mBeforeImg) mBeforeImg.src = "";
     const mAfterImg = document.getElementById("modal-after-img");
     if (mAfterImg) mAfterImg.src = "";
+
+    // Clean up Process Drawer & Mobile Sheet
+    const processDrawer = document.getElementById("modal-process-drawer");
+    if (processDrawer) processDrawer.classList.add("hidden");
+    const processFilmstrip = document.getElementById("modal-process-filmstrip");
+    if (processFilmstrip) processFilmstrip.innerHTML = "";
+    const reelSheet = document.getElementById("reel-process-sheet");
+    if (reelSheet) reelSheet.classList.remove("active");
 
     document.body.style.overflow = "";
     if (window.lenis) window.lenis.start();
