@@ -108,9 +108,10 @@
     // Check if user is logged into admin or requested layout edit
     function checkEditModeAllowed() {
         const urlParams = new URLSearchParams(window.location.search);
-        const forceEdit = urlParams.get("edit_layout") === "1" || urlParams.get("hud") === "1";
-        const isAdminLoggedIn = !!localStorage.getItem("samsco_admin_session") || !!sessionStorage.getItem("samsco_admin_logged_in");
-        return forceEdit || isAdminLoggedIn;
+        const forceEdit = urlParams.get("edit_layout") === "1" || urlParams.get("hud") === "1" || urlParams.has("edit_layout");
+        const hasAdminLocal = !!localStorage.getItem("samsco_admin_session") || !!sessionStorage.getItem("samsco_admin_logged_in");
+        const hasSupabaseAuth = Object.keys(localStorage).some(key => key.startsWith("sb-") && key.endsWith("-auth-token"));
+        return forceEdit || hasAdminLocal || hasSupabaseAuth;
     }
 
     // Create and Mount the COD Mobile HUD UI
@@ -121,7 +122,7 @@
         const launcher = document.createElement("button");
         launcher.id = "hud-launcher-btn";
         launcher.title = "Customize Layout (COD Mobile HUD Mode)";
-        launcher.className = "fixed bottom-5 right-5 z-[9999] px-4 py-2.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-bold text-xs uppercase tracking-wider shadow-[0_8px_30px_rgba(37,99,235,0.5)] border border-white/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer";
+        launcher.className = "fixed bottom-5 right-5 z-[100001] px-4 py-2.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-bold text-xs uppercase tracking-wider shadow-[0_8px_30px_rgba(37,99,235,0.5)] border border-white/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer";
         launcher.innerHTML = `
             <svg class="w-4 h-4 text-cyan-300 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
             <span>Edit Layout HUD</span>
@@ -132,7 +133,7 @@
         // Build Main HUD Container
         const hud = document.createElement("div");
         hud.id = "vault-cod-hud";
-        hud.className = "fixed inset-x-0 top-0 z-[10000] hidden select-none pointer-events-none font-sans";
+        hud.className = "fixed inset-x-0 top-0 z-[100002] hidden select-none pointer-events-none font-sans";
         hud.innerHTML = `
             <!-- Top HUD Bar -->
             <div class="pointer-events-auto mx-auto max-w-5xl mt-3 px-4">
@@ -220,6 +221,13 @@
             document.body.classList.add("vault-hud-editing");
             renderLayerControls();
             highlightSelectedComponent();
+        }
+
+        // Dismiss preloader immediately if active so HUD is not blocked or hidden behind loading screen
+        const preloader = document.getElementById("preloader");
+        if (preloader) {
+            preloader.classList.add("exit");
+            preloader.style.display = "none";
         }
     }
 
@@ -524,13 +532,20 @@
     };
 
     // Auto-init on page load
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-            loadSavedCustomLayout();
-            if (checkEditModeAllowed()) initHudUi();
-        });
-    } else {
+    function initVaultCustomizer() {
         loadSavedCustomLayout();
-        if (checkEditModeAllowed()) initHudUi();
+        if (checkEditModeAllowed()) {
+            initHudUi();
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("edit_layout") === "1" || urlParams.get("hud") === "1" || urlParams.has("edit_layout")) {
+                setTimeout(() => openHud(), 150);
+            }
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initVaultCustomizer);
+    } else {
+        initVaultCustomizer();
     }
 })();

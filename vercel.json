@@ -45,6 +45,7 @@
         { "source": "/work/assets/:match*", "destination": "/assets/:match*" },
         { "source": "/work/:file(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|avif|mp4|webm|woff2?|ttf|eot))", "destination": "/:file" },
         { "source": "/vault/:slug([^/.]+)", "destination": "/vault" },
-        { "source": "/work/:slug([^/.]+)", "destination": "/vault" }
+        { "source": "/work/:slug([^/.]+)", "destination": "/vault" },
+        { "source": "/admin/:tab((?!assets|.*\\.[a-zA-Z0-9]+$).*)", "destination": "/admin" }
     ]
 }

@@ -1020,10 +1020,15 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                     <li>Optimal for laptops and compact desktop monitors</li>
                                     <li>Default classic admin presentation</li>
                                 </ul>
+                            <div class="admin-layout-actions mt-6 flex items-center gap-2">
+                                <button type="button" class="btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                                    Select Layout 1
+                                </button>
+                                <button type="button" class="btn-edit-admin-layout hidden px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5" title="Customize Layout Preferences">
+                                    <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <span>Edit</span>
+                                </button>
                             </div>
-                            <button type="button" class="btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
-                                Select Layout 1
-                            </button>
                         </div>
 
                         <!-- Admin Option 2: Left Side Panel Layout -->
@@ -1064,10 +1069,15 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                     <li>Modern desktop dashboard experience with maximum workspace width</li>
                                     <li>Automatically falls back cleanly to touch bar on mobile devices</li>
                                 </ul>
+                            <div class="admin-layout-actions mt-6 flex items-center gap-2">
+                                <button type="button" class="btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                                    Select Layout 2
+                                </button>
+                                <button type="button" class="btn-edit-admin-layout hidden px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5" title="Customize Layout Preferences">
+                                    <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <span>Edit</span>
+                                </button>
                             </div>
-                            <button type="button" class="btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
-                                Select Layout 2
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1145,10 +1155,15 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                     <li>Full-width dynamic masonry grid (2 to 4 columns)</li>
                                     <li>Original default cinematic vault presentation</li>
                                 </ul>
+                            <div class="vault-layout-actions mt-6 flex items-center gap-2">
+                                <button type="button" class="btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                                    Select Layout 1
+                                </button>
+                                <a href="vault.html?edit_layout=1" target="_blank" class="btn-edit-vault-layout hidden px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5" title="Open HUD Customizer">
+                                    <svg class="w-3.5 h-3.5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <span>Edit</span>
+                                </a>
                             </div>
-                            <button type="button" class="btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
-                                Select Layout 1
-                            </button>
                         </div>
 
                         <!-- Option 2: Sidebar Dashboard Layout (New Layout 2) -->
@@ -1207,34 +1222,18 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                     <li>Hero headline + full search & sort bar</li>
                                     <li>3-column Featured Project cards with circular action buttons</li>
                                 </ul>
-                            </div>
-                            <button type="button" class="btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
-                                Select Layout 2
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- COD Mobile Style Interactive Customizer Promo / Launch Banner -->
-                    <div class="mt-6 p-6 rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-[#0a0f1d] to-purple-950/20 shadow-2xl relative overflow-hidden">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div class="space-y-1.5 max-w-xl">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-cyan-400 text-black font-mono">NEW FEATURE</span>
-                                    <span class="text-xs font-mono text-cyan-300 font-bold">COD Mobile-Style HUD</span>
-                                </div>
-                                <h3 class="text-lg font-black text-white font-display tracking-tight">Interactive Vault HUD &amp; Layout Customizer</h3>
-                                <p class="text-xs text-white/60 leading-relaxed font-sans">
-                                    Visually customize card scale/height, border-radiuses, gaps, and columns live with full card uniformity, separate PC and Mobile profiles, and an instant reset-to-default button.
-                                </p>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-3 shrink-0">
-                                <a href="vault.html?edit_layout=1" target="_blank" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:brightness-110 text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_25px_rgba(6,182,212,0.4)] transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-cyan-200 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                                    <span>Launch HUD Customizer ↗</span>
+                            <div class="vault-layout-actions mt-6 flex items-center gap-2">
+                                <button type="button" class="btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                                    Select Layout 2
+                                </button>
+                                <a href="vault.html?edit_layout=1" target="_blank" class="btn-edit-vault-layout hidden px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5" title="Open HUD Customizer">
+                                    <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <span>Edit</span>
                                 </a>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Save Layout Selection Action Bar -->
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white/[0.02] border border-white/5 p-6 rounded-3xl mt-4">
@@ -1999,6 +1998,11 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         loginCard.classList.add("hidden");
                         dashboard.classList.remove("hidden");
                         
+                        if (typeof window.parseCurrentRoute === 'function' && typeof window.switchAdminTab === 'function') {
+                            const initialRoute = window.parseCurrentRoute();
+                            window.switchAdminTab(initialRoute.tab, false, initialRoute.action, initialRoute.id);
+                        }
+
                         await syncAIPredsWithDb();
                         loadDashboardData();
                     } else {
@@ -2584,6 +2588,199 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
             }
 
             // ==========================================
+            // SMART ADAPTIVE SLUG URL ROUTING & TAB SWITCHER
+            // ==========================================
+            const tabs = ["works", "analytics", "inquiries", "activity", "skills", "experience", "profile", "testimonials", "categories", "layout"];
+            let activeTab = "works";
+
+            function parseCurrentRoute() {
+                // Priority 1: Pathname routing (e.g. /admin/analytics or /admin/works/edit/12)
+                const path = window.location.pathname;
+                const pathParts = path.split("/").filter(Boolean);
+                let pathTab = null;
+                let pathAction = null;
+                let pathId = null;
+
+                const adminIdx = pathParts.findIndex(p => p.toLowerCase() === "admin" || p.toLowerCase() === "admin.html");
+                if (adminIdx !== -1 && pathParts[adminIdx + 1]) {
+                    const candidate = pathParts[adminIdx + 1].toLowerCase();
+                    if (tabs.includes(candidate)) {
+                        pathTab = candidate;
+                        if (pathParts[adminIdx + 2]) pathAction = pathParts[adminIdx + 2].toLowerCase();
+                        if (pathParts[adminIdx + 3]) pathId = pathParts[adminIdx + 3];
+                    }
+                }
+
+                // Priority 2: URL Query parameters (e.g. ?tab=works&edit=12 or ?tab=analytics)
+                const urlParams = new URLSearchParams(window.location.search);
+                const queryTab = urlParams.get("tab")?.toLowerCase();
+                const queryAction = urlParams.get("action")?.toLowerCase() || (urlParams.get("new") === "1" ? "new" : null) || (urlParams.get("edit") ? "edit" : null);
+                const queryId = urlParams.get("id") || urlParams.get("edit") || (pathId ? pathId : null);
+
+                // Priority 3: URL Hash fragment (e.g. #analytics or #works/edit/12)
+                const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+                const hashParts = hash.split("/").filter(Boolean);
+                let hashTab = null;
+                let hashAction = null;
+                let hashId = null;
+                if (hashParts.length > 0 && tabs.includes(hashParts[0])) {
+                    hashTab = hashParts[0];
+                    if (hashParts[1]) hashAction = hashParts[1];
+                    if (hashParts[2]) hashId = hashParts[2];
+                }
+
+                // Combine with fallback to localStorage then "works"
+                const tab = pathTab || queryTab || hashTab || localStorage.getItem("samsco_admin_last_tab") || "works";
+                const validTab = tabs.includes(tab) ? tab : "works";
+                const action = pathAction || queryAction || hashAction || null;
+                const id = pathId || queryId || hashId || null;
+
+                return { tab: validTab, action, id };
+            }
+
+            function updateUrlSlug(tab, action = null, id = null, replace = false) {
+                try {
+                    const url = new URL(window.location.href);
+                    
+                    // Format pathname cleanly (e.g. /admin/analytics or /admin/works/edit/12) if supported by routing
+                    const path = window.location.pathname;
+                    const pathParts = path.split("/").filter(Boolean);
+                    const adminIdx = pathParts.findIndex(p => p.toLowerCase() === "admin" || p.toLowerCase() === "admin.html");
+                    
+                    if (adminIdx !== -1 && !path.endsWith(".html")) {
+                        // Clean Vercel / server-side route
+                        let newPath = `/${pathParts.slice(0, adminIdx + 1).join("/")}/${tab}`;
+                        if (action) {
+                            newPath += `/${action}`;
+                            if (id) newPath += `/${id}`;
+                        }
+                        url.pathname = newPath;
+                        url.search = "";
+                        url.hash = "";
+                    } else {
+                        // Standard / static fallback using query params & hash
+                        url.searchParams.set("tab", tab);
+                        if (action) {
+                            url.searchParams.set("action", action);
+                            if (id) {
+                                url.searchParams.set("id", id);
+                                url.hash = `${tab}/${action}/${id}`;
+                            } else {
+                                url.searchParams.delete("id");
+                                url.hash = `${tab}/${action}`;
+                            }
+                        } else {
+                            url.searchParams.delete("action");
+                            url.searchParams.delete("id");
+                            url.searchParams.delete("edit");
+                            url.searchParams.delete("new");
+                            url.hash = tab;
+                        }
+                    }
+
+                    if (replace) {
+                        history.replaceState({ tab, action, id }, "", url.toString());
+                    } else {
+                        history.pushState({ tab, action, id }, "", url.toString());
+                    }
+                } catch (e) {
+                    console.warn("Failed to update history state:", e);
+                }
+            }
+
+            function switchTab(tab, updateHistory = true, action = null, id = null) {
+                if (!tabs.includes(tab)) tab = "works";
+                activeTab = tab;
+                localStorage.setItem("samsco_admin_last_tab", tab);
+
+                tabs.forEach(t => {
+                    const b = document.getElementById(`tab-${t}`);
+                    const sec = document.getElementById(`section-${t}`);
+                    if (b) {
+                        if (t === tab) {
+                            b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
+                        } else {
+                            b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
+                        }
+                    }
+                    if (sec) {
+                        if (t === tab) {
+                            sec.classList.remove("hidden");
+                        } else {
+                            sec.classList.add("hidden");
+                        }
+                    }
+                });
+
+                if (tab === "categories") {
+                    renderCategoriesTable();
+                } else if (tab === "layout") {
+                    if (typeof loadVaultLayoutSettings === "function") loadVaultLayoutSettings();
+                } else if (tab === "analytics") {
+                    if (typeof loadAnalyticsData === "function") loadAnalyticsData();
+                    if (window.supabaseClient && typeof loadDashboardData === "function") {
+                        loadDashboardData();
+                    }
+                } else if (tab === "inquiries") {
+                    if (typeof loadInquiriesData === "function") loadInquiriesData();
+                } else if (tab === "activity") {
+                    if (typeof renderActivityLog === "function") renderActivityLog();
+                }
+
+                // Toggle header buttons visibility
+                const newWorkBtn = document.getElementById("new-work-btn");
+                const importBtn = document.getElementById("import-btn");
+                const sidebarNewWorkBtn = document.getElementById("sidebar-new-work-btn");
+                if (newWorkBtn && importBtn) {
+                    if (tab === "works") {
+                        newWorkBtn.classList.remove("hidden");
+                        importBtn.classList.remove("hidden");
+                        if (sidebarNewWorkBtn) sidebarNewWorkBtn.classList.remove("hidden");
+                    } else {
+                        newWorkBtn.classList.add("hidden");
+                        importBtn.classList.add("hidden");
+                        if (sidebarNewWorkBtn) sidebarNewWorkBtn.classList.add("hidden");
+                    }
+                }
+
+                if (updateHistory) {
+                    updateUrlSlug(tab, action, id, false);
+                }
+            }
+
+            // Expose globally so other modules and page lifecycle can trigger tab routing
+            window.switchAdminTab = switchTab;
+            window.parseCurrentRoute = parseCurrentRoute;
+            window.updateUrlSlug = updateUrlSlug;
+
+            // Bind tab click events
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-${tab}`);
+                if (btn) {
+                    btn.addEventListener("click", () => {
+                        switchTab(tab, true);
+                    });
+                }
+            });
+
+            // Handle browser Back / Forward buttons seamlessly
+            window.addEventListener("popstate", (e) => {
+                const route = parseCurrentRoute();
+                switchTab(route.tab, false, route.action, route.id);
+                if (route.action === "edit" && route.id && typeof openEditModal === "function") {
+                    openEditModal(route.id, false);
+                } else if (route.action === "new") {
+                    const newBtn = document.getElementById("new-work-btn");
+                    if (newBtn) newBtn.click();
+                } else {
+                    const modalEl = document.getElementById("work-modal");
+                    if (modalEl && !modalEl.classList.contains("pointer-events-none") && typeof closeModal === "function") {
+                        closeModal(false);
+                    }
+                }
+            });
+
+            // ==========================================
             // CRUD DATA MANAGEMENT
             // ==========================================
             let skillsData = [];
@@ -2633,6 +2830,18 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 loadTestimonialsData();
                 loadInquiriesData();
                 renderActivityLog();
+
+                // Restore active tab and modal state from URL slug (or localStorage)
+                if (typeof parseCurrentRoute === 'function' && typeof switchTab === 'function') {
+                    const route = parseCurrentRoute();
+                    switchTab(route.tab, false, route.action, route.id);
+                    if (route.action === "edit" && route.id && typeof openEditModal === 'function') {
+                        setTimeout(() => openEditModal(route.id, false), 100);
+                    } else if (route.action === "new") {
+                        const newBtn = document.getElementById("new-work-btn");
+                        if (newBtn) setTimeout(() => newBtn.click(), 100);
+                    }
+                }
             }
 
             // ==========================================
@@ -3980,7 +4189,7 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 uploadPercent.textContent = "0%";
             }
 
-            function closeModal() {
+            function closeModal(updateHistory = true) {
                 modal.classList.add("pointer-events-none", "opacity-0");
                 modalContent.classList.remove("scale-100");
                 modalContent.classList.add("scale-95");
@@ -3996,6 +4205,10 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 if (typeof toggleBeforeAfterFields === 'function') toggleBeforeAfterFields();
                 if (typeof toggleScheduledDate === 'function') toggleScheduledDate();
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
+
+                if (updateHistory && typeof updateUrlSlug === 'function') {
+                    updateUrlSlug(activeTab, null, null, false);
+                }
             }
 
             document.getElementById("new-work-btn").addEventListener("click", () => {
@@ -4013,6 +4226,9 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 document.querySelectorAll('input[name="work-cat-cb"]').forEach(cb => cb.checked = false);
                 showModal("Create New Portfolio Work");
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                if (typeof updateUrlSlug === 'function') {
+                    updateUrlSlug("works", "new", null, false);
+                }
             });
             document.getElementById("close-modal-btn").addEventListener("click", closeModal);
             document.getElementById("cancel-modal-btn").addEventListener("click", closeModal);
@@ -5135,7 +5351,7 @@ Provide the response in structured JSON matching this schema:
             document.getElementById("work-status")?.addEventListener("change", toggleScheduledDate);
 
             // Edit Item
-            function openEditModal(id) {
+            function openEditModal(id, updateHistory = true) {
                 const work = worksData.find(w => String(w.id) === String(id));
                 if (!work) return;
                 
@@ -5208,6 +5424,9 @@ Provide the response in structured JSON matching this schema:
 
                 showModal("Edit Portfolio Work");
                 if (typeof updateMediaPreview === 'function') updateMediaPreview();
+                if (updateHistory && typeof updateUrlSlug === 'function') {
+                    updateUrlSlug("works", "edit", id, false);
+                }
             }
 
             // Delete Item
@@ -6065,68 +6284,6 @@ Provide the response in structured JSON matching this schema:
                 }
             });
 
-            // Tab switcher navigation handler
-            const tabs = ["works", "analytics", "inquiries", "activity", "skills", "experience", "profile", "testimonials", "categories", "layout"];
-            let activeTab = "works";
-            
-            tabs.forEach(tab => {
-                const btn = document.getElementById(`tab-${tab}`);
-                if (btn) {
-                    btn.addEventListener("click", () => {
-                        activeTab = tab;
-                        
-                        tabs.forEach(t => {
-                            const b = document.getElementById(`tab-${t}`);
-                            const sec = document.getElementById(`section-${t}`);
-                            if (b) {
-                                if (t === tab) {
-                                    b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
-                                } else {
-                                    b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
-                                }
-                            }
-                            if (sec) {
-                                if (t === tab) {
-                                    sec.classList.remove("hidden");
-                                } else {
-                                    sec.classList.add("hidden");
-                                }
-                            }
-                        });
-                        
-                        if (tab === "categories") {
-                            renderCategoriesTable();
-                        } else if (tab === "layout") {
-                            loadVaultLayoutSettings();
-                        } else if (tab === "analytics") {
-                            loadAnalyticsData();
-                            if (window.supabaseClient) {
-                                loadWorksData();
-                            }
-                        } else if (tab === "inquiries") {
-                            loadInquiriesData();
-                        } else if (tab === "activity") {
-                            renderActivityLog();
-                        }
-                        
-                        // Toggle header buttons visibility
-                        const newWorkBtn = document.getElementById("new-work-btn");
-                        const importBtn = document.getElementById("import-btn");
-                        const sidebarNewWorkBtn = document.getElementById("sidebar-new-work-btn");
-                        if (newWorkBtn && importBtn) {
-                            if (tab === "works") {
-                                newWorkBtn.classList.remove("hidden");
-                                importBtn.classList.remove("hidden");
-                                if (sidebarNewWorkBtn) sidebarNewWorkBtn.classList.remove("hidden");
-                            } else {
-                                newWorkBtn.classList.add("hidden");
-                                importBtn.classList.add("hidden");
-                                if (sidebarNewWorkBtn) sidebarNewWorkBtn.classList.add("hidden");
-                            }
-                        }
-                    });
-                }
-            });
 
             // ==========================================
             // ANALYTICS, INQUIRIES & AUDIT LOG FUNCTIONS
@@ -6627,20 +6784,25 @@ Provide the response in structured JSON matching this schema:
                         cardTop.classList.add("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
                         cardTop.classList.remove("border-white/10");
                         cardTop.querySelector(".admin-active-pill")?.classList.remove("hidden");
+                        // Update button and edit toggle
                         const btnTop = cardTop.querySelector(".btn-choose-admin-layout");
+                        const editTop = cardTop.querySelector(".btn-edit-admin-layout");
                         if (btnTop) {
                             btnTop.textContent = "✓ Current Active Layout";
-                            btnTop.className = "btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0071e3] text-white border border-[#0071e3] shadow-md";
+                            btnTop.className = "btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0071e3] text-white border border-[#0071e3] shadow-md";
                         }
+                        if (editTop) editTop.classList.remove("hidden");
 
                         cardSidebar.classList.remove("border-[#bf5af2]", "bg-purple-500/[0.04]", "shadow-[0_0_30px_rgba(191,90,242,0.2)]");
                         cardSidebar.classList.add("border-white/10");
                         cardSidebar.querySelector(".admin-active-pill")?.classList.add("hidden");
                         const btnSide = cardSidebar.querySelector(".btn-choose-admin-layout");
+                        const editSide = cardSidebar.querySelector(".btn-edit-admin-layout");
                         if (btnSide) {
                             btnSide.textContent = "Switch to Layout 2 (Sidebar)";
-                            btnSide.className = "btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                            btnSide.className = "btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
                         }
+                        if (editSide) editSide.classList.add("hidden");
 
                         if (statusBadge) {
                             statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#0071e3]/15 text-[#64d2ff] border border-[#0071e3]/30 flex items-center gap-2";
@@ -6651,19 +6813,23 @@ Provide the response in structured JSON matching this schema:
                         cardSidebar.classList.remove("border-white/10");
                         cardSidebar.querySelector(".admin-active-pill")?.classList.remove("hidden");
                         const btnSide = cardSidebar.querySelector(".btn-choose-admin-layout");
+                        const editSide = cardSidebar.querySelector(".btn-edit-admin-layout");
                         if (btnSide) {
                             btnSide.textContent = "✓ Current Active Layout";
-                            btnSide.className = "btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white border-0 shadow-md";
+                            btnSide.className = "btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white border-0 shadow-md";
                         }
+                        if (editSide) editSide.classList.remove("hidden");
 
                         cardTop.classList.remove("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
                         cardTop.classList.add("border-white/10");
                         cardTop.querySelector(".admin-active-pill")?.classList.add("hidden");
                         const btnTop = cardTop.querySelector(".btn-choose-admin-layout");
+                        const editTop = cardTop.querySelector(".btn-edit-admin-layout");
                         if (btnTop) {
                             btnTop.textContent = "Switch to Layout 1 (Top Bar)";
-                            btnTop.className = "btn-choose-admin-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                            btnTop.className = "btn-choose-admin-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
                         }
+                        if (editTop) editTop.classList.add("hidden");
 
                         if (statusBadge) {
                             statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#bf5af2]/15 text-[#bf5af2] border border-[#bf5af2]/30 flex items-center gap-2";
@@ -6673,14 +6839,24 @@ Provide the response in structured JSON matching this schema:
                 }
             }
 
-            document.getElementById("admin-layout-card-top")?.addEventListener("click", () => {
+            document.getElementById("admin-layout-card-top")?.addEventListener("click", (e) => {
+                if (e.target.closest(".btn-edit-admin-layout")) return;
                 applyAdminLayout("top");
                 showToast("Admin layout set to Layout 1 (Top Navigation)", "info");
             });
 
-            document.getElementById("admin-layout-card-sidebar")?.addEventListener("click", () => {
+            document.getElementById("admin-layout-card-sidebar")?.addEventListener("click", (e) => {
+                if (e.target.closest(".btn-edit-admin-layout")) return;
                 applyAdminLayout("sidebar");
                 showToast("Admin layout set to Layout 2 (Left Side Panel)", "info");
+            });
+
+            // Admin layout edit button handler
+            document.querySelectorAll(".btn-edit-admin-layout").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    showToast("Admin layout active! You can toggle between top and sidebar navigation anytime.", "info");
+                });
             });
 
             // Sidebar New Work button hook
@@ -6704,14 +6880,26 @@ Provide the response in structured JSON matching this schema:
                     cardDefault.classList.add("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
                     cardDefault.classList.remove("border-white/10");
                     cardDefault.querySelector(".layout-active-pill")?.classList.remove("hidden");
-                    cardDefault.querySelector(".btn-choose-layout").textContent = "✓ Current Active Layout";
-                    cardDefault.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0071e3] text-white border border-[#0071e3] shadow-md";
+                    
+                    const btnDef = cardDefault.querySelector(".btn-choose-layout");
+                    const editDef = cardDefault.querySelector(".btn-edit-vault-layout");
+                    if (btnDef) {
+                        btnDef.textContent = "✓ Current Active Layout";
+                        btnDef.className = "btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0071e3] text-white border border-[#0071e3] shadow-md";
+                    }
+                    if (editDef) editDef.classList.remove("hidden");
 
                     cardSidebar.classList.remove("border-[#bf5af2]", "bg-purple-500/[0.04]", "shadow-[0_0_30px_rgba(191,90,242,0.2)]");
                     cardSidebar.classList.add("border-white/10");
                     cardSidebar.querySelector(".layout-active-pill")?.classList.add("hidden");
-                    cardSidebar.querySelector(".btn-choose-layout").textContent = "Switch to Layout 2";
-                    cardSidebar.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                    
+                    const btnSide = cardSidebar.querySelector(".btn-choose-layout");
+                    const editSide = cardSidebar.querySelector(".btn-edit-vault-layout");
+                    if (btnSide) {
+                        btnSide.textContent = "Switch to Layout 2";
+                        btnSide.className = "btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                    }
+                    if (editSide) editSide.classList.add("hidden");
 
                     if (statusBadge) {
                         statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#0071e3]/15 text-[#64d2ff] border border-[#0071e3]/30 flex items-center gap-2";
@@ -6725,14 +6913,26 @@ Provide the response in structured JSON matching this schema:
                     cardSidebar.classList.add("border-[#bf5af2]", "bg-purple-500/[0.04]", "shadow-[0_0_30px_rgba(191,90,242,0.2)]");
                     cardSidebar.classList.remove("border-white/10");
                     cardSidebar.querySelector(".layout-active-pill")?.classList.remove("hidden");
-                    cardSidebar.querySelector(".btn-choose-layout").textContent = "✓ Current Active Layout";
-                    cardSidebar.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white border-0 shadow-md";
+                    
+                    const btnSide = cardSidebar.querySelector(".btn-choose-layout");
+                    const editSide = cardSidebar.querySelector(".btn-edit-vault-layout");
+                    if (btnSide) {
+                        btnSide.textContent = "✓ Current Active Layout";
+                        btnSide.className = "btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white border-0 shadow-md";
+                    }
+                    if (editSide) editSide.classList.remove("hidden");
 
                     cardDefault.classList.remove("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
                     cardDefault.classList.add("border-white/10");
                     cardDefault.querySelector(".layout-active-pill")?.classList.add("hidden");
-                    cardDefault.querySelector(".btn-choose-layout").textContent = "Switch to Layout 1";
-                    cardDefault.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                    
+                    const btnDef = cardDefault.querySelector(".btn-choose-layout");
+                    const editDef = cardDefault.querySelector(".btn-edit-vault-layout");
+                    if (btnDef) {
+                        btnDef.textContent = "Switch to Layout 1";
+                        btnDef.className = "btn-choose-layout flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+                    }
+                    if (editDef) editDef.classList.add("hidden");
 
                     if (statusBadge) {
                         statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#bf5af2]/15 text-[#bf5af2] border border-[#bf5af2]/30 flex items-center gap-2";
