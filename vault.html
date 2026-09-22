@@ -346,6 +346,36 @@
         /* ===================================================
            LAYOUT 2: SIDEBAR DASHBOARD PRESENTATION (DESKTOP)
            =================================================== */
+        :root {
+            /* Dynamic Vault Customizer Variables (COD Mobile HUD Engine) */
+            --v-card-height-pc: 220px;
+            --v-card-radius-pc: 16px;
+            --v-card-gap-pc: 24px;
+            --v-card-cols-pc: 3;
+            --v-sidebar-width-pc: 270px;
+            --v-stage-pad-x-pc: 36px;
+            --v-stage-pad-y-pc: 32px;
+            --v-title-size-pc: 13px;
+
+            --v-card-height-mob: 210px;
+            --v-card-radius-mob: 14px;
+            --v-card-gap-mob: 12px;
+            --v-card-cols-mob: 2;
+            --v-stage-pad-x-mob: 16px;
+            --v-stage-pad-y-mob: 16px;
+            --v-title-size-mob: 11px;
+        }
+
+        /* HUD Highlight Effect for selected COD customizer layers */
+        .hud-target-highlight {
+            outline: 2px dashed #00f2fe !important;
+            outline-offset: 4px !important;
+            transition: outline 0.15s ease !important;
+        }
+        body.vault-hud-editing .gallery-item {
+            cursor: crosshair !important;
+        }
+
         @media (min-width: 769px) {
             body.vault-layout-sidebar {
                 background: #06070a !important;
@@ -371,7 +401,7 @@
                 top: 0 !important;
                 left: 0 !important;
                 bottom: 0 !important;
-                width: 270px !important;
+                width: var(--v-sidebar-width-pc, 270px) !important;
                 background: #090a0f !important;
                 border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
                 flex-direction: column !important;
@@ -379,15 +409,17 @@
                 padding: 28px 20px 24px 24px !important;
                 overflow-y: auto !important;
                 box-sizing: border-box !important;
+                transition: width 0.2s ease;
             }
             body.vault-layout-sidebar #vault-main-stage {
-                margin-left: 270px !important;
-                width: calc(100% - 270px) !important;
-                max-width: calc(100% - 270px) !important;
-                padding: 32px 36px 60px 36px !important;
+                margin-left: var(--v-sidebar-width-pc, 270px) !important;
+                width: calc(100% - var(--v-sidebar-width-pc, 270px)) !important;
+                max-width: calc(100% - var(--v-sidebar-width-pc, 270px)) !important;
+                padding: var(--v-stage-pad-y-pc, 32px) var(--v-stage-pad-x-pc, 36px) 60px var(--v-stage-pad-x-pc, 36px) !important;
                 min-height: 100vh !important;
                 box-sizing: border-box !important;
                 overflow-x: hidden !important;
+                transition: margin-left 0.2s ease, width 0.2s ease;
             }
             /* Hide Default Header Elements in Layout 2 */
             body.vault-layout-sidebar #navbar,
@@ -445,25 +477,26 @@
                 padding: 2px 7px;
                 border-radius: 9999px;
             }
-            /* Layout 2 Card Grid styling: Exactly 3 cards per row, strictly responsive & contained */
+            /* Layout 2 Card Grid styling: Dynamic uniform columns & gaps */
             body.vault-layout-sidebar #gallery-grid-content {
                 display: grid !important;
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                gap: 24px !important;
+                grid-template-columns: repeat(var(--v-card-cols-pc, 3), minmax(0, 1fr)) !important;
+                gap: var(--v-card-gap-pc, 24px) !important;
                 margin-top: 14px !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 box-sizing: border-box !important;
+                transition: gap 0.2s ease;
             }
             body.vault-layout-sidebar .gallery-item {
-                aspect-ratio: 16 / 10 !important;
-                height: 220px !important;
-                max-height: 240px !important;
-                min-height: 180px !important;
+                aspect-ratio: auto !important;
+                height: var(--v-card-height-pc, 220px) !important;
+                max-height: calc(var(--v-card-height-pc, 220px) + 40px) !important;
+                min-height: 140px !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 min-width: 0 !important;
-                border-radius: 16px !important;
+                border-radius: var(--v-card-radius-pc, 16px) !important;
                 border: 1px solid rgba(255, 255, 255, 0.08) !important;
                 background: #0d1017 !important;
                 box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6) !important;
@@ -471,7 +504,7 @@
                 position: relative !important;
                 box-sizing: border-box !important;
                 contain: layout paint !important;
-                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease !important;
+                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, height 0.2s ease, border-radius 0.2s ease !important;
             }
             body.vault-layout-sidebar .gallery-item:hover {
                 transform: translateY(-4px) !important;
@@ -531,7 +564,7 @@
                 color: #ffffff !important;
                 font-weight: 800 !important;
                 letter-spacing: 0.02em !important;
-                font-size: 13px !important;
+                font-size: var(--v-title-size-pc, 13px) !important;
                 line-height: 1.25 !important;
                 text-shadow: 0 2px 6px rgba(0,0,0,0.95) !important;
                 margin: 0 !important;
@@ -541,6 +574,25 @@
                 font-size: 10px !important;
                 margin-top: 3px !important;
                 margin-bottom: 0 !important;
+            }
+        }
+
+        /* Default state & Mobile: Responsive customizer variable bindings */
+        @media (max-width: 768px) {
+            #gallery-grid-content {
+                grid-template-columns: repeat(var(--v-card-cols-mob, 2), minmax(0, 1fr)) !important;
+                gap: var(--v-card-gap-mob, 12px) !important;
+            }
+            .gallery-item {
+                height: var(--v-card-height-mob, 210px) !important;
+                border-radius: var(--v-card-radius-mob, 14px) !important;
+            }
+            .gallery-item .card-bottom-meta h4 {
+                font-size: var(--v-title-size-mob, 11px) !important;
+            }
+            #vault-main-stage {
+                padding-left: var(--v-stage-pad-x-mob, 16px) !important;
+                padding-right: var(--v-stage-pad-x-mob, 16px) !important;
             }
         }
 
@@ -1404,6 +1456,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabase-config.js"></script>
     <script src="/script.js?v=4"></script>
+    <script src="/vault-customizer.js?v=1"></script>
     <script src="/email-handler.js"></script>
 
     <script>
