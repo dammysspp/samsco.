@@ -309,6 +309,109 @@ async function fetchProfileImagesFromSupabase() {
     }
 }
 
+async function fetchVaultLayoutFromSupabase() {
+    // 1. Check local cache first for instant layout rendering
+    const cachedLayout = localStorage.getItem("samsco_vault_layout");
+    if (cachedLayout) {
+        applyVaultLayout(cachedLayout);
+    }
+
+    if (!window.supabaseClient) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from("site_settings")
+            .select("value")
+            .eq("key", "vault_layout")
+            .maybeSingle();
+
+        if (error) throw error;
+        if (data && data.value) {
+            const layout = data.value;
+            localStorage.setItem("samsco_vault_layout", layout);
+            applyVaultLayout(layout);
+        }
+    } catch (e) {
+        console.warn("Error fetching vault_layout from Supabase:", e);
+    }
+}
+
+function applyVaultLayout(layout) {
+    const isSidebar = layout === "sidebar";
+    if (isSidebar) {
+        document.body.classList.add("vault-layout-sidebar");
+        document.body.classList.remove("vault-layout-default");
+    } else {
+        document.body.classList.remove("vault-layout-sidebar");
+        document.body.classList.add("vault-layout-default");
+    }
+
+    // Populate or refresh Sidebar Navigation if element exists
+    renderVaultSidebarNav();
+}
+
+function renderVaultSidebarNav() {
+    const sidebarNav = document.getElementById("vault-sidebar-nav");
+    if (!sidebarNav) return;
+
+    // Categories list: "All" followed by active gallery categories
+    const categoriesToRender = ["ALL", ...galleryCategories];
+
+    // Compute live item counts for each category
+    const catCounts = { ALL: galleryConfig.length };
+    galleryConfig.forEach(work => {
+        const cats = (work.cat || "").split(",").map(c => c.trim().toLowerCase());
+        cats.forEach(c => {
+            const matched = galleryCategories.find(gc => gc.toLowerCase() === c);
+            const key = matched || c;
+            catCounts[key] = (catCounts[key] || 0) + 1;
+        });
+    });
+
+    // Icons map for category side navigation
+    const catIcons = {
+        "ALL": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>`,
+        "3D & VFX": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
+        "AI": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`,
+        "Coding & Data Analytics": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>`,
+        "Graphics Design": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`,
+        "Motion Graphics": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+        "Presentations": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>`,
+        "Radio Ad": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>`,
+        "Social Management": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+        "Video Editing": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`,
+        "Website": `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>`
+    };
+
+    sidebarNav.innerHTML = "";
+    categoriesToRender.forEach(cat => {
+        const count = catCounts[cat] || (cat === "ALL" ? galleryConfig.length : 0);
+        const displayName = cat === "ALL" ? "All" : cat;
+        const iconSvg = catIcons[cat] || `<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>`;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `sidebar-nav-item ${currentFilter.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`;
+        btn.setAttribute("data-sidebar-cat", cat);
+        btn.innerHTML = `
+            <span class="flex items-center gap-3 truncate">
+                ${iconSvg}
+                <span class="truncate">${displayName}</span>
+            </span>
+            <span class="sidebar-item-count">${count}</span>
+        `;
+
+        btn.addEventListener("click", () => {
+            const topBtn = document.querySelector(`#vault-filters .vault-filter-btn[data-filter="${cat}"]`);
+            handleFilterClick(topBtn, cat);
+            // Highlight active sidebar item
+            sidebarNav.querySelectorAll(".sidebar-nav-item").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+
+        sidebarNav.appendChild(btn);
+    });
+}
+
 async function fetchTestimonialsFromSupabase() {
     if (!window.supabaseClient) return;
     try {
@@ -379,6 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchExperienceFromSupabase();
         fetchProfileImagesFromSupabase();
         fetchTestimonialsFromSupabase();
+        fetchVaultLayoutFromSupabase();
     }, 200);
 });
 
@@ -520,6 +624,21 @@ function handleFilterClick(e, t) {
         } else {
             item.classList.remove("active", "bg-white/10", "text-white", "border-white/10");
             item.classList.add("bg-transparent", "text-white/50", "border-transparent");
+        }
+    });
+
+    // Sync layout 2 sidebar navigation active item
+    document.querySelectorAll("#vault-sidebar-nav .sidebar-nav-item").forEach(item => {
+        const itemCat = item.getAttribute("data-sidebar-cat");
+        const isMatch = itemCat && (
+            itemCat.toLowerCase() === t.toLowerCase() || 
+            (t === "ALL" && itemCat === "ALL") ||
+            mapCategoryToOutcome(itemCat).toLowerCase() === mapCategoryToOutcome(t).toLowerCase()
+        );
+        if (isMatch) {
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
         }
     });
 
@@ -729,10 +848,15 @@ function initGallery(force = false) {
                 </span>
             </div>` : ''}
             
-            <!-- Bottom Metadata Overlay (Title, Role) -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex flex-col justify-end p-3 md:p-3.5 z-10 pointer-events-none">
-                <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
-                <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">${work.role || 'Creative Lead'}</p>
+            <!-- Bottom Metadata Overlay (Title, Role & Action Circle) -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex items-end justify-between p-3 md:p-3.5 z-10 pointer-events-none">
+                <div class="overflow-hidden pr-2">
+                    <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
+                    <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">${work.role || 'Creative Lead'}</p>
+                </div>
+                <div class="card-action-circle shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </div>
             </div>
         `;
         
@@ -745,6 +869,9 @@ function initGallery(force = false) {
     
     visibleGalleryItems = Array.from(document.querySelectorAll(".gallery-item"));
     galleryInitialized = !0;
+    
+    // Refresh sidebar category counts and active links
+    renderVaultSidebarNav();
     
     document.querySelectorAll(".gallery-item").forEach(item => {
         item.addEventListener("click", () => {
@@ -1780,11 +1907,18 @@ function initReelsContainerDelegation() {
 
         const processBtn = e.target.closest(".reel-process-btn");
         if (processBtn) {
+            e.preventDefault();
             e.stopPropagation();
             const slide = processBtn.closest(".reel-slide");
             const configIndex = slide ? parseInt(slide.getAttribute("data-config-index")) : 0;
             const work = galleryConfig[configIndex];
-            if (!work || !work.process_shots || work.process_shots.length === 0) return;
+            if (!work) return;
+
+            let shots = work.process_shots;
+            if (typeof shots === "string") {
+                try { shots = JSON.parse(shots); } catch (err) { shots = []; }
+            }
+            if (!Array.isArray(shots) || shots.length === 0) return;
 
             const sheet = document.getElementById("reel-process-sheet");
             const list = document.getElementById("reel-process-shots-list");
@@ -1793,12 +1927,18 @@ function initReelsContainerDelegation() {
 
             if (!sheet || !list) return;
 
+            // Pause slide video cleanly so it doesn't cause GPU stutter on mobile while sheet is open
+            const slideVid = slide ? slide.querySelector(".reel-video") : null;
+            if (slideVid && !slideVid.paused) {
+                slideVid.pause();
+            }
+
             if (subtitle) {
-                subtitle.innerText = `${work.title} • ${work.process_shots.length} shots`;
+                subtitle.innerText = `${work.title} • ${shots.length} shots`;
             }
 
             list.innerHTML = "";
-            work.process_shots.forEach((shot, sIdx) => {
+            shots.forEach((shot, sIdx) => {
                 const isVid = isVideoUrl(shot.url || "");
                 const card = document.createElement("div");
                 card.className = "flex-shrink-0 w-48 p-2.5 rounded-2xl bg-[#141822] border border-white/10 active:border-purple-400 flex flex-col gap-2 cursor-pointer shadow-lg";
@@ -1829,28 +1969,60 @@ function initReelsContainerDelegation() {
                 // Tapping shot swaps reel slide media temporarily
                 card.onclick = (ce) => {
                     ce.stopPropagation();
-                    const slideMedia = slide.querySelector(".reel-video, .reel-img, .reel-iframe");
-                    if (slideMedia) {
-                        const targetUrl = formatAssetUrl(shot.url);
-                        if (isVid && slideMedia.tagName === "VIDEO") {
-                            slideMedia.src = targetUrl;
-                            slideMedia.play().catch(() => {});
-                        } else if (!isVid && slideMedia.tagName === "IMG") {
-                            slideMedia.src = targetUrl;
+                    const targetUrl = formatAssetUrl(shot.url);
+                    const container = slide.querySelector(".reel-video, .reel-img, .reel-iframe")?.parentElement;
+                    const slideVid = slide.querySelector(".reel-video");
+                    const slideImg = slide.querySelector(".reel-img");
+                    const slidePoster = slide.querySelector(".reel-video-poster");
+
+                    if (isVid) {
+                        if (slideVid) {
+                            slideVid.classList.remove("hidden");
+                            slideVid.style.opacity = "1";
+                            slideVid.src = targetUrl;
+                            slideVid.play().catch(() => {});
+                            if (slideImg) slideImg.classList.add("hidden");
+                            if (slidePoster) slidePoster.classList.add("opacity-0");
+                        }
+                    } else {
+                        if (slideVid) {
+                            slideVid.pause();
+                            slideVid.classList.add("hidden");
+                        }
+                        if (slidePoster) slidePoster.classList.add("opacity-0");
+                        if (slideImg) {
+                            slideImg.classList.remove("hidden");
+                            slideImg.src = targetUrl;
+                        } else if (container) {
+                            let tempImg = container.querySelector(".reel-temp-shot-img");
+                            if (!tempImg) {
+                                tempImg = document.createElement("img");
+                                tempImg.className = "reel-temp-shot-img w-full h-full object-contain relative z-10";
+                                container.appendChild(tempImg);
+                            }
+                            tempImg.classList.remove("hidden");
+                            tempImg.src = targetUrl;
                         }
                     }
-                    sheet.classList.remove("active");
+                    closeProcessSheet();
                 };
 
                 list.appendChild(card);
             });
 
+            const closeProcessSheet = () => {
+                sheet.classList.remove("active");
+                sheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
+            };
+
+            sheet.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
             sheet.classList.add("active");
 
             if (closeBtn) {
                 closeBtn.onclick = (ce) => {
+                    ce.preventDefault();
                     ce.stopPropagation();
-                    sheet.classList.remove("active");
+                    closeProcessSheet();
                 };
             }
             return;
@@ -1884,7 +2056,7 @@ function initReelsContainerDelegation() {
         }
 
         const slide = e.target.closest(".reel-slide");
-        if (slide && !e.target.closest("button") && !e.target.closest(".reel-ba-container")) {
+        if (slide && !e.target.closest("button") && !e.target.closest(".reel-action-btn") && !e.target.closest(".reel-ba-container") && !e.target.closest("#reel-process-sheet")) {
             const now = Date.now();
             const heartAnim = slide.querySelector(".reel-heart-anim");
             if (now - lastTap < 300) {
@@ -2103,12 +2275,19 @@ function renderMobileReelsFeed(targetIndex) {
                 </a>` : ''}
 
                 <!-- Process Button (if shots exist) -->
-                ${(work.process_shots && work.process_shots.length > 0) ? `
-                <button class="reel-action-btn reel-process-btn text-purple-300 relative" title="See The Process (${work.process_shots.length} shots)">
-                    <svg class="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
-                    <span class="text-[9px] font-bold mt-0.5">Process</span>
-                    <span class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[8px] font-black bg-purple-500 text-white font-mono shadow-md">${work.process_shots.length}</span>
-                </button>` : ''}
+                ${(() => {
+                    let pShots = work.process_shots;
+                    if (typeof pShots === "string") {
+                        try { pShots = JSON.parse(pShots); } catch(e) { pShots = []; }
+                    }
+                    if (!Array.isArray(pShots) || pShots.length === 0) return '';
+                    return `
+                    <button class="reel-action-btn reel-process-btn text-purple-300 relative pointer-events-auto" title="See The Process (${pShots.length} shots)">
+                        <svg class="w-5 h-5 fill-none stroke-current pointer-events-none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                        <span class="text-[9px] font-bold mt-0.5 pointer-events-none">Process</span>
+                        <span class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[8px] font-black bg-purple-500 text-white font-mono shadow-md pointer-events-none">${pShots.length}</span>
+                    </button>`;
+                })()}
 
                 <!-- Share Button -->
                 <button class="reel-action-btn reel-share-btn text-white" title="Share Project">
@@ -3621,7 +3800,10 @@ function closeProjectModal(skipHistory = false) {
     const processFilmstrip = document.getElementById("modal-process-filmstrip");
     if (processFilmstrip) processFilmstrip.innerHTML = "";
     const reelSheet = document.getElementById("reel-process-sheet");
-    if (reelSheet) reelSheet.classList.remove("active");
+    if (reelSheet) {
+        reelSheet.classList.remove("active");
+        reelSheet.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
+    }
 
     document.body.style.overflow = "";
     if (window.lenis) window.lenis.start();

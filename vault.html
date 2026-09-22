@@ -247,11 +247,13 @@
         /* Mobile Reels Process Bottom Sheet */
         #reel-process-sheet {
             transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+            z-index: 250 !important;
         }
         #reel-process-sheet.active {
             transform: translateY(0%) !important;
             opacity: 1 !important;
             pointer-events: auto !important;
+            z-index: 250 !important;
         }
         @keyframes swipeUpFloat {
             0%, 100% {
@@ -340,9 +342,158 @@
             object-fit: contain;
             display: block;
         }
-        .flipbook-page-hard {
-            background-color: #161a24;
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        /* ===================================================
+           LAYOUT 2: SIDEBAR DASHBOARD PRESENTATION (DESKTOP)
+           =================================================== */
+        @media (min-width: 769px) {
+            body.vault-layout-sidebar {
+                background: #06070a !important;
+            }
+            body.vault-layout-sidebar #headset-bg-container,
+            body.vault-layout-sidebar #vault-background {
+                opacity: 0.25;
+            }
+            body.vault-layout-sidebar #full-gallery-modal {
+                display: flex !important;
+                min-height: 100vh;
+            }
+            body.vault-layout-sidebar #vault-sidebar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 270px;
+                background: #090a0f;
+                border-right: 1px solid rgba(255, 255, 255, 0.07);
+                flex-direction: column;
+                z-index: 100;
+                padding: 28px 20px 24px 24px;
+                overflow-y: auto;
+            }
+            body.vault-layout-sidebar #vault-main-stage {
+                margin-left: 270px;
+                width: calc(100% - 270px);
+                padding: 32px 40px 60px 40px;
+                min-height: 100vh;
+            }
+            /* Hide Default Header Elements in Layout 2 */
+            body.vault-layout-sidebar .vault-default-header,
+            body.vault-layout-sidebar #vault-filters,
+            body.vault-layout-sidebar #mobile-bottom-nav,
+            body.vault-layout-sidebar .vault-floating-stats {
+                display: none !important;
+            }
+            /* Show Layout 2 Specific Elements */
+            body.vault-layout-sidebar .vault-sidebar-only {
+                display: block !important;
+            }
+            body.vault-layout-sidebar .vault-sidebar-flex {
+                display: flex !important;
+            }
+            /* Layout 2 Category Nav Buttons */
+            .sidebar-nav-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 12px;
+                font-size: 13px;
+                font-weight: 500;
+                color: rgba(255, 255, 255, 0.6);
+                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                border: 1px solid transparent;
+                cursor: pointer;
+                user-select: none;
+            }
+            .sidebar-nav-item:hover {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.04);
+            }
+            .sidebar-nav-item.active {
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(126, 34, 206, 0.15) 100%);
+                color: #ffffff;
+                border-color: rgba(168, 85, 247, 0.3);
+                box-shadow: 0 4px 20px rgba(147, 51, 234, 0.15);
+            }
+            .sidebar-nav-item.active .sidebar-item-count {
+                background: rgba(168, 85, 247, 0.3);
+                color: #e9d5ff;
+            }
+            .sidebar-item-count {
+                font-size: 11px;
+                font-weight: 600;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                color: rgba(255, 255, 255, 0.35);
+                padding: 2px 7px;
+                border-radius: 9999px;
+            }
+            /* Layout 2 Card Grid styling */
+            body.vault-layout-sidebar #gallery-grid-content {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 20px !important;
+                margin-top: 20px;
+            }
+            body.vault-layout-sidebar .gallery-item {
+                aspect-ratio: 16 / 9.6 !important;
+                border-radius: 20px !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                background: #0f121a !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            }
+            body.vault-layout-sidebar .gallery-item:hover {
+                transform: translateY(-5px) !important;
+                border-color: rgba(168, 85, 247, 0.4) !important;
+                box-shadow: 0 20px 45px -10px rgba(168, 85, 247, 0.25), 0 0 0 1px rgba(168, 85, 247, 0.2) !important;
+            }
+            /* Layout 2 Action Button (Circular Arrow on card bottom right) */
+            body.vault-layout-sidebar .card-action-circle {
+                display: flex !important;
+                width: 32px;
+                height: 32px;
+                border-radius: 9999px;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(8px);
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                color: rgba(255, 255, 255, 0.8);
+                transition: all 0.2s ease;
+            }
+            body.vault-layout-sidebar .gallery-item:hover .card-action-circle {
+                background: #a855f7;
+                color: #ffffff;
+                transform: scale(1.08);
+                border-color: #c084fc;
+            }
+            /* Top Tag Pills */
+            .sidebar-tag-pill {
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.6);
+                padding: 6px 14px;
+                border-radius: 9999px;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                transition: all 0.2s ease;
+            }
+            .sidebar-tag-pill:hover {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        /* Default state: Hide layout 2 sidebar when not in sidebar layout or on mobile */
+        #vault-sidebar,
+        .vault-sidebar-only {
+            display: none;
+        }
+        .card-action-circle {
+            display: none;
         }
     </style>
 </head>
@@ -803,7 +954,7 @@
     </div>
 
     <!-- MOBILE REELS PROCESS BOTTOM SHEET (Independent Slide-up Process Breakdown Drawer for Mobile) -->
-    <div id="reel-process-sheet" class="md:hidden fixed inset-x-0 bottom-0 z-[150] bg-[#0e1118] border-t border-purple-500/40 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.95)] p-5 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 select-none max-h-[82vh] flex flex-col">
+    <div id="reel-process-sheet" class="md:hidden fixed inset-x-0 bottom-0 z-[250] bg-[#0e1118] border-t border-purple-500/40 rounded-t-3xl shadow-[0_-12px_45px_rgba(0,0,0,0.95)] p-5 transform translate-y-full opacity-0 pointer-events-none transition-all duration-300 select-none max-h-[82vh] flex flex-col">
         <!-- Grab Handle Bar -->
         <div class="w-12 h-1 bg-white/30 rounded-full mx-auto mb-3 cursor-pointer"></div>
         <div class="flex items-center justify-between mb-3.5">
@@ -844,9 +995,62 @@
     <!-- GALLERY OVERLAY - IMMERSIVE EXPERIENCE -->
     <div id="full-gallery-modal" class="relative w-full z-[90] bg-transparent" style="display: none;">
 
-        <div class="min-h-screen px-4 pt-4 pb-28 md:px-8 lg:px-16 relative z-10">
-            <!-- Mobile Top App Bar (Exact match to mobile ui.png) -->
-            <div class="flex items-center justify-between w-full pt-1 pb-4">
+        <!-- LAYOUT 2: FIXED LEFT VERTICAL SIDEBAR (DESKTOP ONLY) -->
+        <aside id="vault-sidebar" class="hidden md:hidden select-none">
+            <!-- Brand Header -->
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 rounded-2xl bg-[#1d172e] border border-purple-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.25)] shrink-0">
+                    <svg class="w-5 h-5 text-[#c084fc]" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
+                </div>
+                <div>
+                    <h2 class="text-sm font-black tracking-wider text-white font-display uppercase">THE VAULT</h2>
+                    <p class="text-[11px] text-white/50 flex items-center gap-1.5 font-medium mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-[#30d158] inline-block animate-pulse"></span>
+                        <span>Creative Works</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Categories Navigation List -->
+            <nav id="vault-sidebar-nav" class="flex-1 flex flex-col gap-1.5 overflow-y-auto no-scrollbar pr-1">
+                <!-- Dynamically populated categories with icons and count badges -->
+            </nav>
+
+            <!-- Sidebar Footer Back Home Link -->
+            <div class="pt-4 mt-auto border-t border-white/5">
+                <a href="index.html" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 text-white/60 hover:text-white transition-all text-xs font-medium">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span>Main Portfolio</span>
+                    </span>
+                    <span class="text-[10px] font-mono text-white/30">ESC</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN VAULT STAGE WRAPPER -->
+        <div id="vault-main-stage" class="min-h-screen px-4 pt-4 pb-28 md:px-8 lg:px-16 relative z-10 w-full transition-all">
+
+            <!-- LAYOUT 2: TOP RIGHT TAGS & MENU (DESKTOP ONLY) -->
+            <div class="vault-sidebar-only hidden w-full mb-6">
+                <div class="flex items-center justify-end gap-3">
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Graphics Design')">DESIGN</button>
+                        <span class="text-white/20 text-xs font-mono">/</span>
+                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Coding & Data Analytics')">CODE</button>
+                        <span class="text-white/20 text-xs font-mono">/</span>
+                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Motion Graphics')">ANIMATE</button>
+                        <span class="text-white/20 text-xs font-mono">/</span>
+                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, '3D & VFX')">CREATE</button>
+                    </div>
+                    <a href="index.html" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white flex items-center justify-center transition-all ml-2" title="Back to main portfolio">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile & Default Top App Bar -->
+            <div class="vault-default-header flex items-center justify-between w-full pt-1 pb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-2xl bg-[#1b1e28] border border-white/10 flex items-center justify-center shadow-lg">
                         <svg class="w-5 h-5 text-[#bf5af2]" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-7.5h-5.5l9-11.5h1l-1.5 7.5h5.5l-9 11.5z"></path></svg>
@@ -871,20 +1075,22 @@
                 </div>
             </div>
 
-            <!-- Hero Headline Section (Exact match to mobile ui.png) -->
+            <!-- Hero Headline Section -->
             <div class="pt-2 pb-4">
-                <h1 class="text-3xl font-black text-white tracking-tight leading-[1.15] font-display">
+                <!-- Layout 2 Eyebrow label -->
+                <p class="vault-sidebar-only hidden text-[11px] font-mono tracking-[0.2em] text-white/40 uppercase mb-2">WELCOME TO MY PORTFOLIO</p>
+                <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight leading-[1.15] font-display">
                     Creative work<br><span class="text-[#a855f7]">that makes an impact.</span>
                 </h1>
-                <p class="text-white/50 text-xs mt-2.5 max-w-sm leading-relaxed font-sans">
-                    Explore a curated selection of projects, tools and solutions built to inspire.
+                <p class="text-white/50 text-xs md:text-sm mt-2.5 max-w-lg leading-relaxed font-sans">
+                    Explore a curated selection of projects, tools and solutions built to inspire, inform and create real value.
                 </p>
             </div>
 
-            <!-- Search & Sort Row (Exact match to mobile ui.png) -->
+            <!-- Search & Sort Row -->
             <div class="flex items-center gap-2.5 my-2">
                 <div class="relative flex-1">
-                    <input type="text" id="vault-search" placeholder="Search projects, tools..." 
+                    <input type="text" id="vault-search" placeholder="Search projects, tools, or keywords..." 
                         class="w-full bg-[#141721] border border-white/10 rounded-2xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#a855f7] transition-all font-sans">
                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -892,7 +1098,7 @@
                 </div>
                 
                 <div class="relative shrink-0">
-                    <select id="vault-sort" class="appearance-none bg-[#141721] border border-white/10 rounded-2xl py-3 pl-4 pr-8 text-xs text-white font-medium focus:outline-none focus:border-[#a855f7] cursor-pointer font-sans transition-all">
+                    <select id="vault-sort" class="appearance-none bg-[#141721] border border-white/10 rounded-2xl py-3 pl-4 pr-9 text-xs text-white font-medium focus:outline-none focus:border-[#a855f7] cursor-pointer font-sans transition-all">
                         <option value="newest" class="bg-black text-white">Newest</option>
                         <option value="oldest" class="bg-black text-white">Oldest</option>
                         <option value="alphabetical" class="bg-black text-white">A-Z</option>
@@ -1157,6 +1363,9 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
+            // Apply vault layout immediately (uses cached layout if present, then checks Supabase)
+            if (typeof fetchVaultLayoutFromSupabase !== 'undefined') fetchVaultLayoutFromSupabase();
+            
             // Start initializing gallery immediately so images start loading behind the scenes
             if (typeof initVaultFilters !== 'undefined') initVaultFilters();
             if (typeof initGallery !== 'undefined') initGallery();

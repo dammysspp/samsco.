@@ -393,6 +393,11 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         </svg>
                         CLEAN DUPLICATES
                     </button>
+                    <button id="quick-layout-btn" class="bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-500/40 hover:border-purple-500 hover:from-purple-600/50 hover:to-pink-600/50 text-white px-4 py-2.5 rounded-full font-bold text-xs tracking-wider transition-all duration-300 flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.25)]" title="Switch Creative Vault Layout">
+                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                        <span>VAULT LAYOUT</span>
+                        <span id="quick-layout-pill" class="px-2 py-0.5 rounded-full text-[9px] font-mono bg-purple-500 text-white">L1</span>
+                    </button>
                     <button id="show-status-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-full font-medium text-xs tracking-wider transition-all duration-300 flex items-center gap-2" title="Check Connection Status">
                         <span class="w-2 h-2 rounded-full bg-white/30" id="header-status-dot"></span>
                         STATUS
@@ -417,6 +422,10 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 <button id="tab-profile" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Profile</button>
                 <button id="tab-testimonials" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Reviews</button>
                 <button id="tab-categories" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300">Categories</button>
+                <button id="tab-layout" class="tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300 flex items-center gap-1.5">
+                    <span>Vault Layout</span>
+                    <span id="active-layout-badge" class="px-1.5 py-0.5 rounded text-[8px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">Layout 1</span>
+                </button>
             </div>
 
             <!-- Tab Section: Works -->
@@ -474,6 +483,13 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                             </svg>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+                            <!-- Direct Layout Switcher Button -->
+                            <button id="inline-layout-toggle-btn" type="button" class="px-3.5 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-semibold flex items-center gap-2 transition-all" title="Toggle Creative Vault layout">
+                                <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                                <span id="inline-layout-text">Vault Layout: Layout 1</span>
+                                <span class="text-[10px] opacity-60 underline">Change ↗</span>
+                            </button>
+
                             <!-- Status Filter -->
                             <select id="filter-status" class="px-3 py-2 rounded-xl admin-input text-xs">
                                 <option value="ALL">All Statuses</option>
@@ -877,6 +893,159 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            <!-- Tab Section: Vault Layout Switcher -->
+            <div id="section-layout" class="tab-section hidden flex flex-col gap-6 animate-fade-in">
+                <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold font-display">VAULT DISPLAY LAYOUT</h2>
+                        <p class="text-xs text-white/40 mt-1">Select the active presentation layout for the Creative Vault on desktop and larger screens. Mobile devices automatically render an optimized responsive touch experience.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="current-layout-status" class="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#bf5af2]/15 text-[#bf5af2] border border-[#bf5af2]/30 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#bf5af2] animate-pulse"></span>
+                            Active: Layout 1 (Classic Grid)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Layout Switcher Visual Cards -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Option 1: Classic Cinematic Grid (Default) -->
+                    <div id="layout-card-default" class="layout-select-card admin-glass p-6 rounded-3xl border-2 border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer flex flex-col justify-between group relative overflow-hidden" data-layout="default">
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="layout-active-pill hidden px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#30d158] text-black shadow-lg">ACTIVE</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">1</div>
+                                <div>
+                                    <h3 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors">Layout 1: Classic Cinematic Grid</h3>
+                                    <p class="text-[11px] text-white/40">Default masonry showcase layout</p>
+                                </div>
+                            </div>
+                            <!-- Layout Preview Mockup Mini -->
+                            <div class="aspect-video w-full rounded-2xl bg-[#0b0d14] border border-white/10 p-3 mb-4 flex flex-col gap-2 overflow-hidden pointer-events-none">
+                                <!-- Top Bar Preview -->
+                                <div class="flex items-center justify-between border-b border-white/5 pb-1.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
+                                        <div class="w-12 h-1.5 rounded bg-white/40"></div>
+                                    </div>
+                                    <div class="w-16 h-2 rounded-full bg-white/10"></div>
+                                </div>
+                                <!-- Horizontal Filter Bar Preview -->
+                                <div class="flex items-center gap-1 py-1">
+                                    <div class="w-8 h-2.5 rounded-full bg-blue-500"></div>
+                                    <div class="w-10 h-2.5 rounded-full bg-white/10"></div>
+                                    <div class="w-9 h-2.5 rounded-full bg-white/10"></div>
+                                    <div class="w-11 h-2.5 rounded-full bg-white/10"></div>
+                                </div>
+                                <!-- 4-Column Masonry Cards Preview -->
+                                <div class="grid grid-cols-4 gap-1.5 flex-1">
+                                    <div class="rounded-lg bg-white/10 border border-white/5 relative overflow-hidden flex items-end p-1">
+                                        <div class="w-full h-1 bg-white/30 rounded"></div>
+                                    </div>
+                                    <div class="rounded-lg bg-white/10 border border-white/5 relative overflow-hidden flex items-end p-1">
+                                        <div class="w-full h-1 bg-white/30 rounded"></div>
+                                    </div>
+                                    <div class="rounded-lg bg-white/10 border border-white/5 relative overflow-hidden flex items-end p-1">
+                                        <div class="w-full h-1 bg-white/30 rounded"></div>
+                                    </div>
+                                    <div class="rounded-lg bg-white/10 border border-white/5 relative overflow-hidden flex items-end p-1">
+                                        <div class="w-full h-1 bg-white/30 rounded"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="text-xs text-white/60 space-y-1.5 list-disc pl-4 font-sans">
+                                <li>Top horizontal scrolling category filter badges</li>
+                                <li>Full-width dynamic masonry grid (2 to 4 columns)</li>
+                                <li>Original default cinematic vault presentation</li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                            Select Layout 1
+                        </button>
+                    </div>
+
+                    <!-- Option 2: Sidebar Dashboard Layout (New Layout 2) -->
+                    <div id="layout-card-sidebar" class="layout-select-card admin-glass p-6 rounded-3xl border-2 border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer flex flex-col justify-between group relative overflow-hidden" data-layout="sidebar">
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="layout-active-pill hidden px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#bf5af2] text-white shadow-lg">ACTIVE</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">2</div>
+                                <div>
+                                    <h3 class="text-base font-bold text-white group-hover:text-purple-400 transition-colors">Layout 2: Sidebar Dashboard</h3>
+                                    <p class="text-[11px] text-white/40">Vertical side menu with featured project cards</p>
+                                </div>
+                            </div>
+                            <!-- Layout Preview Mockup Mini -->
+                            <div class="aspect-video w-full rounded-2xl bg-[#08090d] border border-white/10 p-2.5 mb-4 flex gap-2 overflow-hidden pointer-events-none">
+                                <!-- Left Sidebar Mini Preview -->
+                                <div class="w-1/4 rounded-lg bg-[#0e1118] border border-white/5 p-1.5 flex flex-col gap-1 shrink-0">
+                                    <div class="w-3 h-3 rounded-full bg-purple-500 mb-1"></div>
+                                    <div class="w-full h-2 rounded bg-purple-500/40"></div>
+                                    <div class="w-full h-1.5 rounded bg-white/10"></div>
+                                    <div class="w-full h-1.5 rounded bg-white/10"></div>
+                                    <div class="w-full h-1.5 rounded bg-white/10"></div>
+                                    <div class="w-full h-1.5 rounded bg-white/10"></div>
+                                </div>
+                                <!-- Right Content Mini Preview -->
+                                <div class="flex-1 flex flex-col gap-1.5">
+                                    <div class="flex justify-between items-center">
+                                        <div class="w-16 h-1.5 bg-white/20 rounded"></div>
+                                        <div class="w-14 h-2 rounded-full bg-white/10"></div>
+                                    </div>
+                                    <div class="w-24 h-2.5 bg-white/60 rounded"></div>
+                                    <!-- Search Input Mini -->
+                                    <div class="w-full h-3 rounded-lg bg-white/5 border border-white/10"></div>
+                                    <!-- 3-Column Card Grid -->
+                                    <div class="grid grid-cols-3 gap-1 flex-1">
+                                        <div class="rounded bg-white/10 border border-white/5 flex flex-col justify-between p-1">
+                                            <div class="w-5 h-1 bg-purple-500/70 rounded"></div>
+                                            <div class="w-full h-1 bg-white/40 rounded"></div>
+                                        </div>
+                                        <div class="rounded bg-white/10 border border-white/5 flex flex-col justify-between p-1">
+                                            <div class="w-5 h-1 bg-blue-500/70 rounded"></div>
+                                            <div class="w-full h-1 bg-white/40 rounded"></div>
+                                        </div>
+                                        <div class="rounded bg-white/10 border border-white/5 flex flex-col justify-between p-1">
+                                            <div class="w-5 h-1 bg-green-500/70 rounded"></div>
+                                            <div class="w-full h-1 bg-white/40 rounded"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="text-xs text-white/60 space-y-1.5 list-disc pl-4 font-sans">
+                                <li>Fixed vertical sidebar with icons and live work count badges</li>
+                                <li>Top tag pills (`DESIGN / CODE / ANIMATE / CREATE`)</li>
+                                <li>Hero headline + full search & sort bar</li>
+                                <li>3-column Featured Project cards with circular action buttons</li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30">
+                            Select Layout 2
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Save Layout Selection Action Bar -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white/[0.02] border border-white/5 p-6 rounded-3xl mt-2">
+                    <p class="text-xs text-white/50">
+                        When saved, this layout will be saved to Supabase and immediately active across all devices visiting <a href="vault.html" target="_blank" class="text-purple-400 hover:underline">/vault.html</a>.
+                    </p>
+                    <div class="flex gap-3 shrink-0">
+                        <a href="vault.html" target="_blank" class="px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold tracking-wider transition-colors flex items-center gap-1.5">
+                            <span>Open Vault Preview</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                        <button type="button" id="save-vault-layout-btn" class="px-6 py-2.5 bg-gradient-to-r from-[#bf5af2] to-[#ff375f] hover:brightness-110 text-white rounded-full font-bold text-xs tracking-wider transition-all duration-300 shadow-[0_4px_20px_rgba(191,90,242,0.3)] hover:scale-[1.02] active:scale-95 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>Save & Apply Layout</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -5650,7 +5819,7 @@ Provide the response in structured JSON matching this schema:
             });
 
             // Tab switcher navigation handler
-            const tabs = ["works", "analytics", "inquiries", "activity", "skills", "experience", "profile", "testimonials", "categories"];
+            const tabs = ["works", "analytics", "inquiries", "activity", "skills", "experience", "profile", "testimonials", "categories", "layout"];
             let activeTab = "works";
             
             tabs.forEach(tab => {
@@ -5664,9 +5833,9 @@ Provide the response in structured JSON matching this schema:
                             const sec = document.getElementById(`section-${t}`);
                             if (b) {
                                 if (t === tab) {
-                                    b.className = "tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
+                                    b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase bg-[#0071e3] text-white transition-all duration-300";
                                 } else {
-                                    b.className = "tab-btn flex-1 min-w-[110px] py-2 px-3 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
+                                    b.className = "tab-btn shrink-0 whitespace-nowrap snap-start py-2.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase text-white/50 hover:text-white transition-all duration-300";
                                 }
                             }
                             if (sec) {
@@ -5680,6 +5849,8 @@ Provide the response in structured JSON matching this schema:
                         
                         if (tab === "categories") {
                             renderCategoriesTable();
+                        } else if (tab === "layout") {
+                            loadVaultLayoutSettings();
                         } else if (tab === "analytics") {
                             loadAnalyticsData();
                             if (window.supabaseClient) {
@@ -6170,6 +6341,159 @@ Provide the response in structured JSON matching this schema:
             });
 
             document.getElementById("import-categories-btn")?.addEventListener("click", importDefaultCategories);
+
+            // ==========================================
+            // VAULT LAYOUT SWITCHER LOGIC
+            // ==========================================
+            let selectedVaultLayout = "default"; // "default" or "sidebar"
+
+            function updateLayoutUI() {
+                const cardDefault = document.getElementById("layout-card-default");
+                const cardSidebar = document.getElementById("layout-card-sidebar");
+                const statusBadge = document.getElementById("current-layout-status");
+                const tabBadge = document.getElementById("active-layout-badge");
+
+                if (!cardDefault || !cardSidebar) return;
+
+                const isSidebar = selectedVaultLayout === "sidebar";
+
+                // Card default styles
+                if (!isSidebar) {
+                    cardDefault.classList.add("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
+                    cardDefault.classList.remove("border-white/10");
+                    cardDefault.querySelector(".layout-active-pill")?.classList.remove("hidden");
+                    cardDefault.querySelector(".btn-choose-layout").textContent = "✓ Current Active Layout";
+                    cardDefault.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0071e3] text-white border border-[#0071e3] shadow-md";
+
+                    cardSidebar.classList.remove("border-[#bf5af2]", "bg-purple-500/[0.04]", "shadow-[0_0_30px_rgba(191,90,242,0.2)]");
+                    cardSidebar.classList.add("border-white/10");
+                    cardSidebar.querySelector(".layout-active-pill")?.classList.add("hidden");
+                    cardSidebar.querySelector(".btn-choose-layout").textContent = "Switch to Layout 2";
+                    cardSidebar.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+
+                    if (statusBadge) {
+                        statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#0071e3]/15 text-[#64d2ff] border border-[#0071e3]/30 flex items-center gap-2";
+                        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0071e3] animate-pulse"></span> Active: Layout 1 (Classic Grid)`;
+                    }
+                    if (tabBadge) {
+                        tabBadge.textContent = "Layout 1";
+                        tabBadge.className = "px-1.5 py-0.5 rounded text-[8px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30";
+                    }
+                    const qPill = document.getElementById("quick-layout-pill");
+                    if (qPill) { qPill.textContent = "L1"; qPill.className = "px-2 py-0.5 rounded-full text-[9px] font-mono bg-blue-500 text-white"; }
+                    const inText = document.getElementById("inline-layout-text");
+                    if (inText) { inText.textContent = "Vault Layout: Layout 1 (Classic)"; }
+                } else {
+                    cardSidebar.classList.add("border-[#bf5af2]", "bg-purple-500/[0.04]", "shadow-[0_0_30px_rgba(191,90,242,0.2)]");
+                    cardSidebar.classList.remove("border-white/10");
+                    cardSidebar.querySelector(".layout-active-pill")?.classList.remove("hidden");
+                    cardSidebar.querySelector(".btn-choose-layout").textContent = "✓ Current Active Layout";
+                    cardSidebar.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#bf5af2] to-[#ff375f] text-white border-0 shadow-md";
+
+                    cardDefault.classList.remove("border-[#0071e3]", "bg-blue-500/[0.04]", "shadow-[0_0_30px_rgba(0,113,227,0.2)]");
+                    cardDefault.classList.add("border-white/10");
+                    cardDefault.querySelector(".layout-active-pill")?.classList.add("hidden");
+                    cardDefault.querySelector(".btn-choose-layout").textContent = "Switch to Layout 1";
+                    cardDefault.querySelector(".btn-choose-layout").className = "btn-choose-layout mt-6 w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all group-hover:border-white/30";
+
+                    if (statusBadge) {
+                        statusBadge.className = "px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#bf5af2]/15 text-[#bf5af2] border border-[#bf5af2]/30 flex items-center gap-2";
+                        statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#bf5af2] animate-pulse"></span> Active: Layout 2 (Sidebar Dashboard)`;
+                    }
+                    if (tabBadge) {
+                        tabBadge.textContent = "Layout 2";
+                        tabBadge.className = "px-1.5 py-0.5 rounded text-[8px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30";
+                    }
+                    const qPill = document.getElementById("quick-layout-pill");
+                    if (qPill) { qPill.textContent = "L2"; qPill.className = "px-2 py-0.5 rounded-full text-[9px] font-mono bg-gradient-to-r from-purple-500 to-pink-500 text-white"; }
+                    const inText = document.getElementById("inline-layout-text");
+                    if (inText) { inText.textContent = "Vault Layout: Layout 2 (Sidebar)"; }
+                }
+            }
+
+            async function loadVaultLayoutSettings() {
+                // 1. Try reading from Supabase
+                if (window.supabaseClient) {
+                    try {
+                        const { data, error } = await window.supabaseClient
+                            .from("site_settings")
+                            .select("value")
+                            .eq("key", "vault_layout")
+                            .maybeSingle();
+
+                        if (!error && data && data.value) {
+                            selectedVaultLayout = data.value;
+                            localStorage.setItem("samsco_vault_layout", selectedVaultLayout);
+                            updateLayoutUI();
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn("Could not read vault_layout from Supabase:", e);
+                    }
+                }
+
+                // 2. Fallback to localStorage
+                const local = localStorage.getItem("samsco_vault_layout");
+                if (local) {
+                    selectedVaultLayout = local;
+                }
+                updateLayoutUI();
+            }
+
+            // Click on card to select
+            document.getElementById("layout-card-default")?.addEventListener("click", () => {
+                selectedVaultLayout = "default";
+                updateLayoutUI();
+            });
+
+            document.getElementById("layout-card-sidebar")?.addEventListener("click", () => {
+                selectedVaultLayout = "sidebar";
+                updateLayoutUI();
+            });
+
+            // Save layout button
+            document.getElementById("save-vault-layout-btn")?.addEventListener("click", async () => {
+                const saveBtn = document.getElementById("save-vault-layout-btn");
+                const originalHtml = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = `<span>Saving...</span>`;
+
+                localStorage.setItem("samsco_vault_layout", selectedVaultLayout);
+
+                try {
+                    if (window.supabaseClient) {
+                        const { error } = await window.supabaseClient
+                            .from("site_settings")
+                            .upsert({ key: "vault_layout", value: selectedVaultLayout });
+
+                        if (error) throw error;
+                    }
+
+                    showToast(`Layout switched to ${selectedVaultLayout === 'sidebar' ? 'Layout 2 (Sidebar Dashboard)' : 'Layout 1 (Classic Grid)'}!`, "success");
+                    logActivity("Vault Layout Changed", `Switched active vault layout to ${selectedVaultLayout}`);
+                    updateLayoutUI();
+                } catch (err) {
+                    console.error("Save layout failed:", err);
+                    showToast(`Failed to sync layout to Supabase: ${err.message}`, "error");
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalHtml;
+                }
+            });
+
+            // Quick navigation to Vault Layout tab from Header button or Works bar button
+            function openLayoutTab() {
+                const layoutTabBtn = document.getElementById("tab-layout");
+                if (layoutTabBtn) {
+                    layoutTabBtn.click();
+                    layoutTabBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            }
+            document.getElementById("quick-layout-btn")?.addEventListener("click", openLayoutTab);
+            document.getElementById("inline-layout-toggle-btn")?.addEventListener("click", openLayoutTab);
+
+            // Preload layout setting on login
+            loadVaultLayoutSettings();
 
             // Initialize app state
             checkAppState();
