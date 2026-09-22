@@ -906,8 +906,24 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         <button type="button" id="import-categories-btn" class="bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider uppercase transition-all duration-300">
                             Import Defaults
                         </button>
-                        <form id="add-category-form" class="flex gap-2 items-center">
-                            <input type="text" id="new-category-name" required placeholder="e.g. Brand Identity" class="px-4 py-2.5 rounded-xl admin-input text-xs w-44 md:w-64">
+                        <form id="add-category-form" class="flex flex-wrap gap-2 items-center">
+                            <input type="text" id="new-category-name" required placeholder="e.g. Brand Identity" class="px-4 py-2.5 rounded-xl admin-input text-xs w-44 md:w-60">
+                            <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 shrink-0">
+                                <label for="new-category-icon" class="text-[9px] text-white/40 uppercase font-bold tracking-wider">Icon</label>
+                                <select id="new-category-icon" class="bg-transparent text-xs text-white border-0 outline-none cursor-pointer">
+                                    <option value="palette" class="bg-[#12151c] text-white">🎨 Design / Palette</option>
+                                    <option value="cube" class="bg-[#12151c] text-white">🧊 3D & VFX</option>
+                                    <option value="sparkles" class="bg-[#12151c] text-white">✨ AI / Sparkles</option>
+                                    <option value="code" class="bg-[#12151c] text-white">💻 Coding & Data</option>
+                                    <option value="play" class="bg-[#12151c] text-white">▶️ Motion Graphics</option>
+                                    <option value="film" class="bg-[#12151c] text-white">🎬 Video Editing</option>
+                                    <option value="presentation" class="bg-[#12151c] text-white">📊 Presentations</option>
+                                    <option value="mic" class="bg-[#12151c] text-white">🎙️ Radio & Audio</option>
+                                    <option value="users" class="bg-[#12151c] text-white">👥 Social Management</option>
+                                    <option value="globe" class="bg-[#12151c] text-white">🌐 Website & Web</option>
+                                    <option value="tag" class="bg-[#12151c] text-white">🏷️ General Tag</option>
+                                </select>
+                            </div>
                             <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 shrink-0">
                                 <label for="new-category-color" class="text-[9px] text-white/40 uppercase font-bold tracking-wider">Color</label>
                                 <input type="color" id="new-category-color" value="#0071e3" class="w-6 h-6 bg-transparent border-0 cursor-pointer rounded overflow-hidden">
@@ -2251,18 +2267,45 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                 }
             });
 
-            // ==========================================
             // CATEGORIES DATA STATE & OPERATIONS
             // ==========================================
+            const categoryIconSvgs = {
+                "palette": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>`,
+                "cube": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
+                "sparkles": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`,
+                "code": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>`,
+                "play": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                "film": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`,
+                "presentation": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>`,
+                "mic": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>`,
+                "users": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+                "globe": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>`,
+                "tag": `<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>`
+            };
+
+            function getDefaultCategoryIcon(name) {
+                const n = (name || "").toLowerCase();
+                if (n.includes("3d") || n.includes("vfx")) return "cube";
+                if (n.includes("ai")) return "sparkles";
+                if (n.includes("code") || n.includes("data")) return "code";
+                if (n.includes("motion")) return "play";
+                if (n.includes("video") || n.includes("film")) return "film";
+                if (n.includes("presentation")) return "presentation";
+                if (n.includes("radio") || n.includes("audio") || n.includes("sound")) return "mic";
+                if (n.includes("social")) return "users";
+                if (n.includes("web") || n.includes("site") || n.includes("app")) return "globe";
+                return "palette";
+            }
+
             let adminCategories = [
-                { name: "Graphics Design", color: "#0071e3" },
-                { name: "3D & VFX", color: "#bf5af2" },
-                { name: "Video Editing", color: "#ff375f" },
-                { name: "Coding & Data Analytics", color: "#30d158" },
-                { name: "AI", color: "#ff9f0a" },
-                { name: "Website", color: "#06b6d4" },
-                { name: "Social Management", color: "#ec4899" },
-                { name: "Presentations", color: "#10b981" }
+                { name: "Graphics Design", color: "#0071e3", icon: "palette" },
+                { name: "3D & VFX", color: "#bf5af2", icon: "cube" },
+                { name: "Video Editing", color: "#ff375f", icon: "film" },
+                { name: "Coding & Data Analytics", color: "#30d158", icon: "code" },
+                { name: "AI", color: "#ff9f0a", icon: "sparkles" },
+                { name: "Website", color: "#06b6d4", icon: "globe" },
+                { name: "Social Management", color: "#ec4899", icon: "users" },
+                { name: "Presentations", color: "#10b981", icon: "presentation" }
             ];
 
             async function loadCategoriesData() {
@@ -2303,7 +2346,11 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     }
                     
                     if (data) {
-                        adminCategories = data.map(item => ({ name: item.name, color: item.color || getCategoryColor(item.name) }));
+                        adminCategories = data.map(item => ({ 
+                            name: item.name, 
+                            color: item.color || getCategoryColor(item.name),
+                            icon: item.icon || getDefaultCategoryIcon(item.name)
+                        }));
                         adminCategories.sort((a, b) => a.name.localeCompare(b.name));
                     }
                 } catch (e) {
@@ -2370,10 +2417,16 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                     const tr = document.createElement("tr");
                     tr.className = "border-b border-white/[0.04] hover:bg-white/[0.01] transition-colors";
                     const catColor = cat.color || getCategoryColor(cat.name);
+                    const iconKey = cat.icon || getDefaultCategoryIcon(cat.name);
+                    const iconSvg = categoryIconSvgs[iconKey] || categoryIconSvgs["palette"];
+                    
                     tr.innerHTML = `
                         <td class="py-4 px-6 font-semibold text-white flex items-center gap-3">
                             <div class="relative w-6 h-6 rounded-full border border-white/10 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-transform" style="background-color: ${escapeHtml(catColor)}">
                                 <input type="color" value="${escapeHtml(catColor)}" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer" data-cat-name="${escapeHtml(cat.name)}" onchange="handleTableColorChange(this)">
+                            </div>
+                            <div class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/70 shrink-0" title="Category Icon">
+                                ${iconSvg}
                             </div>
                             <span>${escapeHtml(cat.name)}</span>
                         </td>
@@ -2466,28 +2519,32 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
 
             async function importDefaultCategories() {
                 const defaults = [
-                    { name: "Graphics Design", color: "#0071e3" },
-                    { name: "3D & VFX", color: "#bf5af2" },
-                    { name: "Video Editing", color: "#ff375f" },
-                    { name: "Coding & Data Analytics", color: "#30d158" },
-                    { name: "AI", color: "#ff9f0a" },
-                    { name: "Website", color: "#06b6d4" },
-                    { name: "Social Management", color: "#ec4899" },
-                    { name: "Presentations", color: "#10b981" }
+                    { name: "Graphics Design", color: "#0071e3", icon: "palette" },
+                    { name: "3D & VFX", color: "#bf5af2", icon: "cube" },
+                    { name: "Video Editing", color: "#ff375f", icon: "film" },
+                    { name: "Coding & Data Analytics", color: "#30d158", icon: "code" },
+                    { name: "AI", color: "#ff9f0a", icon: "sparkles" },
+                    { name: "Website", color: "#06b6d4", icon: "globe" },
+                    { name: "Social Management", color: "#ec4899", icon: "users" },
+                    { name: "Presentations", color: "#10b981", icon: "presentation" }
                 ];
                 
-                if (!confirm(`Import ${defaults.length} default categories with colors?`)) return;
+                if (!confirm(`Import ${defaults.length} default categories with icons and colors?`)) return;
                 
                 showToast("Importing default categories...", "info");
                 
                 try {
                     if (window.supabaseClient) {
-                        const insertData = defaults.map(c => ({ name: c.name, color: c.color }));
+                        const insertData = defaults.map(c => ({ name: c.name, color: c.color, icon: c.icon }));
                         const { error } = await window.supabaseClient
                             .from("categories")
                             .insert(insertData);
                             
-                        if (error) throw error;
+                        if (error) {
+                            // If icon column doesn't exist in Supabase yet, retry with name & color only
+                            const fallbackData = defaults.map(c => ({ name: c.name, color: c.color }));
+                            await window.supabaseClient.from("categories").insert(fallbackData);
+                        }
                     }
                     
                     adminCategories = [...defaults];
@@ -6473,10 +6530,12 @@ Provide the response in structured JSON matching this schema:
                 e.preventDefault();
                 const nameInput = document.getElementById("new-category-name");
                 const colorInput = document.getElementById("new-category-color");
+                const iconInput = document.getElementById("new-category-icon");
                 if (!nameInput) return;
                 
                 const name = nameInput.value.trim();
                 const color = colorInput ? colorInput.value : "#0071e3";
+                const icon = iconInput ? iconInput.value : getDefaultCategoryIcon(name);
                 if (!name) return;
                 
                 if (adminCategories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
@@ -6490,12 +6549,15 @@ Provide the response in structured JSON matching this schema:
                     if (window.supabaseClient) {
                         const { error } = await window.supabaseClient
                             .from("categories")
-                            .insert([{ name, color }]);
+                            .insert([{ name, color, icon }]);
                             
-                        if (error) throw error;
+                        if (error) {
+                            // If icon column doesn't exist in Supabase yet, fallback without icon
+                            await window.supabaseClient.from("categories").insert([{ name, color }]);
+                        }
                     }
                     
-                    adminCategories.push({ name, color });
+                    adminCategories.push({ name, color, icon });
                     adminCategories.sort((a, b) => a.name.localeCompare(b.name));
                     
                     showToast(`Category '${name}' added successfully.`, "success");
