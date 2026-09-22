@@ -133,75 +133,75 @@
         // Build Main HUD Container
         const hud = document.createElement("div");
         hud.id = "vault-cod-hud";
-        hud.className = "fixed inset-x-0 top-0 z-[100002] hidden select-none pointer-events-none font-sans";
+        hud.className = "fixed inset-x-0 top-0 z-[1000000] hidden select-none pointer-events-none font-sans";
         hud.innerHTML = `
             <!-- Top HUD Bar -->
-            <div class="pointer-events-auto mx-auto max-w-5xl mt-3 px-4">
-                <div class="glass-card rounded-2xl border border-cyan-500/30 bg-[#090b10]/95 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.9)] p-3 text-white">
-                    <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="pointer-events-auto mx-auto max-w-5xl mt-2 px-3 sm:px-4">
+                <div class="rounded-2xl border border-cyan-500/50 bg-[#090b12] shadow-[0_20px_60px_rgba(0,0,0,0.98)] p-3.5 text-white">
+                    <div class="flex items-center justify-between gap-3 overflow-x-auto no-scrollbar pb-1">
                         
                         <!-- Left: COD Style Title & Status -->
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-400 font-black text-xs">
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 font-black text-xs shadow-[0_0_12px_rgba(6,182,212,0.3)]">
                                 HUD
                             </div>
-                            <div>
+                            <div class="hidden sm:block">
                                 <h3 class="text-xs font-black tracking-wider uppercase text-white font-display flex items-center gap-1.5">
-                                    <span>VAULT LAYOUT CUSTOMIZER</span>
+                                    <span>VAULT LAYOUT</span>
                                     <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
                                 </h3>
-                                <p class="text-[10px] text-cyan-300/70 font-mono">Select layer to adjust scale & position uniformly</p>
+                                <p class="text-[9px] text-cyan-300/70 font-mono">Uniformity & Scaling</p>
                             </div>
                         </div>
 
                         <!-- Center: Target Layer Tabs -->
-                        <div class="flex items-center bg-black/60 border border-white/10 rounded-xl p-1 gap-1">
-                            <button type="button" class="hud-layer-btn px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-cyan-500/30 text-cyan-300 border border-cyan-500/40" data-layer="cards">
-                                Work Cards (Uniform)
+                        <div class="flex items-center bg-black/80 border border-white/10 rounded-xl p-1 gap-1 shrink-0">
+                            <button type="button" class="hud-layer-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 whitespace-nowrap" data-layer="cards">
+                                Work Cards
                             </button>
-                            <button type="button" class="hud-layer-btn px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all text-white/50 hover:text-white" data-layer="sidebar">
+                            <button type="button" class="hud-layer-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all text-white/50 hover:text-white whitespace-nowrap" data-layer="sidebar">
                                 Sidebar Menu
                             </button>
-                            <button type="button" class="hud-layer-btn px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all text-white/50 hover:text-white" data-layer="stage">
+                            <button type="button" class="hud-layer-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all text-white/50 hover:text-white whitespace-nowrap" data-layer="stage">
                                 Stage Container
                             </button>
                         </div>
 
                         <!-- Right: Device Mode Toggle & Quick Actions -->
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 shrink-0">
                             <!-- Device Switcher -->
-                            <div class="flex items-center bg-black/60 border border-white/10 rounded-xl p-1">
-                                <button type="button" id="hud-mode-pc" class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${activeDeviceMode === 'desktop' ? 'bg-blue-600 text-white' : 'text-white/40 hover:text-white'}">
+                            <div class="flex items-center bg-black/80 border border-white/10 rounded-xl p-0.5">
+                                <button type="button" id="hud-mode-pc" class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all ${activeDeviceMode === 'desktop' ? 'bg-blue-600 text-white shadow-sm' : 'text-white/40 hover:text-white'}">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     <span>PC</span>
                                 </button>
-                                <button type="button" id="hud-mode-mob" class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${activeDeviceMode === 'mobile' ? 'bg-blue-600 text-white' : 'text-white/40 hover:text-white'}">
+                                <button type="button" id="hud-mode-mob" class="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all ${activeDeviceMode === 'mobile' ? 'bg-blue-600 text-white shadow-sm' : 'text-white/40 hover:text-white'}">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                     <span>Mobile</span>
                                 </button>
                             </div>
 
                             <!-- Reset Button (Panic Button) -->
-                            <button type="button" id="hud-reset-btn" class="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-bold tracking-wider transition-all active:scale-95 flex items-center gap-1" title="Reset everything to factory default">
+                            <button type="button" id="hud-reset-btn" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-bold tracking-wider transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap cursor-pointer" title="Reset everything to factory default">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                <span>Reset</span>
+                                <span class="hidden sm:inline">Reset</span>
                             </button>
 
                             <!-- Save & Apply Button -->
-                            <button type="button" id="hud-save-btn" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5">
+                            <button type="button" id="hud-save-btn" class="px-3.5 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-xs uppercase tracking-wider shadow-[0_4px_15px_rgba(6,182,212,0.4)] hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                 <span>Save</span>
                             </button>
 
                             <!-- Close HUD -->
-                            <button type="button" id="hud-close-btn" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center transition-all ml-1">
+                            <button type="button" id="hud-close-btn" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-all ml-0.5 cursor-pointer text-base" title="Close HUD">
                                 &times;
                             </button>
                         </div>
                     </div>
 
                     <!-- Lower Controls Drawer (Sliders per selected layer) -->
-                    <div id="hud-controls-panel" class="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 items-end">
+                    <div id="hud-controls-panel" class="mt-2.5 pt-2.5 border-t border-cyan-500/20 bg-black/40 rounded-xl p-2.5 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 items-end">
                         <!-- Populated dynamically based on selected layer -->
                     </div>
                 </div>

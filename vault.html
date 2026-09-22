@@ -658,6 +658,45 @@
             max-height: 1.25rem !important;
             flex-shrink: 0 !important;
         }
+
+        /* HUD Customizer Edit Mode Rules: Always on top, never obscured */
+        #vault-cod-hud {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 9999999 !important;
+            pointer-events: none !important;
+        }
+        #vault-cod-hud .pointer-events-auto {
+            pointer-events: auto !important;
+        }
+        #vault-cod-hud svg {
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        /* When HUD is active, provide generous top padding so content is never occluded */
+        body.vault-hud-editing {
+            padding-top: 170px !important;
+        }
+        body.vault-hud-editing #vault-main-stage {
+            padding-top: 180px !important;
+        }
+        @media (min-width: 769px) {
+            /* Account for the desktop sidebar in Layout 2 */
+            body.vault-hud-editing.vault-layout-sidebar #vault-cod-hud .pointer-events-auto {
+                margin-left: calc(var(--v-sidebar-width-pc, 270px) + 20px) !important;
+                margin-right: 20px !important;
+                max-width: calc(100% - var(--v-sidebar-width-pc, 270px) - 40px) !important;
+            }
+            body.vault-hud-editing.vault-layout-sidebar #vault-sidebar {
+                top: 0 !important;
+                z-index: 9999998 !important;
+            }
+            body.vault-hud-editing.vault-layout-sidebar #vault-main-stage {
+                padding-top: 200px !important;
+            }
+        }
     </style>
 </head>
 
@@ -1474,7 +1513,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabase-config.js"></script>
     <script src="/script.js?v=4"></script>
-    <script src="/vault-customizer.js?v=2"></script>
+    <script src="/vault-customizer.js?v=3"></script>
     <script src="/email-handler.js"></script>
 
     <script>
