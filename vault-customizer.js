@@ -257,6 +257,7 @@
         if (hud) {
             hud.classList.add("hidden");
             document.body.classList.remove("vault-hud-editing");
+            document.body.classList.remove("vault-hud-preview-mobile");
             clearHighlights();
         }
     }
@@ -275,23 +276,26 @@
             });
         });
 
-        // Device Mode Switch
+        // Device Mode Switch (Transform to live device frame on click)
         const pcBtn = document.getElementById("hud-mode-pc");
         const mobBtn = document.getElementById("hud-mode-mob");
 
-        pcBtn?.addEventListener("click", () => {
-            activeDeviceMode = "desktop";
-            pcBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 bg-blue-600 text-white";
-            mobBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 text-white/40 hover:text-white";
+        function updateDeviceModeUi(mode) {
+            activeDeviceMode = mode;
+            if (mode === "mobile") {
+                document.body.classList.add("vault-hud-preview-mobile");
+                if (mobBtn) mobBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all bg-blue-600 text-white shadow-sm";
+                if (pcBtn) pcBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all text-white/40 hover:text-white";
+            } else {
+                document.body.classList.remove("vault-hud-preview-mobile");
+                if (pcBtn) pcBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all bg-blue-600 text-white shadow-sm";
+                if (mobBtn) mobBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all text-white/40 hover:text-white";
+            }
             renderLayerControls();
-        });
+        }
 
-        mobBtn?.addEventListener("click", () => {
-            activeDeviceMode = "mobile";
-            mobBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 bg-blue-600 text-white";
-            pcBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 text-white/40 hover:text-white";
-            renderLayerControls();
-        });
+        pcBtn?.addEventListener("click", () => updateDeviceModeUi("desktop"));
+        mobBtn?.addEventListener("click", () => updateDeviceModeUi("mobile"));
 
         // Close button
         document.getElementById("hud-close-btn")?.addEventListener("click", closeHud);
