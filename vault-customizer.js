@@ -223,11 +223,31 @@
             highlightSelectedComponent();
         }
 
-        // Dismiss preloader immediately if active so HUD is not blocked or hidden behind loading screen
+        // Dismiss preloader immediately so HUD is not blocked or hidden behind loading screen
         const preloader = document.getElementById("preloader");
         if (preloader) {
             preloader.classList.add("exit");
             preloader.style.display = "none";
+        }
+
+        // Ensure full gallery modal is visible and interactive
+        const gm = document.getElementById("full-gallery-modal");
+        if (gm) {
+            if (document.body.classList.contains("vault-layout-sidebar")) {
+                gm.style.display = "flex";
+            } else {
+                gm.style.display = "block";
+            }
+            gm.classList.add("active");
+        }
+        const bg = document.getElementById("vault-background");
+        if (bg) {
+            bg.classList.add("active");
+        }
+
+        // If revealVault is available, invoke it to animate items and start layout
+        if (typeof window.revealVault === "function") {
+            window.revealVault();
         }
     }
 

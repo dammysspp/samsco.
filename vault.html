@@ -640,6 +640,24 @@
             margin-top: 2px !important;
             margin-bottom: 0 !important;
         }
+
+        /* SVG Strict Sizing Guardrails - Never allow unconstrained SVGs to expand to full screen */
+        svg {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        #vault-sidebar svg,
+        .sidebar-nav-item svg,
+        #vault-cod-hud svg,
+        #mobile-bottom-nav svg,
+        .vault-default-header svg,
+        .card-action-circle svg {
+            width: 1rem !important;
+            height: 1rem !important;
+            max-width: 1.25rem !important;
+            max-height: 1.25rem !important;
+            flex-shrink: 0 !important;
+        }
     </style>
 </head>
 
@@ -1582,6 +1600,12 @@
                     revealVault();
                 });
             }
+
+            // Expose globally so external scripts and HUD edit mode can trigger instant reveal
+            window.revealVault = () => {
+                loaderFinished = true;
+                revealVault();
+            };
 
             checkReady();
         });
