@@ -45,8 +45,11 @@
         html, body {
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
-            scroll-behavior: auto;
+            scroll-behavior: smooth;
             overscroll-behavior-y: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100%;
         }
 
         /* Pure CSS Cinematic Preloader */
@@ -98,14 +101,12 @@
         /* Desktop Virtual Grid Containment (Instant 60fps on Budget Hardware) */
         .gallery-item {
             content-visibility: auto;
-            contain-intrinsic-size: 0 300px;
-            transform: translateZ(0);
+            contain-intrinsic-size: 320px 280px;
             backface-visibility: hidden;
-            will-change: transform;
             transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
         }
         .gallery-item:hover {
-            transform: translateY(-4px) translateZ(0);
+            transform: translateY(-4px);
             border-color: rgba(0, 113, 227, 0.5) !important;
             box-shadow: 0 16px 40px -10px rgba(0, 113, 227, 0.35), 0 0 0 1px rgba(0, 113, 227, 0.3) !important;
         }
@@ -434,24 +435,24 @@
             }
             /* Layout 2 Card Grid styling */
             body.vault-layout-sidebar #gallery-grid-content {
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                gap: 22px !important;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+                gap: 24px !important;
                 margin-top: 14px;
             }
             body.vault-layout-sidebar .gallery-item {
-                aspect-ratio: 16 / 10 !important;
-                min-height: 220px;
+                aspect-ratio: 4 / 3 !important;
+                min-height: 280px;
                 border-radius: 20px !important;
                 border: 1px solid rgba(255, 255, 255, 0.08) !important;
                 background: #0d1017 !important;
                 box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6) !important;
                 overflow: hidden !important;
-                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+                transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease !important;
             }
             body.vault-layout-sidebar .gallery-item:hover {
-                transform: translateY(-6px) scale(1.01) !important;
+                transform: translateY(-5px) !important;
                 border-color: rgba(168, 85, 247, 0.45) !important;
-                box-shadow: 0 22px 45px -8px rgba(168, 85, 247, 0.28), 0 0 0 1px rgba(168, 85, 247, 0.2) !important;
+                box-shadow: 0 20px 40px -8px rgba(168, 85, 247, 0.25), 0 0 0 1px rgba(168, 85, 247, 0.2) !important;
             }
             /* Layout 2 Action Button (Circular Arrow on card bottom right) */
             body.vault-layout-sidebar .card-action-circle {
@@ -505,7 +506,7 @@
     </style>
 </head>
 
-<body class="antialiased selection:bg-apple-blue selection:text-white font-sans" style="overflow: hidden;">
+<body class="antialiased selection:bg-apple-blue selection:text-white font-sans">
 
     <!-- SVG FILTERS (Hidden) -->
     <svg style="display: none;">
@@ -986,16 +987,10 @@
 
     <!-- Fixed Background for the Vault (Decoupled from scroll container for maximum smoothness) -->
     <div id="vault-background" class="fixed inset-0 z-[80] gallery-modal-bg pointer-events-none">
-        <!-- Animated Background -->
-        <div class="absolute inset-0 pointer-events-none">
-            <div
-                class="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-[#0071e3]/20 via-transparent to-transparent blur-3xl animate-pulse transform-gpu will-change-transform">
-            </div>
-            <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-[#bf5af2]/15 via-transparent to-transparent blur-3xl transform-gpu will-change-transform"
-                style="animation: pulse 4s ease-in-out infinite alternate;"></div>
-            <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-[#30d158]/5 via-transparent to-transparent blur-3xl transform-gpu will-change-transform">
-            </div>
+        <!-- Lightweight Static Ambient Glow (No continuous GPU redraws) -->
+        <div class="absolute inset-0 pointer-events-none opacity-40">
+            <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-radial from-[#0071e3]/15 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-[#bf5af2]/10 via-transparent to-transparent"></div>
         </div>
     </div>
 
@@ -1318,37 +1313,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis Smooth Scrolling (Desktop only - Native touch scroll on mobile for 60-120fps performance) -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- Native Smooth Scrolling for 60-144fps responsive scrolling on all devices -->
     <script>
-        const isTouchMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 768);
-        let lenis = null;
-        if (!isTouchMobile && typeof Lenis !== 'undefined') {
-            lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 1.5,
-                infinite: false,
-            });
-            window.lenis = lenis;
-            lenis.stop(); // Disable scroll while preloader is active
-
-            // Connect Lenis to GSAP ScrollTrigger
-            if (typeof ScrollTrigger !== "undefined") {
-                lenis.on('scroll', ScrollTrigger.update);
-                gsap.ticker.add((time) => {
-                    lenis.raf(time * 1000);
-                });
-                gsap.ticker.lagSmoothing(0);
-            }
-        } else {
-            window.lenis = null;
-        }
+        window.lenis = null;
     </script>
 
 
