@@ -430,6 +430,20 @@
                     <span class="text-white/80 text-sm font-semibold">Media Link Broken or Offline</span>
                 </div>
 
+                <!-- Process Shot Navigator Overlay (Visible when viewing a process shot) -->
+                <div id="modal-process-nav-bar" class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-purple-500/40 shadow-xl flex items-center gap-2 select-none">
+                    <button type="button" id="stage-prev-shot-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center text-xs" title="Previous Shot">❮</button>
+                    <div class="flex items-center gap-1.5 px-1 font-mono text-[10px] text-white">
+                        <span class="text-[#c084fc] font-bold uppercase">Shot</span>
+                        <span id="stage-shot-current-num" class="font-bold text-white">1</span>
+                        <span class="text-white/40">/</span>
+                        <span id="stage-shot-total-num" class="text-white/70">1</span>
+                    </div>
+                    <button type="button" id="stage-next-shot-btn" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center text-xs" title="Next Shot">❯</button>
+                    <div class="w-[1px] h-3 bg-white/20 my-auto mx-0.5"></div>
+                    <button type="button" id="stage-exit-process-btn" class="text-[10px] text-white/60 hover:text-white px-1 font-sans uppercase font-bold" title="Back to original media">Original</button>
+                </div>
+
                 <!-- DESKTOP OVERLAY EMBEDDED CONTROLS BAR (Hidden on mobile) -->
                 <div id="cinematic-overlay-bar" class="hidden md:flex absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20 items-center gap-4 transition-opacity duration-300">
                     <button id="cinematic-play-btn" class="text-white/90 hover:text-white transition-transform active:scale-90" aria-label="Play/Pause">

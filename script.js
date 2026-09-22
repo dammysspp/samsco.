@@ -1431,8 +1431,8 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
         const pageHeight = unscaledViewport.height || 800;
         const isMobile = window.innerWidth <= 768;
 
-        // Determine optimal rendering scale
-        const renderScale = isMobile ? Math.min(window.devicePixelRatio || 1.5, 2.0) : Math.min(window.devicePixelRatio || 1.5, 2.2);
+        // Determine optimal rendering scale (budget-friendly to avoid GPU canvas memory thrashing)
+        const renderScale = isMobile ? 1.25 : Math.min(window.devicePixelRatio || 1.5, 1.6);
 
         bookEl.innerHTML = "";
 
@@ -1451,26 +1451,27 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
             bookEl.appendChild(pageDiv);
         }
 
-        // Render each page to canvas
-        for (let i = 1; i <= numPages; i++) {
+        // Helper to render a specific page into its canvas
+        const renderPageCanvas = async (pageIndex) => {
             if (thisToken !== flipbookRenderToken) return;
-            const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: renderScale });
-            const pageDiv = bookEl.children[i - 1];
-            if (!pageDiv) continue;
-
+            const pageDiv = bookEl.children[pageIndex - 1];
+            if (!pageDiv) return;
             const canvas = pageDiv.querySelector("canvas");
-            if (canvas) {
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                const ctx = canvas.getContext("2d");
-                await page.render({ canvasContext: ctx, viewport }).promise;
-            }
+            if (!canvas || canvas._isRendered) return;
+            canvas._isRendered = true;
 
-            const currentPct = 50 + Math.round((i / numPages) * 45);
-            if (percentEl) percentEl.textContent = `${currentPct}%`;
-            if (barEl) barEl.style.width = `${currentPct}%`;
-        }
+            const page = await pdf.getPage(pageIndex);
+            const viewport = page.getViewport({ scale: renderScale });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext("2d", { alpha: false });
+            await page.render({ canvasContext: ctx, viewport }).promise;
+        };
+
+        // Eagerly render first 2 pages so the flipbook opens instantly
+        if (statusEl) statusEl.textContent = "Opening document...";
+        await renderPageCanvas(1);
+        if (numPages > 1) await renderPageCanvas(2);
 
         if (thisToken !== flipbookRenderToken) return;
 
@@ -1478,7 +1479,7 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
         if (barEl) barEl.style.width = "100%";
         if (statusEl) statusEl.textContent = "Ready!";
 
-        // Initialize St.PageFlip
+        // Initialize St.PageFlip immediately
         if (typeof St !== "undefined" && St.PageFlip) {
             // Viewport sizing
             const stageBox = stageEl.getBoundingClientRect();
@@ -1506,11 +1507,11 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
                 minHeight: 350,
                 maxHeight: 1400,
                 showCover: true,
-                maxShadowOpacity: 0.5,
+                maxShadowOpacity: 0.4,
                 mobileScrollSupport: false,
                 useMouseEvents: true,
-                swipeDistance: 30,
-                flippingTime: 650,
+                swipeDistance: 25,
+                flippingTime: 450,
                 usePortrait: isMobile,
                 startPage: 0,
             });
@@ -1523,6 +1524,11 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
                     const displayNum = Math.min(numPages, Math.max(1, pageIndex + 1));
                     pageNumEl.textContent = String(displayNum);
                 }
+                // When flipping, ensure current, previous, and next pages are rendered
+                const p = pageIndex + 1;
+                [p - 1, p, p + 1, p + 2].forEach(pg => {
+                    if (pg >= 1 && pg <= numPages) renderPageCanvas(pg);
+                });
             };
 
             pageFlip.on("flip", (e) => {
@@ -1579,15 +1585,22 @@ async function renderPdfFlipbook(pdfUrl, workTitle = "Brochure") {
             bookEl.style.maxHeight = "65vh";
         }
 
-        // Hide loader after smooth fade
-        setTimeout(() => {
-            if (loaderEl && thisToken === flipbookRenderToken) {
-                loaderEl.classList.add("opacity-0", "pointer-events-none");
-                setTimeout(() => {
-                    if (thisToken === flipbookRenderToken) loaderEl.style.display = "none";
-                }, 300);
+        // Hide loader quickly since pages 1-2 are ready
+        if (loaderEl && thisToken === flipbookRenderToken) {
+            loaderEl.classList.add("opacity-0", "pointer-events-none");
+            setTimeout(() => {
+                if (thisToken === flipbookRenderToken) loaderEl.style.display = "none";
+            }, 250);
+        }
+
+        // Render remaining pages in background in idle slices
+        (async () => {
+            for (let i = 3; i <= numPages; i++) {
+                if (thisToken !== flipbookRenderToken) break;
+                await new Promise(r => setTimeout(r, 60)); // Yield thread so flip animations stay 60fps
+                await renderPageCanvas(i);
             }
-        }, 200);
+        })();
 
     } catch (err) {
         console.error("Failed to render PDF flipbook:", err);
@@ -1788,19 +1801,24 @@ function initReelsContainerDelegation() {
             work.process_shots.forEach((shot, sIdx) => {
                 const isVid = isVideoUrl(shot.url || "");
                 const card = document.createElement("div");
-                card.className = "flex-shrink-0 w-52 p-3 rounded-2xl bg-white/[0.05] border border-white/10 active:border-purple-400 flex flex-col gap-2 cursor-pointer";
+                card.className = "flex-shrink-0 w-48 p-2.5 rounded-2xl bg-[#141822] border border-white/10 active:border-purple-400 flex flex-col gap-2 cursor-pointer shadow-lg";
                 
                 const thumb = isVid
-                    ? `<video src="${formatAssetUrl(shot.url)}" class="w-full h-28 object-cover rounded-xl bg-black pointer-events-none" muted playsinline preload="metadata"></video>`
-                    : `<img src="${formatAssetUrl(shot.url)}" alt="${shot.title || 'Shot ' + (sIdx + 1)}" class="w-full h-28 object-cover rounded-xl bg-black pointer-events-none" loading="lazy">`;
+                    ? `<div class="w-full h-24 rounded-xl bg-black/80 flex flex-col items-center justify-center relative overflow-hidden border border-white/10">
+                        <div class="w-9 h-9 rounded-full bg-purple-600/30 border border-purple-500/50 flex items-center justify-center text-purple-300">
+                            <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <span class="text-[9px] font-mono text-white/50 mt-1 uppercase tracking-wider">Video Shot</span>
+                       </div>`
+                    : `<img src="${formatAssetUrl(shot.url)}" alt="${shot.title || 'Shot ' + (sIdx + 1)}" class="w-full h-24 object-cover rounded-xl bg-black pointer-events-none" loading="lazy">`;
 
                 card.innerHTML = `
-                    <div class="relative w-full h-28 rounded-xl overflow-hidden bg-black flex items-center justify-center">
+                    <div class="relative w-full h-24 rounded-xl overflow-hidden bg-black flex items-center justify-center">
                         ${thumb}
-                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/80 text-[#c084fc] border border-purple-500/40 backdrop-blur-md">
+                        <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/85 text-[#c084fc] border border-purple-500/40">
                             Shot ${sIdx + 1}
                         </span>
-                        ${shot.time ? `<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90 backdrop-blur-md">${shot.time}</span>` : ''}
+                        ${shot.time ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90">${shot.time}</span>` : ''}
                     </div>
                     <div class="flex flex-col gap-0.5">
                         <h4 class="text-xs font-bold text-white uppercase tracking-tight truncate">${shot.title || `Shot ${sIdx + 1}`}</h4>
@@ -1808,7 +1826,7 @@ function initReelsContainerDelegation() {
                     </div>
                 `;
 
-                // Tapping shot swaps reel slide media temporarily or opens full modal view
+                // Tapping shot swaps reel slide media temporarily
                 card.onclick = (ce) => {
                     ce.stopPropagation();
                     const slideMedia = slide.querySelector(".reel-video, .reel-img, .reel-iframe");
@@ -2611,25 +2629,124 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                 };
             }
 
+            // Wire up Stage Process Shot Navigation Bar
+            const stageNavBar = document.getElementById("modal-process-nav-bar");
+            const stageShotCurrent = document.getElementById("stage-shot-current-num");
+            const stageShotTotal = document.getElementById("stage-shot-total-num");
+            const stagePrevShotBtn = document.getElementById("stage-prev-shot-btn");
+            const stageNextShotBtn = document.getElementById("stage-next-shot-btn");
+            const stageExitProcessBtn = document.getElementById("stage-exit-process-btn");
+
+            if (stageNavBar) stageNavBar.classList.add("hidden");
+            if (stageShotTotal) stageShotTotal.textContent = String(shots.length);
+
+            let activeProcessShotIdx = -1;
+
+            const selectProcessShot = (shotIdx) => {
+                if (shotIdx < 0 || shotIdx >= shots.length) return;
+                activeProcessShotIdx = shotIdx;
+                const shot = shots[shotIdx];
+                const isVidShot = isVideoUrl(shot.url || "");
+
+                // Update filmstrip highlight
+                if (processFilmstrip) {
+                    processFilmstrip.querySelectorAll(".process-shot-card").forEach((el, i) => {
+                        el.classList.toggle("ring-2", i === shotIdx);
+                        el.classList.toggle("ring-purple-400", i === shotIdx);
+                    });
+                    const activeCard = processFilmstrip.children[shotIdx];
+                    if (activeCard) activeCard.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+                }
+
+                // Show nav bar on stage
+                if (stageNavBar) {
+                    stageNavBar.classList.remove("hidden");
+                    if (stageShotCurrent) stageShotCurrent.textContent = String(shotIdx + 1);
+                }
+
+                const stageMediaUrl = formatAssetUrl(shot.url);
+                const mStageImg = document.getElementById("modal-img");
+                const mStageVid = document.getElementById("modal-video");
+                const mStageIframe = document.getElementById("modal-iframe");
+                const mStageBA = document.getElementById("modal-before-after");
+                const mStageOverlay = document.getElementById("cinematic-overlay-bar");
+
+                if (mStageIframe) mStageIframe.classList.add("hidden");
+                if (mStageBA) mStageBA.classList.add("hidden");
+
+                if (isVidShot && mStageVid) {
+                    if (mStageImg) mStageImg.classList.add("hidden");
+                    mStageVid.classList.remove("hidden");
+                    if (mStageOverlay) mStageOverlay.classList.remove("hidden");
+                    mStageVid.src = stageMediaUrl;
+                    mStageVid.play().catch(() => {});
+                } else if (mStageImg) {
+                    if (mStageVid) {
+                        mStageVid.pause();
+                        mStageVid.classList.add("hidden");
+                    }
+                    if (mStageOverlay) mStageOverlay.classList.add("hidden");
+                    mStageImg.classList.remove("hidden");
+                    mStageImg.src = stageMediaUrl;
+                }
+
+                const modalStage = document.getElementById("cinematic-stage");
+                if (modalStage) modalStage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            };
+
+            if (stagePrevShotBtn) {
+                stagePrevShotBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (activeProcessShotIdx > 0) selectProcessShot(activeProcessShotIdx - 1);
+                    else selectProcessShot(shots.length - 1);
+                };
+            }
+            if (stageNextShotBtn) {
+                stageNextShotBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (activeProcessShotIdx < shots.length - 1) selectProcessShot(activeProcessShotIdx + 1);
+                    else selectProcessShot(0);
+                };
+            }
+            if (stageExitProcessBtn) {
+                stageExitProcessBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    activeProcessShotIdx = -1;
+                    if (stageNavBar) stageNavBar.classList.add("hidden");
+                    if (processFilmstrip) {
+                        processFilmstrip.querySelectorAll(".process-shot-card").forEach(el => {
+                            el.classList.remove("ring-2", "ring-purple-400");
+                        });
+                    }
+                    // Restore original work media
+                    openProjectModal(index, true);
+                };
+            }
+
             // Populate Filmstrip cards
             if (processFilmstrip) {
                 processFilmstrip.innerHTML = "";
                 shots.forEach((shot, shotIdx) => {
                     const shotCard = document.createElement("div");
-                    shotCard.className = "flex-shrink-0 w-44 sm:w-52 p-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer group flex flex-col gap-2";
+                    shotCard.className = "process-shot-card flex-shrink-0 w-44 sm:w-52 p-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-purple-500/50 transition-all cursor-pointer group flex flex-col gap-2";
                     
                     const isVidShot = isVideoUrl(shot.url || "");
                     const shotThumb = isVidShot
-                        ? `<video src="${formatAssetUrl(shot.url)}" class="w-full h-24 object-cover rounded-xl bg-black pointer-events-none" muted playsinline preload="metadata"></video>`
+                        ? `<div class="w-full h-24 rounded-xl bg-black/80 flex flex-col items-center justify-center relative overflow-hidden border border-white/10">
+                            <div class="w-8 h-8 rounded-full bg-purple-600/30 border border-purple-500/50 flex items-center justify-center text-purple-300">
+                                <svg class="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <span class="text-[9px] font-mono text-white/40 mt-1 uppercase tracking-wider">Video Shot</span>
+                           </div>`
                         : `<img src="${formatAssetUrl(shot.url)}" alt="${shot.title || 'Shot ' + (shotIdx + 1)}" class="w-full h-24 object-cover rounded-xl bg-black pointer-events-none group-hover:scale-105 transition-transform duration-300" loading="lazy">`;
 
                     shotCard.innerHTML = `
                         <div class="relative w-full h-24 rounded-xl overflow-hidden bg-black flex items-center justify-center">
                             ${shotThumb}
-                            <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/80 text-[#c084fc] border border-purple-500/30 backdrop-blur-md">
+                            <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/85 text-[#c084fc] border border-purple-500/30">
                                 Shot ${shotIdx + 1}
                             </span>
-                            ${shot.time ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90 backdrop-blur-md">${shot.time}</span>` : ''}
+                            ${shot.time ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/80 text-white/90">${shot.time}</span>` : ''}
                             <div class="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                 <span class="px-2 py-1 rounded-full bg-black/80 text-[10px] text-white font-bold tracking-wider uppercase border border-white/20">Preview</span>
                             </div>
@@ -2643,45 +2760,15 @@ function openProjectModal(indexOrEl, skipHistory = false) {
                     // Click to preview this shot in the main media stage
                     shotCard.onclick = (e) => {
                         e.stopPropagation();
-                        // Highlight active card
-                        processFilmstrip.querySelectorAll(".ring-2").forEach(el => el.classList.remove("ring-2", "ring-purple-400"));
-                        shotCard.classList.add("ring-2", "ring-purple-400");
-
-                        const stageMediaUrl = formatAssetUrl(shot.url);
-                        const mStageImg = document.getElementById("modal-img");
-                        const mStageVid = document.getElementById("modal-video");
-                        const mStageIframe = document.getElementById("modal-iframe");
-                        const mStageBA = document.getElementById("modal-before-after");
-                        const mStageOverlay = document.getElementById("cinematic-overlay-bar");
-
-                        if (mStageIframe) mStageIframe.classList.add("hidden");
-                        if (mStageBA) mStageBA.classList.add("hidden");
-
-                        if (isVidShot && mStageVid) {
-                            if (mStageImg) mStageImg.classList.add("hidden");
-                            mStageVid.classList.remove("hidden");
-                            if (mStageOverlay) mStageOverlay.classList.remove("hidden");
-                            mStageVid.src = stageMediaUrl;
-                            mStageVid.play().catch(() => {});
-                        } else if (mStageImg) {
-                            if (mStageVid) {
-                                mStageVid.pause();
-                                mStageVid.classList.add("hidden");
-                            }
-                            if (mStageOverlay) mStageOverlay.classList.add("hidden");
-                            mStageImg.classList.remove("hidden");
-                            mStageImg.src = stageMediaUrl;
-                        }
-
-                        // Scroll stage smoothly into view if user is looking down
-                        const modalStage = document.getElementById("cinematic-stage");
-                        if (modalStage) modalStage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        selectProcessShot(shotIdx);
                     };
 
                     processFilmstrip.appendChild(shotCard);
                 });
             }
         } else {
+            const stageNavBar = document.getElementById("modal-process-nav-bar");
+            if (stageNavBar) stageNavBar.classList.add("hidden");
             processTriggerBtn.classList.add("hidden");
             if (!targetLink && actionContainer) {
                 actionContainer.classList.add("hidden");
