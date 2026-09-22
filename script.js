@@ -875,10 +875,10 @@ function initGallery(force = false) {
             </div>` : ''}
             
             <!-- Bottom Metadata Overlay (Title, Role & Action Circle) -->
-            <div class="card-bottom-meta absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex items-end justify-between p-3.5 z-10 pointer-events-none">
-                <div class="overflow-hidden pr-2">
-                    <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
-                    <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">${work.role || 'Creative Lead'}</p>
+            <div class="card-bottom-meta" style="position: absolute !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; display: flex !important; flex-direction: row !important; align-items: flex-end !important; justify-content: space-between !important; padding: 28px 14px 12px 14px !important; background: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.7) 65%, transparent 100%) !important; z-index: 25 !important; pointer-events: none !important; box-sizing: border-box !important;">
+                <div class="overflow-hidden pr-2" style="flex: 1 1 0%; min-width: 0;">
+                    <h4 style="color: #ffffff !important; font-size: 12px !important; font-weight: 800 !important; line-height: 1.25 !important; text-transform: uppercase !important; margin: 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; text-shadow: 0 2px 6px rgba(0,0,0,0.95) !important;">${work.title}</h4>
+                    <p style="color: rgba(255,255,255,0.7) !important; font-size: 10px !important; font-weight: 500 !important; margin: 2px 0 0 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;">${work.role || 'Creative Lead'}</p>
                 </div>
                 <div class="card-action-circle shrink-0">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
