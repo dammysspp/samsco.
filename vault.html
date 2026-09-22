@@ -433,15 +433,15 @@
                 padding: 2px 7px;
                 border-radius: 9999px;
             }
-            /* Layout 2 Card Grid styling */
+            /* Layout 2 Card Grid styling: Exactly 3 on a row */
             body.vault-layout-sidebar #gallery-grid-content {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
-                gap: 24px !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 22px !important;
                 margin-top: 14px;
             }
             body.vault-layout-sidebar .gallery-item {
                 aspect-ratio: 4 / 3 !important;
-                min-height: 280px;
+                min-height: 270px;
                 border-radius: 20px !important;
                 border: 1px solid rgba(255, 255, 255, 0.08) !important;
                 background: #0d1017 !important;
@@ -475,23 +475,33 @@
                 border-color: #60a5fa;
                 box-shadow: 0 0 12px rgba(37, 99, 235, 0.7);
             }
-            /* Top Tag Pills */
-            .sidebar-tag-pill {
-                font-size: 10px;
-                font-weight: 700;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: rgba(255, 255, 255, 0.6);
-                padding: 6px 14px;
-                border-radius: 9999px;
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                transition: all 0.2s ease;
+            /* Explicit bottom metadata bar for project titles */
+            .gallery-item .card-bottom-meta {
+                position: absolute !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                top: auto !important;
+                padding: 24px 16px 14px 16px !important;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.75) 65%, transparent 100%) !important;
+                display: flex !important;
+                align-items: flex-end !important;
+                justify-content: space-between !important;
+                z-index: 25 !important;
+                pointer-events: none !important;
             }
-            .sidebar-tag-pill:hover {
-                color: #ffffff;
-                background: rgba(255, 255, 255, 0.08);
-                border-color: rgba(255, 255, 255, 0.2);
+            .gallery-item .card-bottom-meta h4 {
+                color: #ffffff !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.02em !important;
+                font-size: 13px !important;
+                line-height: 1.25 !important;
+                text-shadow: 0 2px 5px rgba(0,0,0,0.9) !important;
+            }
+            .gallery-item .card-bottom-meta p {
+                color: rgba(255, 255, 255, 0.7) !important;
+                font-size: 10px !important;
+                margin-top: 2px !important;
             }
         }
 
@@ -502,6 +512,28 @@
         }
         .card-action-circle {
             display: none;
+        }
+        .gallery-item .card-bottom-meta {
+            position: absolute !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            top: auto !important;
+            padding: 24px 14px 12px 14px !important;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.75) 60%, transparent 100%) !important;
+            display: flex !important;
+            align-items: flex-end !important;
+            justify-content: space-between !important;
+            z-index: 25 !important;
+            pointer-events: none !important;
+        }
+        .gallery-item .card-bottom-meta h4 {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.02em !important;
+            font-size: 12px !important;
+            line-height: 1.25 !important;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9) !important;
         }
     </style>
 </head>
@@ -1023,7 +1055,7 @@
                 <a href="index.html" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/5 text-white/60 hover:text-white transition-all text-xs font-medium">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        <span>Main Portfolio</span>
+                        <span>Home</span>
                     </span>
                     <span class="text-[10px] font-mono text-white/30">ESC</span>
                 </a>
@@ -1033,20 +1065,12 @@
         <!-- MAIN VAULT STAGE WRAPPER -->
         <div id="vault-main-stage" class="min-h-screen px-4 pt-4 pb-28 md:px-8 lg:px-16 relative z-10 w-full transition-all">
 
-            <!-- LAYOUT 2: TOP RIGHT TAGS & MENU (DESKTOP ONLY) -->
+            <!-- LAYOUT 2: TOP RIGHT HOME SHORTCUT (DESKTOP ONLY) -->
             <div class="vault-sidebar-only hidden w-full mb-6">
-                <div class="flex items-center justify-end gap-3">
-                    <div class="flex items-center gap-2">
-                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Graphics Design')">DESIGN</button>
-                        <span class="text-white/20 text-xs font-mono">/</span>
-                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Coding & Data Analytics')">CODE</button>
-                        <span class="text-white/20 text-xs font-mono">/</span>
-                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, 'Motion Graphics')">ANIMATE</button>
-                        <span class="text-white/20 text-xs font-mono">/</span>
-                        <button type="button" class="sidebar-tag-pill" onclick="handleFilterClick(null, '3D & VFX')">CREATE</button>
-                    </div>
-                    <a href="index.html" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white flex items-center justify-center transition-all ml-2" title="Back to main portfolio">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <div class="flex items-center justify-end">
+                    <a href="index.html" class="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white flex items-center gap-2 text-xs font-medium transition-all" title="Back to Home">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span>Home</span>
                     </a>
                 </div>
             </div>

@@ -849,7 +849,7 @@ function initGallery(force = false) {
             </div>` : ''}
             
             <!-- Bottom Metadata Overlay (Title, Role & Action Circle) -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex items-end justify-between p-3 md:p-3.5 z-10 pointer-events-none">
+            <div class="card-bottom-meta absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex items-end justify-between p-3.5 z-10 pointer-events-none">
                 <div class="overflow-hidden pr-2">
                     <h4 class="text-white text-[11px] md:text-xs font-black leading-tight uppercase truncate font-display drop-shadow-sm">${work.title}</h4>
                     <p class="text-white/60 text-[9px] md:text-[10px] mt-0.5 truncate font-medium">${work.role || 'Creative Lead'}</p>
