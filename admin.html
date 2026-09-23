@@ -354,8 +354,9 @@ CREATE TABLE IF NOT EXISTS public.mailbox_emails (
 );
 
 ALTER TABLE public.mailbox_emails ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow authenticated read/manage on mailbox_emails" ON public.mailbox_emails FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow public or service insert on mailbox_emails" ON public.mailbox_emails FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public or service insert on mailbox_emails" ON public.mailbox_emails FOR INSERT TO anon, authenticated, service_role WITH CHECK (true);
+CREATE POLICY "Allow select on mailbox_emails" ON public.mailbox_emails FOR SELECT TO anon, authenticated, service_role USING (true);
+CREATE POLICY "Allow update/delete on mailbox_emails" ON public.mailbox_emails FOR ALL TO authenticated, service_role USING (true);
 
 
 -- 9. Public Interaction RPC for Analytics (Views, Plays, Clicks)
