@@ -85,8 +85,11 @@
         }
 
         /* Admin Portal Layout 2 (Sidebar Mode) */
+        #dashboard.hidden {
+            display: none !important;
+        }
         @media (min-width: 1024px) {
-            #dashboard.admin-sidebar-mode {
+            #dashboard.admin-sidebar-mode:not(.hidden) {
                 display: flex !important;
                 flex-direction: row !important;
                 align-items: flex-start !important;
@@ -2890,6 +2893,14 @@ Body:
             }
 
             function switchTab(tab, updateHistory = true, action = null, id = null) {
+                if (!activeUser) {
+                    // Not signed in; strictly force login screen and prevent tab switching
+                    setupCard.classList.add("hidden");
+                    loginCard.classList.remove("hidden");
+                    dashboard.classList.add("hidden");
+                    return;
+                }
+
                 if (!tabs.includes(tab)) tab = "works";
                 activeTab = tab;
                 localStorage.setItem("samsco_admin_last_tab", tab);
@@ -2966,6 +2977,11 @@ Body:
 
             // Handle browser Back / Forward buttons seamlessly
             window.addEventListener("popstate", (e) => {
+                if (!activeUser) {
+                    loginCard.classList.remove("hidden");
+                    dashboard.classList.add("hidden");
+                    return;
+                }
                 const route = parseCurrentRoute();
                 switchTab(route.tab, false, route.action, route.id);
                 if (route.action === "edit" && route.id && typeof openEditModal === "function") {
