@@ -1189,18 +1189,6 @@ if (tabOverviewBtn && tabCaseBtn && tabOverviewPane && tabCasePane) {
     });
 }
 
-// Navbar shortcuts listeners
-const navShortcutsBtn = document.getElementById("nav-shortcuts-btn");
-const navShortcutsMobile = document.getElementById("nav-shortcuts-mobile");
-navShortcutsBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    openShortcuts();
-});
-navShortcutsMobile?.addEventListener("click", (e) => {
-    e.preventDefault();
-    openShortcuts();
-});
-
 gsap.utils.toArray(".anim-heading").forEach(e => {
     // Exclude hero words so hero text rotator and initial view aren't disturbed
     if (e.id === "hero-word-1" || e.id === "hero-word-2") {
@@ -3893,21 +3881,10 @@ if (window.matchMedia && window.matchMedia("(hover: hover)").matches) {
 
 const menuBtn = document.getElementById("menu-btn"), closeMenuBtn = document.getElementById("close-menu"), mobileMenu = document.getElementById("mobile-menu");
 menuBtn.addEventListener("click", () => mobileMenu.classList.add("active")), closeMenuBtn.addEventListener("click", () => mobileMenu.classList.remove("active")), document.querySelectorAll(".mobile-link").forEach(e => e.addEventListener("click", () => mobileMenu.classList.remove("active")));
-const ctxMenu = document.getElementById("custom-context-menu");
-if (ctxMenu) {
-    document.addEventListener("contextmenu", e => {
-        if (e.shiftKey || window.innerWidth < 768) return; // Allow native context menu on Shift+RightClick or mobile
-        e.preventDefault();
-        let t = e.clientX, a = e.clientY;
-        const r = window.innerWidth, i = window.innerHeight;
-        t + 200 > r && (t = r - 200), a + 200 > i && (a = i - 200);
-        ctxMenu.style.left = `${t}px`;
-        ctxMenu.style.top = `${a}px`;
-        ctxMenu.classList.add("visible");
-    });
-    document.addEventListener("click", () => ctxMenu.classList.remove("visible"));
-    document.addEventListener("scroll", () => ctxMenu.classList.remove("visible"), { passive: true });
-}
+// Disable right-click completely and silently across the entire page (no prompt, no dialog, no menu)
+document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+}, { capture: true });
 
 const scrollProgressBar = document.getElementById("scroll-progress");
 let ticking = false;
@@ -4253,20 +4230,8 @@ savedAccent && accentColors[savedAccent] && setAccentColor(savedAccent), themeDo
     )
 }
 );
-const shortcutsModal = document.getElementById("shortcuts-modal"), closeShortcutsBtn = document.getElementById("close-shortcuts");
-function openShortcuts() {
-    shortcutsModal.classList.add("active")
-}
-function closeShortcuts() {
-    shortcutsModal.classList.remove("active")
-}
-closeShortcutsBtn && closeShortcutsBtn.addEventListener("click", closeShortcuts), shortcutsModal && shortcutsModal.addEventListener("click", e => {
-    e.target === shortcutsModal && closeShortcuts()
-}
-), document.addEventListener("keydown", e => {
+document.addEventListener("keydown", e => {
     if ("INPUT" !== e.target.tagName && "TEXTAREA" !== e.target.tagName) switch (e.key.toLowerCase()) {
-        case "?": e.preventDefault(), shortcutsModal.classList.contains("active") ? closeShortcuts() : openShortcuts();
-            break;
         case "t": e.preventDefault(), window.scrollTo({
             top: 0, behavior: "smooth"
         }
@@ -4281,11 +4246,8 @@ closeShortcutsBtn && closeShortcutsBtn.addEventListener("click", closeShortcuts)
         }
         );
             break;
-        case "r": e.preventDefault(), document.body.classList.toggle("god-mode");
-            break;
-        case "escape": closeShortcuts(); closeProjectModal();
+        case "escape": closeProjectModal();
     }
-
 }
 );
 const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
@@ -4332,7 +4294,7 @@ if (document.addEventListener("keydown", e => {
         }
     `, document.head.appendChild(b)
 }
-console.log("%c🎨 Welcome to Samsco Portfolio!", "font-size: 20px; font-weight: bold; color: #0071e3;"), console.log("%cPress ? for keyboard shortcuts", "font-size: 12px; color: #888;");
+console.log("%c🎨 Welcome to Samsco Portfolio!", "font-size: 20px; font-weight: bold; color: #0071e3;");
 const telegramModal = document.getElementById("telegram-modal"), telegramBtn = document.getElementById("telegram-btn"), telegramClose = document.getElementById("telegram-close"), telegramContent = telegramModal ? telegramModal.querySelector(".glass-card") : null;
 function openTelegramModal(e) {
     e && e.preventDefault(), telegramModal && telegramContent && (telegramModal.classList.remove("pointer-events-none", "opacity-0"), telegramContent.classList.remove("scale-90"), telegramContent.classList.add("scale-100"), (document.body.style.overflow = "hidden", window.lenis && window.lenis.stop()))

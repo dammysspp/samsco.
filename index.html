@@ -37,6 +37,17 @@
 
     <link rel="stylesheet" href="/styles.css">
     <style>
+        /* High-Performance Smooth Scrolling (Optimized for Synaptics Touchpads, Mice & High-Refresh Displays) */
+        html, body {
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            scroll-behavior: smooth;
+            overscroll-behavior-y: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100%;
+        }
+
         /* PDF Interactive Flipbook Stage */
         .stage-flipbook {
             aspect-ratio: auto !important;
@@ -132,43 +143,6 @@
 
 
 
-    <!-- KEYBOARD SHORTCUTS MODAL -->
-    <div id="shortcuts-modal">
-        <div class="shortcuts-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold flex items-center gap-3">
-                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Keyboard Shortcuts
-                </h3>
-                <button id="close-shortcuts" class="text-white/50 hover:text-white text-2xl">&times;</button>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Show this help</span>
-                <span class="shortcut-key"><span class="key">?</span></span>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Go to top</span>
-                <span class="shortcut-key"><span class="key">T</span></span>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Open Gallery</span>
-                <span class="shortcut-key"><span class="key">G</span></span>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Contact Section</span>
-                <span class="shortcut-key"><span class="key">C</span></span>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Toggle God Mode</span>
-                <span class="shortcut-key"><span class="key">R</span></span>
-            </div>
-            <div class="shortcut-item">
-                <span class="text-white/70">Close modals</span>
-                <span class="shortcut-key"><span class="key">Esc</span></span>
-            </div>
-            <p class="text-white/30 text-xs mt-6 text-center">Press <span class="key">?</span> anytime to see this</p>
-        </div>
-    </div>
 
     <!-- PURE CSS PRELOADER (GPU Accelerated - No Stutter) -->
     <!-- APPLE-STYLE PRELOADER -->
@@ -208,30 +182,6 @@
         </div>
     </div>
 
-    <!-- CONTEXT MENU -->
-    <div id="custom-context-menu">
-        <div class="ctx-item" onclick="window.open('mailto:samscocommunications@gmail.com')">
-            <span>Email Me</span>
-            <span class="ctx-shortcut">@</span>
-        </div>
-        <div class="ctx-item" onclick="window.open('tel:09072483594')">
-            <span>Call Now</span>
-            <span class="ctx-shortcut flex items-center">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-            </span>
-        </div>
-        <div class="ctx-divider"></div>
-        <div class="ctx-item" onclick="document.body.classList.toggle('god-mode')">
-            <span>Toggle God Mode</span>
-            <span class="ctx-shortcut">R</span>
-        </div>
-        <div class="ctx-divider"></div>
-        <div class="px-4 py-1 text-[10px] text-gray-600 font-bold tracking-widest">
-            SYSTEM NORMAL
-            <span class="inline-block w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span>
-        </div>
-    </div>
-
     <!-- APPLE-STYLE NAVIGATION -->
     <nav class="fixed w-full top-0 z-50 px-4 md:px-6 py-4 md:py-5 transition-all duration-500" id="navbar">
         <div
@@ -246,12 +196,8 @@
                 <a href="#portfolio" class="hover:text-white transition-colors duration-300">WORK</a>
                 <a href="#cv" class="hover:text-white transition-colors duration-300">RESUME / CV</a>
                 <a href="#contact" class="hover:text-white transition-colors duration-300">CONTACT</a>
-                <button id="nav-shortcuts-btn" class="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 rounded-lg text-[9px] font-mono text-white/50 hover:text-white transition-all duration-300 cursor-pointer" title="Keyboard Shortcuts">
-                    <span class="key-cap">?</span> Shortcuts
-                </button>
             </div>
             <div class="flex items-center gap-4 md:hidden">
-                <button id="nav-shortcuts-mobile" class="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-lg text-[10px] font-mono text-white/50" title="Keyboard Shortcuts">?</button>
                 <div class="text-xl cursor-pointer text-white/70 hover:text-white transition-colors"
                     id="menu-btn">☰</div>
             </div>
@@ -1403,36 +1349,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis Smooth Scrolling (Desktop only - Native touch scroll on mobile for 60-120fps performance) -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- Native Smooth Scrolling for 60-144fps responsive scrolling on all devices (Touchpad, Mice & High Refresh) -->
     <script>
-        const isTouchMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 768);
-        let lenis = null;
-        if (!isTouchMobile && typeof Lenis !== 'undefined') {
-            lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 1.5,
-                infinite: false,
-            });
-            window.lenis = lenis;
-
-            // Connect Lenis to GSAP ScrollTrigger
-            if (typeof ScrollTrigger !== "undefined") {
-                lenis.on('scroll', ScrollTrigger.update);
-                gsap.ticker.add((time) => {
-                    lenis.raf(time * 1000);
-                });
-                gsap.ticker.lagSmoothing(0);
-            }
-        } else {
-            window.lenis = null;
-        }
+        window.lenis = null;
     </script>
 
 
