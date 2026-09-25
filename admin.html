@@ -20,6 +20,76 @@
     <!-- PDF.js CDN for Automatic PDF Thumbnail Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+    <!-- Immediate Pre-flight Route Resolver (Auto-figures destination and prevents loading errors) -->
+    <script>
+        (function() {
+            try {
+                const path = window.location.pathname;
+                const pathParts = path.split("/").filter(Boolean);
+                const adminIdx = pathParts.findIndex(p => p.toLowerCase() === "admin" || p.toLowerCase() === "admin.html");
+                const validTabs = ["works", "analytics", "inquiries", "activity", "skills", "experience", "profile", "testimonials", "categories", "layout"];
+                
+                let targetTab = null;
+                let targetAction = null;
+                let targetId = null;
+
+                // 1. Pathname route (e.g. /admin/analytics)
+                if (adminIdx !== -1 && pathParts[adminIdx + 1]) {
+                    const candidate = pathParts[adminIdx + 1].toLowerCase();
+                    if (validTabs.includes(candidate)) {
+                        targetTab = candidate;
+                        if (pathParts[adminIdx + 2]) targetAction = pathParts[adminIdx + 2].toLowerCase();
+                        if (pathParts[adminIdx + 3]) targetId = pathParts[adminIdx + 3];
+                    }
+                }
+
+                // 2. Query param (e.g. ?tab=works)
+                if (!targetTab) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const qTab = urlParams.get("tab")?.toLowerCase();
+                    if (validTabs.includes(qTab)) {
+                        targetTab = qTab;
+                        targetAction = urlParams.get("action")?.toLowerCase() || (urlParams.get("new") === "1" ? "new" : null) || (urlParams.get("edit") ? "edit" : null);
+                        targetId = urlParams.get("id") || urlParams.get("edit");
+                    }
+                }
+
+                // 3. Hash fragment (e.g. #works)
+                if (!targetTab) {
+                    const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+                    const hashParts = hash.split("/").filter(Boolean);
+                    if (hashParts.length > 0 && validTabs.includes(hashParts[0])) {
+                        targetTab = hashParts[0];
+                        if (hashParts[1]) targetAction = hashParts[1];
+                        if (hashParts[2]) targetId = hashParts[2];
+                    }
+                }
+
+                // 4. Where it was last in or fallback to works
+                if (!targetTab) {
+                    const lastTab = localStorage.getItem("samsco_admin_last_tab");
+                    targetTab = (lastTab && validTabs.includes(lastTab)) ? lastTab : "works";
+                }
+
+                window._preflightTarget = { tab: targetTab, action: targetAction, id: targetId };
+
+                // Seamlessly normalize bare URLs like /admin.html or /admin to /admin/<targetTab>
+                if (window.history && window.history.replaceState) {
+                    let newPath = `/admin/${targetTab}`;
+                    if (targetAction) {
+                        newPath += `/${targetAction}`;
+                        if (targetId) newPath += `/${targetId}`;
+                    }
+                    if (path !== newPath && !path.includes(`/admin/${targetTab}`)) {
+                        window.history.replaceState({ tab: targetTab, action: targetAction, id: targetId }, "", newPath);
+                    }
+                }
+            } catch (e) {
+                console.warn("Pre-flight route resolver notice:", e);
+            }
+        })();
+    </script>
+
     <style>
         body {
             background-color: #000;
@@ -135,6 +205,18 @@
     <div id="toast" class="fixed top-6 right-6 z-[100] transform translate-y-[-20px] opacity-0 pointer-events-none transition-all duration-300 max-w-sm w-full p-4 rounded-xl flex items-center gap-3 backdrop-blur-md border shadow-2xl">
         <div id="toast-icon" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"></div>
         <div id="toast-text" class="text-sm font-medium"></div>
+    </div>
+
+    <!-- Portal Pre-flight Loading Screen -->
+    <div id="admin-portal-loader" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300">
+        <div class="relative w-14 h-14 mb-4 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-2 border-white/10 border-t-[#0071e3] animate-spin"></div>
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0071e3] to-[#64d2ff] flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <span class="text-white font-bold font-display text-xs">S</span>
+            </div>
+        </div>
+        <p class="text-white text-xs font-semibold tracking-wider uppercase font-display" id="admin-loader-text">Loading Portal...</p>
+        <p class="text-white/40 text-[10px] font-mono mt-1" id="admin-loader-subtext">Resolving destination...</p>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -2137,8 +2219,33 @@ Body:
                 }, 4000);
             }
             
+            // Portal Loading Indicator Helpers
+            function showAdminLoader(msg = "Loading Portal...", subtext = "Resolving destination...") {
+                const loader = document.getElementById("admin-portal-loader");
+                const textEl = document.getElementById("admin-loader-text");
+                const subtextEl = document.getElementById("admin-loader-subtext");
+                if (textEl) textEl.textContent = msg;
+                if (subtextEl) subtextEl.textContent = subtext;
+                if (loader) {
+                    loader.classList.remove("opacity-0", "pointer-events-none", "hidden");
+                }
+            }
+
+            function hideAdminLoader() {
+                const loader = document.getElementById("admin-portal-loader");
+                if (loader) {
+                    loader.classList.add("opacity-0", "pointer-events-none");
+                    setTimeout(() => {
+                        if (loader.classList.contains("opacity-0")) {
+                            loader.classList.add("hidden");
+                        }
+                    }, 350);
+                }
+            }
+            
             // Screen router
             function checkAppState() {
+                showAdminLoader("Loading Portal...", "Verifying database connection...");
                 const cancelBtn = document.getElementById("setup-cancel-btn");
                 const disconnectContainer = document.getElementById("disconnect-container");
                 if (cancelBtn) cancelBtn.classList.add("hidden");
@@ -2159,6 +2266,7 @@ Body:
                 const config = getSupabaseConfig();
                 
                 if (!config.url || !config.key) {
+                    hideAdminLoader();
                     setupCard.classList.remove("hidden");
                     loginCard.classList.add("hidden");
                     dashboard.classList.add("hidden");
@@ -2178,6 +2286,7 @@ Body:
                 }
                 
                 if (!window.supabaseClient) {
+                    hideAdminLoader();
                     setupCard.classList.remove("hidden");
                     loginCard.classList.add("hidden");
                     dashboard.classList.add("hidden");
@@ -2190,6 +2299,7 @@ Body:
             }
             
             async function checkUserSession() {
+                showAdminLoader("Verifying Session...", "Checking credentials & active session...");
                 try {
                     const { data: { session }, error } = await window.supabaseClient.auth.getSession();
                     
@@ -2203,21 +2313,30 @@ Body:
                         loginCard.classList.add("hidden");
                         dashboard.classList.remove("hidden");
                         
-                        if (typeof window.parseCurrentRoute === 'function' && typeof window.switchAdminTab === 'function') {
-                            const initialRoute = window.parseCurrentRoute();
-                            window.switchAdminTab(initialRoute.tab, false, initialRoute.action, initialRoute.id);
+                        // Resolve where it's supposed to be (URL slug or where it was last in)
+                        const initialRoute = (typeof window.parseCurrentRoute === 'function') 
+                            ? window.parseCurrentRoute() 
+                            : (window._preflightTarget || { tab: localStorage.getItem("samsco_admin_last_tab") || "works", action: null, id: null });
+                        
+                        showAdminLoader("Entering Dashboard...", `Opening ${initialRoute.tab}...`);
+
+                        if (typeof window.switchAdminTab === 'function') {
+                            window.switchAdminTab(initialRoute.tab, true, initialRoute.action, initialRoute.id);
                         }
 
                         await syncAIPredsWithDb();
-                        loadDashboardData();
+                        await loadDashboardData();
+                        hideAdminLoader();
                     } else {
                         activeUser = null;
+                        hideAdminLoader();
                         setupCard.classList.add("hidden");
                         loginCard.classList.remove("hidden");
                         dashboard.classList.add("hidden");
                     }
                 } catch (e) {
                     console.error("Session check failed:", e);
+                    hideAdminLoader();
                     setupCard.classList.add("hidden");
                     loginCard.classList.remove("hidden");
                     dashboard.classList.add("hidden");
@@ -2834,11 +2953,11 @@ Body:
                     if (hashParts[2]) hashId = hashParts[2];
                 }
 
-                // Combine with fallback to localStorage then "works"
-                const tab = pathTab || queryTab || hashTab || localStorage.getItem("samsco_admin_last_tab") || "works";
+                // Combine with fallback to preflight target then localStorage then "works"
+                const tab = pathTab || queryTab || hashTab || window._preflightTarget?.tab || localStorage.getItem("samsco_admin_last_tab") || "works";
                 const validTab = tabs.includes(tab) ? tab : "works";
-                const action = pathAction || queryAction || hashAction || null;
-                const id = pathId || queryId || hashId || null;
+                const action = pathAction || queryAction || hashAction || window._preflightTarget?.action || null;
+                const id = pathId || queryId || hashId || window._preflightTarget?.id || null;
 
                 return { tab: validTab, action, id };
             }
@@ -2852,9 +2971,9 @@ Body:
                     const pathParts = path.split("/").filter(Boolean);
                     const adminIdx = pathParts.findIndex(p => p.toLowerCase() === "admin" || p.toLowerCase() === "admin.html");
                     
-                    if (adminIdx !== -1 && !path.endsWith(".html")) {
-                        // Clean Vercel / server-side route
-                        let newPath = `/${pathParts.slice(0, adminIdx + 1).join("/")}/${tab}`;
+                    if (adminIdx !== -1) {
+                        // Clean Vercel / server-side route normalized to /admin/<tab>
+                        let newPath = `/admin/${tab}`;
                         if (action) {
                             newPath += `/${action}`;
                             if (id) newPath += `/${id}`;
@@ -3052,7 +3171,7 @@ Body:
                 // Restore active tab and modal state from URL slug (or localStorage)
                 if (typeof parseCurrentRoute === 'function' && typeof switchTab === 'function') {
                     const route = parseCurrentRoute();
-                    switchTab(route.tab, false, route.action, route.id);
+                    switchTab(route.tab, true, route.action, route.id);
                     if (route.action === "edit" && route.id && typeof openEditModal === 'function') {
                         setTimeout(() => openEditModal(route.id, false), 100);
                     } else if (route.action === "new") {
@@ -3060,6 +3179,7 @@ Body:
                         if (newBtn) setTimeout(() => newBtn.click(), 100);
                     }
                 }
+                hideAdminLoader();
             }
 
             // ==========================================
