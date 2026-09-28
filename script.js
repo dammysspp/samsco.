@@ -285,22 +285,53 @@ async function fetchExperienceFromSupabase() {
 async function fetchProfileImagesFromSupabase() {
     if (!window.supabaseClient) return;
     try {
+        const profileKeys = [
+            "profile_image_1", "profile_image_2",
+            "profile_badge", "profile_title", "profile_greeting",
+            "profile_name", "profile_real_name",
+            "profile_subtitle", "profile_bio", "profile_tag"
+        ];
+
         const { data, error } = await window.supabaseClient
             .from("site_settings")
             .select("*")
-            .in("key", ["profile_image_1", "profile_image_2"]);
+            .in("key", profileKeys);
             
         if (error) throw error;
         
         if (data && data.length > 0) {
             const img1 = document.getElementById("profile-img-1");
             const img2 = document.getElementById("profile-img-2");
+            const badgeEl = document.getElementById("about-badge");
+            const titleEl = document.getElementById("about-title");
+            const greetingEl = document.getElementById("about-greeting");
+            const nameEl = document.getElementById("about-name");
+            const realNameEl = document.getElementById("identity-bubble");
+            const subtitleEl = document.getElementById("about-subtitle");
+            const bioEl = document.getElementById("about-bio");
+            const tagEl = document.getElementById("about-tag");
             
             data.forEach(setting => {
-                if (setting.key === "profile_image_1" && img1) {
+                if (setting.key === "profile_image_1" && img1 && setting.value) {
                     img1.src = setting.value;
-                } else if (setting.key === "profile_image_2" && img2) {
+                } else if (setting.key === "profile_image_2" && img2 && setting.value) {
                     img2.src = setting.value;
+                } else if (setting.key === "profile_badge" && badgeEl && setting.value) {
+                    badgeEl.textContent = setting.value;
+                } else if (setting.key === "profile_title" && titleEl && setting.value) {
+                    titleEl.textContent = setting.value;
+                } else if (setting.key === "profile_greeting" && greetingEl && setting.value) {
+                    greetingEl.textContent = setting.value;
+                } else if (setting.key === "profile_name" && nameEl && setting.value) {
+                    nameEl.textContent = setting.value;
+                } else if (setting.key === "profile_real_name" && realNameEl && setting.value) {
+                    realNameEl.textContent = setting.value;
+                } else if (setting.key === "profile_subtitle" && subtitleEl && setting.value) {
+                    subtitleEl.innerHTML = setting.value;
+                } else if (setting.key === "profile_bio" && bioEl && setting.value) {
+                    bioEl.textContent = setting.value;
+                } else if (setting.key === "profile_tag" && tagEl && setting.value) {
+                    tagEl.textContent = setting.value;
                 }
             });
         }

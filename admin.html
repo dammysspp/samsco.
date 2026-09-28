@@ -1013,11 +1013,104 @@ GRANT EXECUTE ON FUNCTION public.increment_work_metric(BIGINT, TEXT) TO anon, au
                         </div>
                     </div>
                 </div>
+
+                <!-- Text Customization Section -->
+                <div class="bg-white/[0.02] border border-white/5 p-6 rounded-3xl backdrop-blur-md mt-4">
+                    <h2 class="text-xl font-bold font-display uppercase">About Me Text Customization</h2>
+                    <p class="text-white/40 text-xs mt-1">Customize every text element in your About Me section broken down by hierarchy and sections.</p>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- Section 1: Header & Category Eyebrow -->
+                    <div class="admin-glass p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2 border-b border-white/5 pb-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#0071e3]"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">1. Section Header & Eyebrow</h3>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Eyebrow Badge (Small Top Text)</label>
+                                <input type="text" id="profile-badge-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm" placeholder="e.g. WHO I AM">
+                                <span class="text-[11px] text-white/30 mt-1 block">Renders at the very top of the section in neon blue</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Section Title (Header)</label>
+                                <input type="text" id="profile-title-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm" placeholder="e.g. About Me">
+                                <span class="text-[11px] text-white/30 mt-1 block">The main 3D masked heading for the section</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Name & Identity Headline -->
+                    <div class="admin-glass p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2 border-b border-white/5 pb-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#bf5af2]"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">2. Headline & Identity</h3>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Greeting Prefix</label>
+                                <input type="text" id="profile-greeting-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm" placeholder="e.g. Hello, I'm">
+                                <span class="text-[11px] text-white/30 mt-1 block">Introductory greeting before your name</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Display Name / Alias</label>
+                                <input type="text" id="profile-name-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm text-[#0071e3] font-bold" placeholder="e.g. Samsco">
+                                <span class="text-[11px] text-white/30 mt-1 block">Highlighted interactive name in blue</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Hover Identity Tag</label>
+                                <input type="text" id="profile-real-name-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm" placeholder="e.g. Aiyedun Samuel">
+                                <span class="text-[11px] text-white/30 mt-1 block">Bubble text that appears when hovering over your name</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Lead Subtitle (Biggest Body Text) -->
+                    <div class="admin-glass p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2 border-b border-white/5 pb-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#ff9f0a]"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">3. Lead Subtitle (Main Highlight Statement)</h3>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Hero Subtitle / One-Liner (Biggest Text)</label>
+                            <textarea id="profile-subtitle-input" rows="3" class="w-full px-4 py-3 rounded-xl admin-input text-sm resize-none leading-relaxed" placeholder="e.g. 19-Year-Old Multi-Disciplinary Talent. Final Year Student at Covenant University."></textarea>
+                            <span class="text-[11px] text-white/30 mt-1 block">High-impact summary right beneath your headline</span>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Main Bio (Body Paragraph) -->
+                    <div class="admin-glass p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2 border-b border-white/5 pb-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#64d2ff]"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">4. Bio (Body Story Paragraph)</h3>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Description / Body Paragraph</label>
+                            <textarea id="profile-bio-input" rows="4" class="w-full px-4 py-3 rounded-xl admin-input text-sm resize-none leading-relaxed" placeholder="e.g. I bridge the gap between Mass Communication and Creative Technology. My background in communications helps me craft visual stories that connect, while my programming skills give me the power to build the systems that deliver them."></textarea>
+                            <span class="text-[11px] text-white/30 mt-1 block">Detailed paragraph describing your expertise, story, and unique philosophy</span>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Status Tag & Pill -->
+                    <div class="admin-glass p-6 rounded-3xl flex flex-col gap-4">
+                        <div class="flex items-center gap-2 border-b border-white/5 pb-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#30d158]"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">5. Status / University Badge</h3>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-white/70 mb-1.5 uppercase tracking-wider">Status Pill Text (Next to glowing green dot)</label>
+                            <input type="text" id="profile-tag-input" class="w-full px-4 py-3 rounded-xl admin-input text-sm" placeholder="e.g. Covenant University • Mass Comm Class of '26">
+                            <span class="text-[11px] text-white/30 mt-1 block">Live status badge text displayed alongside the pulsing status indicator</span>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Profile Save Button -->
                 <div class="flex justify-end mt-4">
-                    <button id="save-profile-settings-btn" class="bg-[#0071e3] hover:bg-[#0077ed] text-white px-8 py-3 rounded-full font-bold text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,113,227,0.3)]">
-                        SAVE PROFILE SETTINGS
+                    <button id="save-profile-settings-btn" class="bg-[#0071e3] hover:bg-[#0077ed] text-white px-8 py-3.5 rounded-full font-bold text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,113,227,0.3)] flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>SAVE PROFILE & TEXTS</span>
                     </button>
                 </div>
             </div>
@@ -3328,31 +3421,57 @@ Body:
                 const url2Input = document.getElementById("profile-url-2");
                 const preview1 = document.getElementById("profile-preview-1");
                 const preview2 = document.getElementById("profile-preview-2");
+
+                const badgeInput = document.getElementById("profile-badge-input");
+                const titleInput = document.getElementById("profile-title-input");
+                const greetingInput = document.getElementById("profile-greeting-input");
+                const nameInput = document.getElementById("profile-name-input");
+                const realNameInput = document.getElementById("profile-real-name-input");
+                const subtitleInput = document.getElementById("profile-subtitle-input");
+                const bioInput = document.getElementById("profile-bio-input");
+                const tagInput = document.getElementById("profile-tag-input");
+
                 if (!url1Input || !url2Input) return;
                 
                 try {
+                    const profileKeys = [
+                        "profile_image_1", "profile_image_2",
+                        "profile_badge", "profile_title", "profile_greeting",
+                        "profile_name", "profile_real_name",
+                        "profile_subtitle", "profile_bio", "profile_tag"
+                    ];
+
                     const { data, error } = await window.supabaseClient
                         .from("site_settings")
                         .select("*")
-                        .in("key", ["profile_image_1", "profile_image_2"]);
+                        .in("key", profileKeys);
                     
                     if (error) throw error;
                     
-                    let img1Val = "./SAMSCO.jpg";
-                    let img2Val = "./me_3.jpg";
-                    
+                    const settingsMap = {};
                     if (data) {
                         data.forEach(item => {
-                            if (item.key === "profile_image_1") img1Val = item.value;
-                            if (item.key === "profile_image_2") img2Val = item.value;
+                            settingsMap[item.key] = item.value;
                         });
                     }
+
+                    const img1Val = settingsMap["profile_image_1"] || "./SAMSCO.jpg";
+                    const img2Val = settingsMap["profile_image_2"] || "./me_3.jpg";
                     
                     url1Input.value = img1Val;
                     preview1.src = img1Val;
                     
                     url2Input.value = img2Val;
                     preview2.src = img2Val;
+
+                    if (badgeInput) badgeInput.value = settingsMap["profile_badge"] ?? "WHO I AM";
+                    if (titleInput) titleInput.value = settingsMap["profile_title"] ?? "About Me";
+                    if (greetingInput) greetingInput.value = settingsMap["profile_greeting"] ?? "Hello, I'm";
+                    if (nameInput) nameInput.value = settingsMap["profile_name"] ?? "Samsco";
+                    if (realNameInput) realNameInput.value = settingsMap["profile_real_name"] ?? "Aiyedun Samuel";
+                    if (subtitleInput) subtitleInput.value = settingsMap["profile_subtitle"] ?? "19-Year-Old Multi-Disciplinary Talent. Final Year Student at Covenant University.";
+                    if (bioInput) bioInput.value = settingsMap["profile_bio"] ?? "I bridge the gap between Mass Communication and Creative Technology. My background in communications helps me craft visual stories that connect, while my programming skills give me the power to build the systems that deliver them.";
+                    if (tagInput) tagInput.value = settingsMap["profile_tag"] ?? "Covenant University • Mass Comm Class of '26";
                 } catch (e) {
                     console.error("Fetch profile settings failed:", e);
                 }
@@ -7331,25 +7450,42 @@ Provide the response in structured JSON matching this schema:
                 saveProfileSettingsBtn.addEventListener("click", async () => {
                     const val1 = document.getElementById("profile-url-1").value.trim();
                     const val2 = document.getElementById("profile-url-2").value.trim();
+
+                    const badge = (document.getElementById("profile-badge-input")?.value || "").trim() || "WHO I AM";
+                    const title = (document.getElementById("profile-title-input")?.value || "").trim() || "About Me";
+                    const greeting = (document.getElementById("profile-greeting-input")?.value || "").trim() || "Hello, I'm";
+                    const name = (document.getElementById("profile-name-input")?.value || "").trim() || "Samsco";
+                    const realName = (document.getElementById("profile-real-name-input")?.value || "").trim() || "Aiyedun Samuel";
+                    const subtitle = (document.getElementById("profile-subtitle-input")?.value || "").trim() || "19-Year-Old Multi-Disciplinary Talent. Final Year Student at Covenant University.";
+                    const bio = (document.getElementById("profile-bio-input")?.value || "").trim() || "I bridge the gap between Mass Communication and Creative Technology. My background in communications helps me craft visual stories that connect, while my programming skills give me the power to build the systems that deliver them.";
+                    const tag = (document.getElementById("profile-tag-input")?.value || "").trim() || "Covenant University • Mass Comm Class of '26";
                     
                     if (!val1 || !val2) {
                         showToast("Please enter URLs for both profile image fields", "error");
                         return;
                     }
                     
-                    showToast("Saving profile images settings...", "info");
+                    showToast("Saving profile images & text settings...", "info");
                     try {
-                        const { error: err1 } = await window.supabaseClient
+                        const settingsToSave = [
+                            { key: "profile_image_1", value: val1 },
+                            { key: "profile_image_2", value: val2 },
+                            { key: "profile_badge", value: badge },
+                            { key: "profile_title", value: title },
+                            { key: "profile_greeting", value: greeting },
+                            { key: "profile_name", value: name },
+                            { key: "profile_real_name", value: realName },
+                            { key: "profile_subtitle", value: subtitle },
+                            { key: "profile_bio", value: bio },
+                            { key: "profile_tag", value: tag }
+                        ];
+
+                        const { error } = await window.supabaseClient
                             .from("site_settings")
-                            .upsert({ key: "profile_image_1", value: val1 });
-                        if (err1) throw err1;
+                            .upsert(settingsToSave);
+                        if (error) throw error;
                         
-                        const { error: err2 } = await window.supabaseClient
-                            .from("site_settings")
-                            .upsert({ key: "profile_image_2", value: val2 });
-                        if (err2) throw err2;
-                        
-                        showToast("Successfully saved profile images settings!", "success");
+                        showToast("Successfully saved profile images & text customizations!", "success");
                         loadProfileSettingsData();
                     } catch (e) {
                         showToast(`Save failed: ${e.message}`, "error");
